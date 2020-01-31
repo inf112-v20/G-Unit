@@ -47,6 +47,7 @@ Alt skal funke etter reglene, man må kunne gjennomføre et helt spill etter reg
 Det sto mellom scrum og kanban, men vi endte opp med **kanban** som prosjektmetodikk ettersom denne er litt frirere enn scrum. Selvom vi har valgt kanban, vil vi nok etterhvert inkludere elementer av scrum. Som f.eks. sprinter - det kan være hvis vi blir enige om møtes og ta en sprint hvis vi ser behov for det.
 
 Vi har bestemt oss for å ha et fast tidspunkt (søndag kl. 19) hver uke hvor vi tar en catchup på slack, der vi blir enige om evt møte(r) i uken som kommer. Vi tar også en oppsummering av uken og kanban-boardet, hvor vi ser hvordan vi ligger an.
+
 ---
 ## Deloppgave 4
 #### Brukerhistorier

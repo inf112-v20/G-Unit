@@ -23,25 +23,25 @@ Vi har også valgt en kundekontakt fordi vi må ha en som tar ansvar for å ta k
 Alt skal funke etter reglene, man må kunne gjennomføre et helt spill etter reglene. Det skal heller ikke være noen game-breaking bugs.
 
 ### Krav
-- Meny
-- Flerspiller- og enspiller support
-- Et brett
-- Vise en brikke
-- Dele ut kodesprint
-- Velge kodesprint
-- Flagg på brettet
-- Ikke gå gjennom vegger
-- Spille fra ulike maskiner
-- Flytte flere brikker samtidig
-- Flytte brukker etter prioritet på kort
-- Dele ut nye kort ved ny runde
-- Restarte fra backup ved ødeleggelse
+-  Meny
+-  Flerspiller- og enspiller support
+-  Et brett
+-  Vise en brikke
+-  Dele ut kodesprint
+-  Velge kodesprint
+-  Flagg på brettet
+-  Ikke gå gjennom vegger
+-  Spille fra ulike maskiner
+-  Flytte flere brikker samtidig
+-  Flytte brukker etter prioritet på kort
+-  Dele ut nye kort ved ny runde
+-  Restarte fra backup ved ødeleggelse
 
 ### Krav i første iterasjon
-- Et vindu
-- Elementær grafikk
-- Brett med tiles
-- En figur
+-  Et vindu
+-  Elementær grafikk
+-  Brett med tiles
+-  En figur
 ---
 ## Deloppgave 3: Prosjektmetodikk
 Det sto mellom scrum og kanban, men vi endte opp med **kanban** som prosjektmetodikk ettersom denne er litt frirere enn scrum. Selvom vi har valgt kanban, vil vi nok etterhvert inkludere elementer av scrum. Som f.eks. sprinter - det kan være hvis vi blir enige om møtes og ta en sprint hvis vi ser behov for det.

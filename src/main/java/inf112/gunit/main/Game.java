@@ -12,9 +12,9 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 public class Game implements ApplicationListener {
     TiledMap tiledMap;
-    TiledMapTileLayer Board, Player, Hole, Flag;
+    TiledMapTileLayer layerBoard, layerPlayer, layerHole, layerFlag;
     OrthographicCamera camera;
-    OrthogonalTiledMapRenderer tilerender;
+    OrthogonalTiledMapRenderer tileRenderer;
     TiledMapRenderer tiledMapRenderer;
 
     @Override
@@ -28,16 +28,15 @@ public class Game implements ApplicationListener {
         int mapWidth = props.get("width", Integer.class);
         int mapHeight = props.get("height", Integer.class);
 
-        Board = (TiledMapTileLayer) tiledMap.getLayers().get("Board");
+        layerBoard = (TiledMapTileLayer) tiledMap.getLayers().get("Board");
 
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, tileWidth*mapWidth, tileWidth*mapHeight);
+        camera.setToOrtho(false, tileWidth*mapWidth, tileHeight*mapHeight);
         camera.translate(2.5f, 0);
         camera.update();
 
-        tilerender = new OrthogonalTiledMapRenderer(tiledMap, (float) 1/300*300);
-
-        tilerender.setView(camera);
+        tileRenderer = new OrthogonalTiledMapRenderer(tiledMap, (float) 1/300*300);
+        tileRenderer.setView(camera);
     }
 
     @Override
@@ -47,8 +46,7 @@ public class Game implements ApplicationListener {
     @Override
     public void render() {
         Gdx.gl.glClearColor(1, 0, 0, 1);
-
-        tilerender.render();
+        tileRenderer.render();
     }
 
     @Override

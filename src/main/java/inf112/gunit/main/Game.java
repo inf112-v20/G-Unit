@@ -30,7 +30,7 @@ public class Game extends InputAdapter implements ApplicationListener {
     public void create() {
         Gdx.input.setInputProcessor(this);
 
-        tiledMap = new TmxMapLoader().load("src/assets/tiles.tmx");
+        tiledMap = new TmxMapLoader().load("src/assets/tiles_80x80.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         MapProperties props = tiledMap.getProperties();
 
@@ -42,7 +42,7 @@ public class Game extends InputAdapter implements ApplicationListener {
         layerBoard = (TiledMapTileLayer) tiledMap.getLayers().get("board");
         layerPlayer = (TiledMapTileLayer) tiledMap.getLayers().get("player");
 
-        Texture playerTexture = new Texture("src/assets/player.png");
+        Texture playerTexture = new Texture("src/assets/player_16x16.png");
         TextureRegion[][] playerTextureSplit = TextureRegion.split(playerTexture, tileWidth, tileHeight);
         playerCell = new Cell().setTile(new StaticTiledMapTile(playerTextureSplit[0][0]));
         playerPosition = new Vector2(0, 0);
@@ -51,7 +51,7 @@ public class Game extends InputAdapter implements ApplicationListener {
         camera.setToOrtho(false, tileWidth*mapWidth, tileHeight*mapHeight);
         camera.update();
 
-        tileRenderer = new OrthogonalTiledMapRenderer(tiledMap, (float) 1/300*300);
+        tileRenderer = new OrthogonalTiledMapRenderer(tiledMap, (float) 1/16*16);
         tileRenderer.setView(camera);
     }
 

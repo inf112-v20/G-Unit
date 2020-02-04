@@ -19,11 +19,11 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 
 public class Game extends InputAdapter implements ApplicationListener {
     TiledMap tiledMap;
-    TiledMapTileLayer layerBoard, layerPlayer, layerHole, layerFlag;
+    TiledMapTileLayer layerBoard, layerPlayer;
     OrthographicCamera camera;
     OrthogonalTiledMapRenderer tileRenderer;
     TiledMapRenderer tiledMapRenderer;
-    Cell playerCell, playerDiedCell, playerWonCell;
+    Cell playerCell;
     Vector2 playerPosition;
 
     @Override
@@ -79,7 +79,7 @@ public class Game extends InputAdapter implements ApplicationListener {
     }
 
     @Override
-    public boolean keyUp(int keycode) {
+    public boolean keyDown(int keycode) {
         layerPlayer.setCell((int) playerPosition.x, (int) playerPosition.y, null);
 
         if (keycode == Input.Keys.LEFT)

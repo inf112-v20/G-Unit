@@ -22,11 +22,11 @@ public class Game implements ApplicationListener {
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         Board = (TiledMapTileLayer) tiledMap.getLayers().get("Board");
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 5, 5);
-        camera.lookAt(2.5f, 0, 0);
+        camera.setToOrtho(false, 1500, 1500);
+        camera.translate(2.5f, 0);
         camera.update();
 
-        tilerender = new OrthogonalTiledMapRenderer(tiledMap, 1);
+        tilerender = new OrthogonalTiledMapRenderer(tiledMap, (float) 1/300*300);
 
         tilerender.setView(camera);
     }

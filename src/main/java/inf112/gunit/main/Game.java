@@ -9,6 +9,8 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 
 public class Game implements ApplicationListener {
     TiledMap tiledMap;
@@ -16,6 +18,8 @@ public class Game implements ApplicationListener {
     OrthographicCamera camera;
     OrthogonalTiledMapRenderer tilerender;
     TiledMapRenderer tiledMapRenderer;
+    Cell playerCell, playerDiedCell, playerWonCell;
+    Vector2 playerPosition;
 
     @Override
     public void create() {

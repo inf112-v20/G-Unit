@@ -45,13 +45,10 @@ public class Game extends InputAdapter implements ApplicationListener {
         Texture playerTexture = new Texture("src/assets/player.png");
         TextureRegion[][] playerTextureSplit = TextureRegion.split(playerTexture, tileWidth, tileHeight);
         playerCell = new Cell().setTile(new StaticTiledMapTile(playerTextureSplit[0][0]));
-        playerDiedCell = new Cell().setTile(new StaticTiledMapTile(playerTextureSplit[0][1]));
-        playerWonCell = new Cell().setTile(new StaticTiledMapTile(playerTextureSplit[0][2]));
         playerPosition = new Vector2(0, 0);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, tileWidth*mapWidth, tileHeight*mapHeight);
-        camera.translate(2.5f, 0);
         camera.update();
 
         tileRenderer = new OrthogonalTiledMapRenderer(tiledMap, (float) 1/300*300);

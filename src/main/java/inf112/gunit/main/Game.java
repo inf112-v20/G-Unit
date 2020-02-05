@@ -18,13 +18,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 
 public class Game extends InputAdapter implements ApplicationListener {
-    TiledMap tiledMap;
-    TiledMapTileLayer layerBoard, layerPlayer;
-    OrthographicCamera camera;
-    OrthogonalTiledMapRenderer tileRenderer;
-    TiledMapRenderer tiledMapRenderer;
-    Cell playerCell;
-    Vector2 playerPosition;
+    private TiledMap tiledMap;
+    private TiledMapTileLayer layerBoard;
+    private TiledMapTileLayer layerPlayer;
+    private MapProperties props;
+
+    private OrthographicCamera camera;
+    private OrthogonalTiledMapRenderer tileRenderer;
+    
+    private TiledMapRenderer tiledMapRenderer;
+    
+    private Cell playerCell;
+    private Vector2 playerPosition;
 
     @Override
     public void create() {
@@ -32,7 +37,7 @@ public class Game extends InputAdapter implements ApplicationListener {
 
         tiledMap = new TmxMapLoader().load("src/assets/tiles_80x80.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-        MapProperties props = tiledMap.getProperties();
+        props = tiledMap.getProperties();
 
         int tileWidth = props.get("tilewidth", Integer.class);
         int tileHeight = props.get("tileheight", Integer.class);
@@ -57,6 +62,7 @@ public class Game extends InputAdapter implements ApplicationListener {
 
     @Override
     public void dispose() {
+        //TODO
     }
 
     @Override
@@ -68,29 +74,45 @@ public class Game extends InputAdapter implements ApplicationListener {
 
     @Override
     public void resize(int width, int height) {
+        //TODO
     }
 
     @Override
     public void pause() {
+        //TODO
     }
 
     @Override
     public void resume() {
+        //TODO
     }
 
     @Override
-    public boolean keyDown(int keycode) {
+    public boolean keyDown(int keyCode) {
         layerPlayer.setCell((int) playerPosition.x, (int) playerPosition.y, null);
 
-        if (keycode == Input.Keys.LEFT)
-            playerPosition.set(playerPosition.x - 1, playerPosition.y);
-        if (keycode == Input.Keys.RIGHT)
-            playerPosition.set(playerPosition.x + 1, playerPosition.y);
-        if (keycode == Input.Keys.DOWN)
-            playerPosition.set(playerPosition.x, playerPosition.y - 1);
-        if (keycode == Input.Keys.UP)
-            playerPosition.set(playerPosition.x, playerPosition.y + 1);
+        int x = (int) playerPosition.x;
+        int y = (int) playerPosition.y;
 
-        return true;
+        switch (keyCode) {
+            case Input.Keys.LEFT:
+                if (x - 1 < 0 || x - 1 >= props.get("width", Integer.class)) return false;
+                else { playerPosition.set(x - 1, y); return true; }
+
+            case Input.Keys.RIGHT:
+                if (x + 1 < 0 || x + 1 >= props.get("width", Integer.class)) return false;
+                else { playerPosition.set(x + 1, y); return true; }
+
+            case Input.Keys.UP:
+                if (y + 1 < 0 || y + 1 >= props.get("height", Integer.class)) return false;
+                else { playerPosition.set(x, y + 1); return true; }
+
+            case Input.Keys.DOWN:
+                if (y - 1 < 0 || y - 1 >= props.get("height", Integer.class)) return false;
+                else { playerPosition.set(x, y - 1); return true; }
+
+            default:
+                return false;
+        }
     }
 }

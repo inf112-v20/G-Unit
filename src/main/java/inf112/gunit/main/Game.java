@@ -17,6 +17,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 
 public class Game extends InputAdapter implements ApplicationListener {
+
     private TiledMap tiledMap;
 
     private TiledMapTileLayer layerBoard;
@@ -86,12 +87,14 @@ public class Game extends InputAdapter implements ApplicationListener {
 
         if (layerHole.getCell((int) playerPosition.x, (int) playerPosition.y) != null) {
             layerPlayer.setCell((int) playerPosition.x, (int) playerPosition.y, playerDiedCell);
-        } else if (layerFlag1.getCell((int) playerPosition.x, (int) playerPosition.y) != null ||
-                layerFlag2.getCell((int) playerPosition.x, (int) playerPosition.y) != null ||
-                layerFlag3.getCell((int) playerPosition.x, (int) playerPosition.y) != null ||
-                layerFlag4.getCell((int) playerPosition.x, (int) playerPosition.y) != null) {
+        } 
+        else if (layerFlag1.getCell((int) playerPosition.x, (int) playerPosition.y) != null ||
+                 layerFlag2.getCell((int) playerPosition.x, (int) playerPosition.y) != null ||
+                 layerFlag3.getCell((int) playerPosition.x, (int) playerPosition.y) != null ||
+                 layerFlag4.getCell((int) playerPosition.x, (int) playerPosition.y) != null) {
             layerPlayer.setCell((int) playerPosition.x, (int) playerPosition.y, playerWonCell);
-        } else {
+        } 
+        else {
             layerPlayer.setCell((int) playerPosition.x, (int) playerPosition.y, playerCell);
         }
 
@@ -122,20 +125,32 @@ public class Game extends InputAdapter implements ApplicationListener {
 
         switch (keyCode) {
             case Input.Keys.LEFT:
-                if (x - 1 < 0 || x - 1 >= props.get("width", Integer.class)) return false;
-                else { playerPosition.set(x - 1, y); return true; }
+                if (x - 1 < 0 || x - 1 >= props.get("width", Integer.class))
+                    return false;
+                else {
+                    playerPosition.set(x - 1, y); return true;
+                }
 
             case Input.Keys.RIGHT:
-                if (x + 1 < 0 || x + 1 >= props.get("width", Integer.class)) return false;
-                else { playerPosition.set(x + 1, y); return true; }
+                if (x + 1 < 0 || x + 1 >= props.get("width", Integer.class))
+                    return false;
+                else {
+                    playerPosition.set(x + 1, y); return true;
+                }
 
             case Input.Keys.UP:
-                if (y + 1 < 0 || y + 1 >= props.get("height", Integer.class)) return false;
-                else { playerPosition.set(x, y + 1); return true; }
+                if (y + 1 < 0 || y + 1 >= props.get("height", Integer.class))
+                    return false;
+                else {
+                    playerPosition.set(x, y + 1); return true;
+                }
 
             case Input.Keys.DOWN:
-                if (y - 1 < 0 || y - 1 >= props.get("height", Integer.class)) return false;
-                else { playerPosition.set(x, y - 1); return true; }
+                if (y - 1 < 0 || y - 1 >= props.get("height", Integer.class))
+                    return false;
+                else {
+                    playerPosition.set(x, y - 1); return true;
+                }
 
             default:
                 return false;

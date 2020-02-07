@@ -84,5 +84,6 @@ Vi fulgte tutorialen som ble lagt ut på mittUIB, men valgte å bruke egne textu
 -   Fremmover skal vi bli flinkere på å skrive møtereferat og oppdatere hverandre på når man setter seg ned å jobber.
     -   Send melding i slack med en gang man begynner å jobbe med en issue
 -   Vi skal også bli flinkere på å oprette flere og mindre omfattende issues
+-   En viktig ting vi må bli flinkere på er å branche ut hver gang vi begynner på en issue
 ### Kommentarer
 Vi har ikke valgt å kommentere og teste koden implementert i denne leveransen. Det er fordi vi har kun implementert grunnlaget for spillet. Når vi begynner med egne klasser, funksjoner og lignende vil vi kommentere og teste implementasjonen vår. 

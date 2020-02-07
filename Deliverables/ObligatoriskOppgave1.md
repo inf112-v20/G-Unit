@@ -74,7 +74,8 @@ Vi fulgte tutorialen som ble lagt ut på mittUIB, men valgte å bruke egne textu
     -   Lage ulike textures for spillerfiguren
     -   Videre implementere bevegelseslogikk
     -   Implementere logikk som tar hånd om oppdatering av figur-textures
-**Alle disse brukerhistoriene er oppfylt til denne leveransen**
+    
+    **Alle disse brukerhistoriene er oppfylt til denne leveransen**
 ---
 ## Annet
 ### Retroperspektiv - Møte 07.02.2020

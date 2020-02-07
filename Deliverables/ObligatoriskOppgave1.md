@@ -81,6 +81,8 @@ Vi fulgte tutorialen som ble lagt ut på mittUIB, men valgte å bruke egne textu
 ### Retroperspektiv - Møte 07.02.2020
 -   I henhold til krav til første innlevering har vi nådd alle kravene
 -   Valget av kanban er vi fornøyde med, og vi tok en liten sprint hvor vi kodet det meste av innleveringen derav spillebrett og spiller.
--   
+-   Fremmover skal vi bli flinkere på å skrive møtereferat og oppdatere hverandre på når man setter seg ned å jobber.
+    -   Send melding i slack med en gang man begynner å jobbe med en issue
+-   Vi skal også bli flinkere på å oprette flere og mindre omfattende issues
 ### Kommentarer
 Vi har ikke valgt å kommentere og teste koden implementert i denne leveransen. Det er fordi vi har kun implementert grunnlaget for spillet. Når vi begynner med egne klasser, funksjoner og lignende vil vi kommentere og teste implementasjonen vår. 

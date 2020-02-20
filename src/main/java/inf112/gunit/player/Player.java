@@ -35,7 +35,7 @@ public class Player extends InputAdapter {
         int tileHeight = props.get("tileheight", Integer.class);
 
         layer = (TiledMapTileLayer) tiledMap.getLayers().get("player");
-        texture = new Texture("src/assets/players_16x16.png");
+        texture = new Texture("src/assets/players_300x300.png");
         TextureRegion[][] textureSplit = TextureRegion.split(texture, tileWidth, tileHeight);
 
         cells = new Cell[3];

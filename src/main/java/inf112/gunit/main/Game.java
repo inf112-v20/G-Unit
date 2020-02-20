@@ -26,7 +26,7 @@ public class Game extends InputAdapter implements ApplicationListener {
 
     @Override
     public void create() {
-        tiledMap = new TmxMapLoader().load("src/assets/tiles_80x80.tmx");
+        tiledMap = new TmxMapLoader().load("src/assets/tile_map_3Kx3K_full.tmx");
 
         props = tiledMap.getProperties();
         int tileWidth = props.get("tilewidth", Integer.class);

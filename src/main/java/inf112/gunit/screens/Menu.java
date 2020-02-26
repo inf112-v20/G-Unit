@@ -21,8 +21,8 @@ public class Menu implements Screen {
 
     public Menu(Main game) {
         this.game = game;
-        this.buttonPlay = new Texture("src/assets/menu-items/button_play.png");
-        this.buttonPlayActive = new Texture("src/assets/menu-items/button_play_active.png");
+        this.buttonPlay = new Texture("assets/menu-items/button_play.png");
+        this.buttonPlayActive = new Texture("assets/menu-items/button_play_active.png");
     }
 
     @Override
@@ -40,7 +40,7 @@ public class Menu implements Screen {
 
             //start game when button is pressed
             if (Gdx.input.isTouched()) {
-                game.setScreen(new Game(game, new TmxMapLoader().load("src/assets/tile_map_3Kx3K_full.tmx")));
+                game.setScreen(new Game(game, new TmxMapLoader().load("assets/tile_map_3Kx3K_full.tmx")));
                 this.dispose();
             }
 

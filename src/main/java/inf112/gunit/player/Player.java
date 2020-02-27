@@ -1,7 +1,5 @@
 package inf112.gunit.player;
 
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
@@ -11,7 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
 
-public class Player extends InputAdapter {
+public class Player {
 
     // Different texture the player can have
     private static final int NORMAL = 0;
@@ -61,46 +59,5 @@ public class Player extends InputAdapter {
 
     public void update() {
         layer.setCell((int) getPositionX(), (int) getPositionY(), cells[NORMAL]);
-    }
-
-    @Override
-    public boolean keyUp(int keyCode) {
-        layer.setCell((int) position.x, (int) position.y, null);
-
-        int x = (int) position.x;
-        int y = (int) position.y;
-
-        switch (keyCode) {
-            case Input.Keys.LEFT:
-                if (x - 1 < 0 || x - 1 >= props.get("width", Integer.class))
-                    return false;
-                else {
-                    position.set(x - 1, y); return true;
-                }
-
-            case Input.Keys.RIGHT:
-                if (x + 1 < 0 || x + 1 >= props.get("width", Integer.class))
-                    return false;
-                else {
-                    position.set(x + 1, y); return true;
-                }
-
-            case Input.Keys.UP:
-                if (y + 1 < 0 || y + 1 >= props.get("height", Integer.class))
-                    return false;
-                else {
-                    position.set(x, y + 1); return true;
-                }
-
-            case Input.Keys.DOWN:
-                if (y - 1 < 0 || y - 1 >= props.get("height", Integer.class))
-                    return false;
-                else {
-                    position.set(x, y - 1); return true;
-                }
-
-            default:
-                return false;
-        }
     }
 }

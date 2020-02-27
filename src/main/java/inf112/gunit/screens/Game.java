@@ -5,11 +5,16 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import inf112.gunit.main.Main;
 import inf112.gunit.player.Player;
+
+import java.util.ArrayList;
 
 public class Game implements Screen {
 
@@ -19,6 +24,7 @@ public class Game implements Screen {
 
     private Main game;
     private TiledMap map;
+    private TiledMapTileLayer[] layers;
 
     private Player[] players;
 
@@ -38,7 +44,11 @@ public class Game implements Screen {
         this.game = game;
         this.map = map;
 
-        spriteSheet = TextureRegion.split(new Texture("assets/tiles.png"), tileWidth, tileHeight);
+        MapLayers mapLayers = map.getLayers();
+        layers = new TiledMapTileLayer[mapLayers.size()];
+        for (int i = 0; i < layers.length; i++) {
+            layers[i] = (TiledMapTileLayer) mapLayers.get(i);
+        }
 
         tick = 0;
 
@@ -48,11 +58,12 @@ public class Game implements Screen {
         tileWidth = map.getProperties().get("tilewidth", Integer.class);
         tileHeight = map.getProperties().get("tileheight", Integer.class);
 
+        player = new Player(map, props);
+        Gdx.input.setInputProcessor(player);
+
         camera = new OrthographicCamera();
         camera.setToOrtho(false, mapWidth*tileWidth, mapHeight*tileHeight);
         camera.update();
-
-        player = new Player(map, map.getProperties());
 
         tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1/tileWidth*tileHeight);
         tileRenderer.setView(camera);
@@ -66,14 +77,22 @@ public class Game implements Screen {
     @Override
     public void render(float v) {
         Gdx.gl.glClearColor(1,0,0,1);
+
+        player.update();
         tileRenderer.setView(camera);
         tileRenderer.render();
 
-
+        if (tick % 30 == 0) {
+            for (int i = 0; i < layers.length; i++) {
+                if (layers[i].getName().equals("rotator_clockwise") && layers[i].getCell((int) player.getPositionX(), (int) player.getPositionY()) != null) {
+                    player.rotate(true);
+                } else if (layers[i].getName().equals("rotator_counter_clockwise") && layers[i].getCell((int) player.getPositionX(), (int) player.getPositionY()) != null) {
+                    player.rotate(false);
+                }
+            }
+        }
 
         tick++;
-
-
     }
 
     @Override

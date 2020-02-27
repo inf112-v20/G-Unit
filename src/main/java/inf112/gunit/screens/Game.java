@@ -3,6 +3,8 @@ package inf112.gunit.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -11,12 +13,16 @@ import inf112.gunit.player.Player;
 
 public class Game implements Screen {
 
+    public static TextureRegion[][] spriteSheet;
+
     private int tick;
 
     private Main game;
     private TiledMap map;
 
     private Player[] players;
+
+    private Player player;
 
     private MapProperties props;
 
@@ -32,6 +38,8 @@ public class Game implements Screen {
         this.game = game;
         this.map = map;
 
+        spriteSheet = TextureRegion.split(new Texture("assets/tiles.png"), tileWidth, tileHeight);
+
         tick = 0;
 
         props = map.getProperties();
@@ -43,6 +51,8 @@ public class Game implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, mapWidth*tileWidth, mapHeight*tileHeight);
         camera.update();
+
+        player = new Player(map, map.getProperties());
 
         tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1/tileWidth*tileHeight);
         tileRenderer.setView(camera);
@@ -58,6 +68,8 @@ public class Game implements Screen {
         Gdx.gl.glClearColor(1,0,0,1);
         tileRenderer.setView(camera);
         tileRenderer.render();
+
+
 
         tick++;
 

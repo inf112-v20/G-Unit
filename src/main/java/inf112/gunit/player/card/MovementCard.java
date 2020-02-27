@@ -5,7 +5,7 @@ public class MovementCard extends ProgramCard {
     private int distance;
 
     public MovementCard(int priority, int distance) {
-        super(priority);
+        super(CardType.MOVEMENT, priority);
         this.distance = distance;
         this.cardName = "Movement Card";
     }

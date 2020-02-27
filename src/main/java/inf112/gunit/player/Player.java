@@ -11,6 +11,10 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.board.Direction;
+import inf112.gunit.player.card.MovementCard;
+import inf112.gunit.player.card.ProgramCard;
+import inf112.gunit.player.card.RotationCard;
+import org.graalvm.compiler.lir.sparc.SPARCMove;
 
 public class Player extends InputAdapter {
 
@@ -83,39 +87,36 @@ public class Player extends InputAdapter {
         return dir;
     }
 
-    public void rotate(boolean clockwise) {
-        switch (dir) {
-            case NORTH:
-                dir = (clockwise) ? Direction.EAST : Direction.WEST;
-                break;
-            case EAST:
-                dir = (clockwise) ? Direction.SOUTH : Direction.NORTH;
-                break;
-            case SOUTH:
-                dir = (clockwise) ? Direction.WEST : Direction.EAST;
-                break;
-            case WEST:
-                dir = (clockwise) ? Direction.NORTH : Direction.SOUTH;
-                break;
+    public void move(int distance) {
+
+    }
+
+    public void rotate(boolean clockwise, int numOfRotations) {
+        for (int i = 0; i < numOfRotations; i++) {
+            switch (dir) {
+                case NORTH:
+                    dir = (clockwise) ? Direction.EAST : Direction.WEST;
+                    break;
+                case EAST:
+                    dir = (clockwise) ? Direction.SOUTH : Direction.NORTH;
+                    break;
+                case SOUTH:
+                    dir = (clockwise) ? Direction.WEST : Direction.EAST;
+                    break;
+                case WEST:
+                    dir = (clockwise) ? Direction.NORTH : Direction.SOUTH;
+                    break;
+            }
         }
     }
 
-    public void move() {
-        int x = (int) position.x;
-        int y = (int) position.y;
-
-        switch (dir) {
-            case NORTH:
-                position.set(x, y + 1);
+    public void doTurn(ProgramCard programCard) {
+        switch (programCard.getType()) {
+            case MOVEMENT:
+                this.move(((MovementCard) programCard).getDistance());
                 break;
-            case EAST:
-                position.set(x + 1, y);
-                break;
-            case SOUTH:
-                position.set(x, y - 1);
-                break;
-            case WEST:
-                position.set(x - 1, y);
+            case ROTATION:
+                this.rotate(((RotationCard) programCard).isClockwise(), ((RotationCard) programCard).getRotations());
                 break;
         }
     }

@@ -1,7 +1,5 @@
 package inf112.gunit.player.card;
 
-import javax.smartcardio.Card;
-
 public abstract class ProgramCard implements Comparable<ProgramCard>{
 
     private CardType type;

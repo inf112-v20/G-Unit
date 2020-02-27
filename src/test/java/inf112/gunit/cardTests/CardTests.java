@@ -19,7 +19,7 @@ public class CardTests {
     public void testCardPriorityReturnsSameValue() {
         for (int i = 0; i < 1000; i++) { // run the test 1000 times
             int priority = r.nextInt(799) + 200; //pick a priority between 200 and 999
-            ProgramCard card = new ProgramCard(priority);
+            ProgramCard card = new MovementCard(priority, 1);
             assertEquals(priority, card.getPriority()); //assert
         }
     }
@@ -42,9 +42,9 @@ public class CardTests {
     @Test
     public void testRotationNumberReturnsSameValue() {
         for (int i = 0; i < 10; i++) {
-            int[] possibleRotations = {-1,1,2};
+            int[] possibleRotations = {1,2};
             int rotation = r.nextInt(possibleRotations.length);
-            RotationCard card = new RotationCard(300, rotation);
+            RotationCard card = new RotationCard(300, rotation, true);
             assertEquals(rotation, card.getRotations());
         }
     }
@@ -66,7 +66,7 @@ public class CardTests {
 
             //initializing cards with arbitrary movement- and rotation values
             MovementCard moveCard = new MovementCard(priority, 3);
-            RotationCard rotCard = new RotationCard(priority, 2);
+            RotationCard rotCard = new RotationCard(priority, 2, true);
 
             assertEquals(movementName, moveCard.toString());
             assertEquals(rotationName, rotCard.toString());

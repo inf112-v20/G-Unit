@@ -85,9 +85,9 @@ public class Game implements Screen {
         if (tick % 30 == 0) {
             for (int i = 0; i < layers.length; i++) {
                 if (layers[i].getName().equals("rotator_clockwise") && layers[i].getCell((int) player.getPositionX(), (int) player.getPositionY()) != null) {
-                    player.rotate(true);
+                    player.rotate(true, 1);
                 } else if (layers[i].getName().equals("rotator_counter_clockwise") && layers[i].getCell((int) player.getPositionX(), (int) player.getPositionY()) != null) {
-                    player.rotate(false);
+                    player.rotate(false, 1);
                 }
             }
         }

@@ -14,7 +14,6 @@ import inf112.gunit.board.Direction;
 import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
-import org.graalvm.compiler.lir.sparc.SPARCMove;
 
 public class Player extends InputAdapter {
 
@@ -37,8 +36,8 @@ public class Player extends InputAdapter {
         this.tiledMap = tiledMap;
         this.props = props;
         this.dir = Direction.NORTH;
+        this.position = new Vector2(0,0);
 
-        // Temporary variables for spliting textures
         int tileWidth = props.get("tilewidth", Integer.class);
         int tileHeight = props.get("tileheight", Integer.class);
 
@@ -51,8 +50,8 @@ public class Player extends InputAdapter {
         cells[DIED] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][DIED]));
         cells[WON] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][WON]));
 
-        position = new Vector2(0,0);
         layer.setCell((int) getPositionX(), (int) getPositionY(), cells[NORMAL]);
+
     }
 
     public TiledMapTileLayer getLayer() {
@@ -88,7 +87,27 @@ public class Player extends InputAdapter {
     }
 
     public void move(int distance) {
+        int x = (int) this.getPositionX();
+        int y = (int) this.getPositionY();
 
+        switch (dir) {
+            case NORTH:
+                if (moveIsValid(x, y + distance)) position.set(x, y + distance);
+                break;
+            case EAST:
+                if (moveIsValid(x + distance, y)) position.set(x + distance, y);
+                break;
+            case SOUTH:
+                if (moveIsValid(x, y - distance)) position.set(x, y - distance);
+                break;
+            case WEST:
+                if (moveIsValid(x - distance, y)) position.set(x - distance, y);
+                break;
+        }
+    }
+
+    private boolean moveIsValid(int x, int y) {
+        return x >= 0 && x < props.get("width", Integer.class) && y >= 0 && y < props.get("height", Integer.class);
     }
 
     public void rotate(boolean clockwise, int numOfRotations) {
@@ -160,10 +179,6 @@ public class Player extends InputAdapter {
                     dir = Direction.SOUTH;
                     position.set(x, y - 1); return true;
                 }
-
-            case Input.Keys.SPACE:
-                move();
-                return true;
 
             default:
                 return false;

@@ -77,5 +77,5 @@ Vi har hatt ett møte siden sist, referatet ligger i Deliverables/Møtereferater
 -   Spillerbrikker
     -   Har kommet godt i gang, noe mekanikk er på plass. Trenger fortsatt support for flere spillere.
     
-# Notes
+# Notater
 Vi har skrevet en del tester, men mange av får ikke kjørt ettersom vi ikke har helt fått til å loade inn assets i testene enda. Dette skal vi fikse, men inntil videre har vi kommentert ut de aktuelle testene, slik at maven kan builde spillet.

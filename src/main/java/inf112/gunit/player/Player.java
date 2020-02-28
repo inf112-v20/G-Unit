@@ -15,6 +15,10 @@ import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
 
+/**
+ * The player class is used to perform all kinds of
+ * player mechanics.
+ */
 public class Player extends InputAdapter {
 
     // aliasing array indexes for the
@@ -41,9 +45,13 @@ public class Player extends InputAdapter {
     private Cell[] textures;
     private Vector2 position;
 
-    public Player(TiledMap tiledMap, MapProperties props) {
+    /**
+     * The Player constructor
+     * @param tiledMap takes the tiledMap stored in Game as reference
+     */
+    public Player(TiledMap tiledMap) {
         this.tiledMap = tiledMap;
-        this.props = props;
+        this.props = tiledMap.getProperties();
         this.dir = Direction.NORTH;
         this.position = new Vector2(0,0);
 

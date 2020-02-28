@@ -1,5 +1,7 @@
 package inf112.gunit.player;
 
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
@@ -13,7 +15,7 @@ import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
 
-public class Player {
+public class Player extends InputAdapter {
 
     // aliasing array indexes for the
     // different textures the player can have

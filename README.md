@@ -23,7 +23,7 @@ RoboRally boardgame made with libgdx. <br/>
 
 **4. Run the game** 
 
-    java -jar target/mvn-app-10.0-SNAPSHOT-jar-with-dependencies.jar
+    java -jar target/mvn-app-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 If executed properly you are presented with the main screen of the game.
 

@@ -1,12 +1,18 @@
 package inf112.gunit.player.card;
 
-public class ProgramCard implements Comparable<ProgramCard>{
+public abstract class ProgramCard implements Comparable<ProgramCard>{
 
+    private CardType type;
     private int priority;
     protected String cardName;
 
-    public ProgramCard(int priority) {
+    public ProgramCard(CardType type, int priority) {
+        this.type = type;
         this.priority = priority;
+    }
+
+    public CardType getType() {
+        return type;
     }
 
     public int getPriority() {

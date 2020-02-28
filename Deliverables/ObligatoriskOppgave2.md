@@ -8,7 +8,7 @@
 ### Trenger dere andre roller?
 -   Vi har ikke skrevet så mange tester enda, så derfor skal Erik passe på litt ekstra på at tester blir laget.
     -   Teamlead: innebærer organisering av prosjektet og delegering av arbeid
-    -   Kundekontakt: ikke nødvendig for vårt prosjekt, siden vi bare bruker våre egne ressurser
+    -   Kundekontakt: ha ansvar for ekstern kommunikasjon
     -   Utvikler: utvikle spillet
     -   Tester: skrive tester samt forsikre seg om at koden oppfører seg som forventet
 

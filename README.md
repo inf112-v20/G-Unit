@@ -5,21 +5,44 @@ RoboRally boardgame made with libgdx. <br/>
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ff6ed6656586423f8c55fdefb4913b1b)](https://www.codacy.com/gh/inf112-v20/G-Unit?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=inf112-v20/G-Unit&amp;utm_campaign=Badge_Grade)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-##Project setup
+## Project setup
 
-**How to run test**
+### macOS and Linux
 
-Run the JUnit tests located in scr/test
+**1. Maven is required for building the game, so install Maven first.**
+  
+   https://maven.apache.org/download.cgi
 
-**How to run the game**
+**2. Clone the repository**
+    
+    git clone https://github.com/inf112/G-Unit
 
-The project is built using maven. Follow these steps to run the game:
+**3. Build the game with all dependencies**
 
-1. Download the G-Unit folder
+    cd G-Unit && mvn clean verify assembly:single
 
-1. Import the project with the `/pom.xml` file using intellij
+**4. Run the game** 
 
-1. Run the main file located at `/src/main/java/inf112/gunit/main/Main.java`
+    java -jar target/mvn-app-10.0-SNAPSHOT-jar-with-dependencies.jar
 
 If executed properly you are presented with the main screen of the game.
 
+### Windows
+
+1. Install a Java IDE, such as Eclipse or IntelliJ IDEA
+
+2. Import the project from version control, as a Maven project.<br/>
+   Specify `pom.xml` as the configuration file for Maven.
+
+3. Run the project, the main class is located at inf112.gunit.main.Main.
+
+If executed properly you are presented with the main screen of the game.
+
+## Playing the game
+
+-   Press space to execute a program card
+-   Move around with the arrow keys (this is only present in this release for debugging)
+
+## Notes
+
+You need to use Java 8 to run this game.

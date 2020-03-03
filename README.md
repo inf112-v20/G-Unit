@@ -15,7 +15,7 @@ RoboRally boardgame made with libgdx. <br/>
 
 **2. Clone the repository**
     
-    git clone https://github.com/inf112/G-Unit
+    git clone https://github.com/inf112-v20/G-Unit
 
 **3. Build the game with all dependencies**
 

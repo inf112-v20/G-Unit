@@ -67,7 +67,7 @@ public class Game extends InputAdapter implements Screen {
         int tileHeight = map.getProperties().get("tileheight", Integer.class);
 
         for (int i = 0; i < numOfPlayers; i++) {
-            Player p = new Player(map, i);
+            Player p = new Player(this, i);
             p.setProgram(TestPrograms.getProgram(i));
             players[i] = p;
         }
@@ -115,6 +115,13 @@ public class Game extends InputAdapter implements Screen {
         // update game mechanics every 0.5 seconds (game runs at 60 fps)
 
         tick++; // increase the game tick
+    }
+
+    private void doTurn() {
+        for(Player p : players) {
+            p.doTurn(p.getProgram()[cardIdx]);
+        }
+        cardIdx++;
     }
 
     // key-listener currently used for testing
@@ -169,15 +176,47 @@ public class Game extends InputAdapter implements Screen {
                 }
 
             case Input.Keys.SPACE:
-                for (Player p : players) {
-                    p.doTurn(p.getProgram()[cardIdx % 5]);
-                }
-                cardIdx++;
+                this.doTurn();
                 return true;
 
             default:
                 return false;
         }
+    }
+
+    /**
+     * Check if a given position at x- and y-coordinate is free
+     * (basically means that, it doesn't contain a player)
+     * @param x the desired x coordinate
+     * @param y the desired y coordinate
+     * @return true if position has pla
+     */
+    public boolean positionIsFree(int x, int y) {
+        // TODO: dont use for-loop here, find a more efficient way
+        // perhaps storing player-layer id's in a global variable?
+        for (int i = 0; i < players.length; i++) {
+            if (((TiledMapTileLayer) map.getLayers().get("player_" + i)).getCell(x, y) != null)
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Check if a move is valid, called by the player class
+     * !!Currently returns false if player actually can move, just not the distance intended to
+     * @param x the desired x-position to move to
+     * @param y the desired y-position to move to
+     * @return true if move is possible, false otherwise
+     */
+    public boolean moveIsValid(int x, int y) {
+        if (x >= 0 && x < props.get("width", Integer.class) && y >= 0 && y < props.get("height", Integer.class)) {
+            return positionIsFree(x, y);
+        }
+        return false;
+    }
+
+    public TiledMap getMap() {
+        return map;
     }
 
     @Override

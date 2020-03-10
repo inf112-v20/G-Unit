@@ -3,7 +3,6 @@ package inf112.gunit.player;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
@@ -12,6 +11,7 @@ import inf112.gunit.board.Direction;
 import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
+import inf112.gunit.screens.Game;
 
 import java.util.Arrays;
 
@@ -28,8 +28,7 @@ public class Player {
     // while counter is a global variable to keep track of what card to execute
     private ProgramCard[] program;
 
-    // the games, tiledmap is stored here along with properties
-    private TiledMap tiledMap;
+    private Game game;
     private MapProperties props;
 
     // the direction the player is facing
@@ -42,11 +41,12 @@ public class Player {
 
     /**
      * The Player constructor
-     * @param tiledMap takes the tiledMap stored in Game as reference
+     * @param game takes the Game object the player is instantiated from
+     * @param id the desired identifier for the player
      */
-    public Player(TiledMap tiledMap, int id) {
-        this.tiledMap = tiledMap;
-        this.props = tiledMap.getProperties();
+    public Player(Game game, int id) {
+        this.game = game;
+        this.props = game.getMap().getProperties();
         this.dir = Direction.NORTH;
         this.position = new Vector2(id,0);
         this.id = id;
@@ -55,7 +55,7 @@ public class Player {
         int tileHeight = props.get("tileheight", Integer.class);
 
         // retrieve the layer
-        layer = (TiledMapTileLayer) tiledMap.getLayers().get("player_" + id);
+        layer = (TiledMapTileLayer) game.getMap().getLayers().get("player_" + id);
 
         // load the textures
         Texture texture = new Texture("assets/players_300x300.png");
@@ -70,7 +70,6 @@ public class Player {
 
         // initialise the player with the NORMAL-texture
         layer.setCell((int) getPositionX(), (int) getPositionY(), textures[id]);
-
     }
 
     /**
@@ -105,41 +104,30 @@ public class Player {
 
         switch (dir) {
             case NORTH:
-                if (moveIsValid(playerX, playerY + distance)) {
+                if (game.moveIsValid(playerX, playerY + distance)) {
                     layer.setCell((int) playerX, (int) playerY, null);
                     position.set(playerX, playerY + distance);
                 }
                 break;
             case EAST:
-                if (moveIsValid(playerX + distance, playerY)) {
+                if (game.moveIsValid(playerX + distance, playerY)) {
                     layer.setCell((int) playerX, (int) playerY, null);
                     position.set(playerX + distance, playerY);
                 }
                 break;
             case SOUTH:
-                if (moveIsValid(playerX, playerY - distance)) {
+                if (game.moveIsValid(playerX, playerY - distance)) {
                     layer.setCell((int) playerX, (int) playerY, null);
                     position.set(playerX, playerY - distance);
                 }
                 break;
             case WEST:
-                if (moveIsValid(playerX - distance, playerY)) {
+                if (game.moveIsValid(playerX - distance, playerY)) {
                     layer.setCell((int) playerX, (int) playerY, null);
                     position.set(playerX - distance, playerY);
                 }
                 break;
         }
-    }
-
-    /**
-     * Private helper-method to check if a given move is valid
-     * !!Currently returns false if player actually can move, just not the distance intended to
-     * @param x the desired x-position to move to
-     * @param y the desired y-position to move to
-     * @return true if move is possible, false otherwise
-     */
-    private boolean moveIsValid(int x, int y) {
-        return x >= 0 && x < props.get("width", Integer.class) && y >= 0 && y < props.get("height", Integer.class);
     }
 
     /**

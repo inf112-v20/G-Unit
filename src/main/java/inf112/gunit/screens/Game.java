@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.board.Direction;
 import inf112.gunit.main.Main;
 import inf112.gunit.player.Player;
+import inf112.gunit.player.card.TestPrograms;
 
 /**
  * The Game class is a screen which is rendered
@@ -67,6 +68,7 @@ public class Game extends InputAdapter implements Screen {
 
         for (int i = 0; i < numOfPlayers; i++) {
             Player p = new Player(map, i);
+            p.setProgram(TestPrograms.getProgram(i));
             players[i] = p;
         }
 

@@ -1,4 +1,4 @@
-package inf112.gunit.player;
+package inf112.gunit.player.card;
 
 import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;

@@ -51,8 +51,6 @@ public class Player {
         this.position = new Vector2(id,0);
         this.id = id;
 
-        program = Arrays.copyOf(TestPrograms.getProgra       m(id), 5);
-
         int tileWidth = props.get("tilewidth", Integer.class);
         int tileHeight = props.get("tileheight", Integer.class);
 
@@ -191,7 +189,7 @@ public class Player {
      */
     public void setProgram(ProgramCard[] program) {
         if (program.length != 5) throw new IllegalArgumentException("Program must be of length 5");
-        System.arraycopy(program, 0, this.program, 0, program.length);
+        this.program = Arrays.copyOf(program, 5);
     }
 
     /**

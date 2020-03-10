@@ -13,6 +13,8 @@ import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
 
+import java.util.Arrays;
+
 /**
  * The player class is used to perform all kinds of
  * player mechanics.
@@ -24,7 +26,7 @@ public class Player {
     // these to are for testing, and (probably) wont be used in the actual game
     // program stores a program to execute
     // while counter is a global variable to keep track of what card to execute
-    private ProgramCard[] program = new ProgramCard[5];
+    private ProgramCard[] program;
 
     // the games, tiledmap is stored here along with properties
     private TiledMap tiledMap;
@@ -49,12 +51,7 @@ public class Player {
         this.position = new Vector2(id,0);
         this.id = id;
 
-        // this is for testing only
-        program[0] = new MovementCard(300,2);
-        program[1] = new RotationCard(300,1,true);
-        program[2] = new MovementCard(300,2);
-        program[3] = new RotationCard(300, 2, false);
-        program[4] = new MovementCard(300, 1);
+        program = Arrays.copyOf(TestPrograms.getProgra       m(id), 5);
 
         int tileWidth = props.get("tilewidth", Integer.class);
         int tileHeight = props.get("tileheight", Integer.class);

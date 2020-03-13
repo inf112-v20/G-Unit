@@ -40,10 +40,21 @@ public class Player extends InputAdapter {
     // the direction the player is facing
     private Direction dir;
 
-    // the TiledMap layer of the player, texture-spritesheet and position
+    // the TiledMap layer of the player, texture-spritesheet and position.
     private TiledMapTileLayer layer;
     private Cell[] textures;
     private Vector2 position;
+
+    // backupMemory is the position where the player starts, and if he gets a flag,
+    // the flags position is now the new position of the players backupMemory.
+    private Vector2 backupMemory;
+
+    // Each player starts out with 3 lifeTokens, where one token is subtracted
+    // each time a player dies (is killed or falls down a hole/pit).
+    private int lifeToken = 3;
+
+    // Each player starts with 10 damageMarkers, which represents health points.
+    private int damageMarker = 10;
 
     /**
      * The Player constructor
@@ -54,6 +65,7 @@ public class Player extends InputAdapter {
         this.props = tiledMap.getProperties();
         this.dir = Direction.NORTH;
         this.position = new Vector2(0,0);
+        backupMemory = position;
 
         // this is for testing only
         counter = 0;
@@ -268,6 +280,21 @@ public class Player extends InputAdapter {
 
             default:
                 return false;
+        }
+    }
+
+    /** Checks to see if player has any lifeToken left, if so,
+     * removes 1 lifeToken, and then respawn player at backupMemory.
+     * If the player has no lifeTokens left, he/she is removed from the board entirely.
+     */
+    public void died(){
+        if (this.lifeToken < 1) {
+            //if player is dead and has no life tokens, this happens.
+        }
+        else { // Moves player back to backupMemory and restores damageMarkers.
+            this.lifeToken--;
+            this.position = backupMemory;
+            this.damageMarker = 10;
         }
     }
 }

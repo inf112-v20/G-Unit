@@ -107,7 +107,7 @@ public class Game extends InputAdapter implements Screen {
                 }
             }
         }
-
+    
         // render the tile-map
         tileRenderer.setView(camera);
         tileRenderer.render();
@@ -119,7 +119,7 @@ public class Game extends InputAdapter implements Screen {
 
     private void doTurn() {
         for(Player p : players) {
-            p.doTurn(p.getProgram()[cardIdx]);
+            p.doTurn(p.getProgram()[cardIdx % 5]);
         }
         cardIdx++;
     }

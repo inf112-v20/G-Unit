@@ -14,7 +14,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.board.Direction;
 import inf112.gunit.main.Main;
-import inf112.gunit.player.Player;
+import inf112.gunit.player.Robot;
 import inf112.gunit.player.card.TestPrograms;
 
 /**
@@ -32,8 +32,8 @@ public class Game extends InputAdapter implements Screen {
     private TiledMapTileLayer[] layers;
     private MapProperties props;
 
-    private Player[] players;
-    private Player mainPlayer;
+    private Robot[] robots;
+    private Robot mainRobot;
 
     private OrthographicCamera camera;
     private OrthogonalTiledMapRenderer tileRenderer;
@@ -48,7 +48,7 @@ public class Game extends InputAdapter implements Screen {
     public Game(Main main, TiledMap map, int numOfPlayers) {
         this.main = main;
         this.map = map;
-        this.players = new Player[numOfPlayers];
+        this.robots = new Robot[numOfPlayers];
 
         cardIdx = 0;
 
@@ -67,12 +67,12 @@ public class Game extends InputAdapter implements Screen {
         int tileHeight = map.getProperties().get("tileheight", Integer.class);
 
         for (int i = 0; i < numOfPlayers; i++) {
-            Player p = new Player(this, i);
+            Robot p = new Robot(this, i);
             p.setProgram(TestPrograms.getProgram(i));
-            players[i] = p;
+            robots[i] = p;
         }
 
-        mainPlayer = players[0];
+        mainRobot = robots[0];
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, mapWidth * tileWidth, mapHeight * tileHeight);
@@ -94,15 +94,15 @@ public class Game extends InputAdapter implements Screen {
         Gdx.gl.glClearColor(1,0,0,1);
 
         // update the player
-        for (Player player : players) {
-            player.update();
+        for (Robot robot : robots) {
+            robot.update();
 
             if (tick % 30 == 0) {
                 for (int i = 0; i < layers.length; i++) {
-                    if (layers[i].getName().equals("rotator_clockwise") && layers[i].getCell((int) player.getPositionX(), (int) player.getPositionY()) != null) {
-                        player.rotate(true, 1);
-                    } else if (layers[i].getName().equals("rotator_counter_clockwise") && layers[i].getCell((int) player.getPositionX(), (int) player.getPositionY()) != null) {
-                        player.rotate(false, 1);
+                    if (layers[i].getName().equals("rotator_clockwise") && layers[i].getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
+                        robot.rotate(true, 1);
+                    } else if (layers[i].getName().equals("rotator_counter_clockwise") && layers[i].getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
+                        robot.rotate(false, 1);
                     }
                 }
             }
@@ -118,8 +118,8 @@ public class Game extends InputAdapter implements Screen {
     }
 
     private void doTurn() {
-        for(Player p : players) {
-            p.doTurn(p.getProgram()[cardIdx % 5]);
+        for(Robot robot : robots) {
+            robot.doTurn(robot.getProgram()[cardIdx % 5]);
         }
         cardIdx++;
     }
@@ -127,9 +127,9 @@ public class Game extends InputAdapter implements Screen {
     // key-listener currently used for testing
     @Override
     public boolean keyUp(int keyCode) {
-        Vector2 position = mainPlayer.getPosition();
+        Vector2 position = mainRobot.getPosition();
         TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get("player_0");
-        Direction dir = mainPlayer.getDirection();
+        Direction dir = mainRobot.getDirection();
 
         int x = (int) position.x;
         int y = (int) position.y;
@@ -140,7 +140,7 @@ public class Game extends InputAdapter implements Screen {
                     return false;
                 else {
                     layer.setCell((int) position.x, (int) position.y, null);
-                    mainPlayer.setDirection(Direction.WEST);
+                    mainRobot.setDirection(Direction.WEST);
                     position.set(x - 1, y);
                     return true;
                 }
@@ -150,7 +150,7 @@ public class Game extends InputAdapter implements Screen {
                     return false;
                 else {
                     layer.setCell((int) position.x, (int) position.y, null);
-                    mainPlayer.setDirection(Direction.EAST);
+                    mainRobot.setDirection(Direction.EAST);
                     position.set(x + 1, y);
                     return true;
                 }
@@ -160,7 +160,7 @@ public class Game extends InputAdapter implements Screen {
                     return false;
                 else {
                     layer.setCell((int) position.x, (int) position.y, null);
-                    mainPlayer.setDirection(Direction.NORTH);
+                    mainRobot.setDirection(Direction.NORTH);
                     position.set(x, y + 1);
                     return true;
                 }
@@ -170,7 +170,7 @@ public class Game extends InputAdapter implements Screen {
                     return false;
                 else {
                     layer.setCell((int) position.x, (int) position.y, null);
-                    mainPlayer.setDirection(Direction.SOUTH);
+                    mainRobot.setDirection(Direction.SOUTH);
                     position.set(x, y - 1);
                     return true;
                 }
@@ -194,7 +194,7 @@ public class Game extends InputAdapter implements Screen {
     public boolean positionIsFree(int x, int y) {
         // TODO: dont use for-loop here, find a more efficient way
         // perhaps storing player-layer id's in a global variable?
-        for (int i = 0; i < players.length; i++) {
+        for (int i = 0; i < robots.length; i++) {
             if (((TiledMapTileLayer) map.getLayers().get("player_" + i)).getCell(x, y) != null)
                 return false;
         }

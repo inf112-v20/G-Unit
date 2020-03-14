@@ -1,11 +1,8 @@
 package inf112.gunit.player;
 
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
@@ -14,27 +11,24 @@ import inf112.gunit.board.Direction;
 import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
+import inf112.gunit.screens.Game;
+
+import java.util.Arrays;
 
 /**
  * The player class is used to perform all kinds of
  * player mechanics.
  */
-public class Player extends InputAdapter {
+public class Player {
 
-    // aliasing array indexes for the
-    // different textures the player can have
-    private static final int NORMAL = 0;
-    private static final int DIED = 1;
-    private static final int WON = 2;
+    private int id;
 
     // these to are for testing, and (probably) wont be used in the actual game
     // program stores a program to execute
     // while counter is a global variable to keep track of what card to execute
-    private ProgramCard[] program = new ProgramCard[5];
-    private int counter;
+    private ProgramCard[] program;
 
-    // the games, tiledmap is stored here along with properties
-    private TiledMap tiledMap;
+    private Game game;
     private MapProperties props;
 
     // the direction the player is facing
@@ -58,66 +52,36 @@ public class Player extends InputAdapter {
 
     /**
      * The Player constructor
-     * @param tiledMap takes the tiledMap stored in Game as reference
+     * @param game takes the Game object the player is instantiated from
+     * @param id the desired identifier for the player
      */
-    public Player(TiledMap tiledMap) {
-        this.tiledMap = tiledMap;
-        this.props = tiledMap.getProperties();
+    public Player(Game game, int id) {
+        this.game = game;
+        this.props = game.getMap().getProperties();
         this.dir = Direction.NORTH;
-        this.position = new Vector2(0,0);
         backupMemory = position;
-
-        // this is for testing only
-        counter = 0;
-        program[0] = new MovementCard(300,2);
-        program[1] = new RotationCard(300,1,true);
-        program[2] = new MovementCard(300,2);
-        program[3] = new RotationCard(300, 2, false);
-        program[4] = new MovementCard(300, 1);
+        this.position = new Vector2(id,0);
+        this.id = id;
 
         int tileWidth = props.get("tilewidth", Integer.class);
         int tileHeight = props.get("tileheight", Integer.class);
 
         // retrieve the layer
-        layer = (TiledMapTileLayer) tiledMap.getLayers().get("player");
+        layer = (TiledMapTileLayer) game.getMap().getLayers().get("player_" + id);
 
         // load the textures
         Texture texture = new Texture("assets/players_300x300.png");
         TextureRegion[][] textureSplit = TextureRegion.split(texture, tileWidth, tileHeight);
 
         // store the textures
-        textures = new Cell[3];
-        textures[NORMAL] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][NORMAL]));
-        textures[DIED] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][DIED]));
-        textures[WON] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][WON]));
+        textures = new Cell[4];
+        textures[0] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][0]));
+        textures[1] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][1]));
+        textures[2] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][2]));
+        textures[3] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][3]));
 
         // initialise the player with the NORMAL-texture
-        layer.setCell((int) getPositionX(), (int) getPositionY(), textures[NORMAL]);
-
-    }
-
-    /**
-     * Get the x-coordinate of the player
-     * @return the players x-position
-     */
-    public float getPositionX() {
-        return position.x;
-    }
-
-    /**
-     * Get the y-coordinate of the player
-     * @return the players y-position
-     */
-    public float getPositionY() {
-        return position.y;
-    }
-
-    /**
-     * Get the direction the player is currently facing
-     * @return the current direction
-     */
-    public Direction getDirection() {
-        return dir;
+        layer.setCell((int) getPositionX(), (int) getPositionY(), textures[id]);
     }
 
     /**
@@ -125,7 +89,7 @@ public class Player extends InputAdapter {
      */
     public void update() {
         // the NORMAL-texture is currently the only one being used
-        Cell cell = textures[NORMAL];
+        Cell cell = textures[id];
 
         // set rotation according to direction
         if (dir == Direction.NORTH) {
@@ -152,41 +116,30 @@ public class Player extends InputAdapter {
 
         switch (dir) {
             case NORTH:
-                if (moveIsValid(playerX, playerY + distance)) {
+                if (game.moveIsValid(playerX, playerY + distance)) {
                     layer.setCell((int) playerX, (int) playerY, null);
                     position.set(playerX, playerY + distance);
                 }
                 break;
             case EAST:
-                if (moveIsValid(playerX + distance, playerY)) {
+                if (game.moveIsValid(playerX + distance, playerY)) {
                     layer.setCell((int) playerX, (int) playerY, null);
                     position.set(playerX + distance, playerY);
                 }
                 break;
             case SOUTH:
-                if (moveIsValid(playerX, playerY - distance)) {
+                if (game.moveIsValid(playerX, playerY - distance)) {
                     layer.setCell((int) playerX, (int) playerY, null);
                     position.set(playerX, playerY - distance);
                 }
                 break;
             case WEST:
-                if (moveIsValid(playerX - distance, playerY)) {
+                if (game.moveIsValid(playerX - distance, playerY)) {
                     layer.setCell((int) playerX, (int) playerY, null);
                     position.set(playerX - distance, playerY);
                 }
                 break;
         }
-    }
-
-    /**
-     * Private helper-method to check if a given move is valid
-     * !!Currently returns false if player actually can move, just not the distance intended to
-     * @param x the desired x-position to move to
-     * @param y the desired y-position to move to
-     * @return true if move is possible, false otherwise
-     */
-    private boolean moveIsValid(int x, int y) {
-        return x >= 0 && x < props.get("width", Integer.class) && y >= 0 && y < props.get("height", Integer.class);
     }
 
     /**
@@ -230,57 +183,69 @@ public class Player extends InputAdapter {
         }
     }
 
-    // key-listener currently used for testing
-    @Override
-    public boolean keyUp(int keyCode) {
-        int x = (int) position.x;
-        int y = (int) position.y;
+    /**
+     * Set a program for the current round
+     * @param program the input program to run on the player
+     */
+    public void setProgram(ProgramCard[] program) {
+        if (program.length != 5) throw new IllegalArgumentException("Program must be of length 5");
+        this.program = Arrays.copyOf(program, 5);
+    }
 
-        switch (keyCode) {
-            case Input.Keys.LEFT:
-                if (x - 1 < 0 || x - 1 >= props.get("width", Integer.class))
-                    return false;
-                else {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    dir = Direction.WEST;
-                    position.set(x - 1, y); return true;
-                }
+    /**
+     * Get the current program of the player
+     * @return the current program
+     */
+    public ProgramCard[] getProgram() {
+        return program;
+    }
 
-            case Input.Keys.RIGHT:
-                if (x + 1 < 0 || x + 1 >= props.get("width", Integer.class))
-                    return false;
-                else {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    dir = Direction.EAST;
-                    position.set(x + 1, y); return true;
-                }
+    /**
+     * Get the current position of a player
+     * @return the current position
+     */
+    public Vector2 getPosition() {
+        return this.position;
+    }
 
-            case Input.Keys.UP:
-                if (y + 1 < 0 || y + 1 >= props.get("height", Integer.class))
-                    return false;
-                else {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    dir = Direction.NORTH;
-                    position.set(x, y + 1); return true;
-                }
+    /**
+     * Get the x-coordinate of the player
+     * @return the players x-position
+     */
+    public float getPositionX() {
+        return position.x;
+    }
 
-            case Input.Keys.DOWN:
-                if (y - 1 < 0 || y - 1 >= props.get("height", Integer.class))
-                    return false;
-                else {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    dir = Direction.SOUTH;
-                    position.set(x, y - 1); return true;
-                }
+    /**
+     * Get the y-coordinate of the player
+     * @return the players y-position
+     */
+    public float getPositionY() {
+        return position.y;
+    }
 
-            case Input.Keys.SPACE:
-                if (counter == 5) counter = 0;
-                doTurn(program[counter++]);
-                return true;
+    /**
+     * Get the direction the player is currently facing
+     * @return the current direction
+     */
+    public Direction getDirection() {
+        return dir;
+    }
 
-            default:
-                return false;
-        }
+    /**
+     * Set the direction of the player
+     * @param dir the desired direction
+     */
+    public void setDirection(Direction dir) {
+        this.dir = dir;
+    }
+
+    /**
+     * Get the players identifier
+     * @return the id of the player
+     */
+    public int getId() {
+        return id;
     }
 
     /** Checks to see if player has any lifeToken left, if so,

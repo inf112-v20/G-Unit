@@ -68,7 +68,7 @@ public class Game extends InputAdapter implements Screen {
 
         for (int i = 0; i < numOfPlayers; i++) {
             Robot p = new Robot(this, i);
-            p.setProgram(TestPrograms.getProgram(i));
+            p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
             robots[i] = p;
         }
 
@@ -78,7 +78,7 @@ public class Game extends InputAdapter implements Screen {
         camera.setToOrtho(false, mapWidth * tileWidth, mapHeight * tileHeight);
         camera.update();
 
-        tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1/ tileWidth * tileHeight);
+        tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / tileWidth * tileHeight);
         tileRenderer.setView(camera);
 
         Gdx.input.setInputProcessor(this);
@@ -112,8 +112,6 @@ public class Game extends InputAdapter implements Screen {
         tileRenderer.setView(camera);
         tileRenderer.render();
 
-        // update game mechanics every 0.5 seconds (game runs at 60 fps)
-
         tick++; // increase the game tick
     }
 
@@ -129,7 +127,6 @@ public class Game extends InputAdapter implements Screen {
     public boolean keyUp(int keyCode) {
         Vector2 position = mainRobot.getPosition();
         TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get("player_0");
-        Direction dir = mainRobot.getDirection();
 
         int x = (int) position.x;
         int y = (int) position.y;

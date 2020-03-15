@@ -124,10 +124,17 @@ public class Game extends InputAdapter implements Screen {
         tick++; // increase the game tick
     }
 
+    /**
+     * Initialise a new round
+     */
     private void newRound() {
         phase = 0;
     }
 
+    /**
+     * Begin a new phase.
+     * Resets some variables, and retrieves cards from the robots
+     */
     private void newPhase() {
         phase++;
 
@@ -148,6 +155,9 @@ public class Game extends InputAdapter implements Screen {
         Collections.reverse(roundCards);
     }
 
+    /**
+     * Used for performing the appropriate program card in the current phase
+     */
     private void doTurn() {
         System.out.println();
 

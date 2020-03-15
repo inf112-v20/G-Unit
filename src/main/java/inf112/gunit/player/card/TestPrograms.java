@@ -1,9 +1,5 @@
 package inf112.gunit.player.card;
 
-import inf112.gunit.player.card.MovementCard;
-import inf112.gunit.player.card.ProgramCard;
-import inf112.gunit.player.card.RotationCard;
-
 public class TestPrograms {
 
     public static ProgramCard[] program1 = {

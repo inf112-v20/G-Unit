@@ -169,34 +169,6 @@ public class Game extends InputAdapter implements Screen {
         }
     }
 
-    private void doTurn1() {
-        int i = 0;
-        ArrayList<ProgramCard> roundCards = new ArrayList<>();
-
-        for (Robot robot : robots) {
-            roundCards.add(robot.getProgram()[cardIdx % 5]);
-        }
-
-        //sort cards by priority
-        Collections.sort(roundCards);
-        Collections.reverse(roundCards);
-
-        for (ProgramCard card : roundCards) {
-            for (Robot robot : robots) {
-                if (card.equals(robot.getProgram()[cardIdx % 5])) {
-                    System.out.println("Moving robot '" + robot.getId() + "' with card '" + card + "'");
-                    robot.doTurn(roundCards.get(i));
-                    i++;
-                    break;
-                }
-            }
-        }
-
-        System.out.println();
-
-        cardIdx++;
-    }
-
     // key-listener currently used for testing
     @Override
     public boolean keyUp(int keyCode) {

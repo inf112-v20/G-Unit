@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.player.Robot;
 import inf112.gunit.screens.Game;
 
@@ -23,7 +24,9 @@ public class Board {
         this.game = game;
     }
 
-    public void conveyor(Robot robot, TiledMapTileLayer layer) {
+    public Vector2 convey(Robot robot, TiledMapTileLayer layer) {
+        Vector2 newPos = robot.getPosition().cpy();
+
         int x = (int) robot.getPositionX();
         int y = (int) robot.getPositionY();
 
@@ -31,27 +34,29 @@ public class Board {
 
         if (name.equals("north")) {
             if (game.moveIsValid(x, y+1)) {
-                robot.getPosition().set(x, y+1);
-                robot.getLayer().setCell(x, y, null);
+                newPos = new Vector2();
+                newPos.set(x, y+1);
             }
         } else if (name.equals("east")) {
             if (game.moveIsValid(x+1, y)) {
-                robot.getPosition().set(x+1, y);
-                robot.getLayer().setCell(x, y, null);
+                newPos = new Vector2();
+                newPos.set(x+1, y);
             }
         } else if (name.equals("south")) {
             if (game.moveIsValid(x, y-1)) {
-                robot.getPosition().set(x, y-1);
-                robot.getLayer().setCell(x, y, null);
+                newPos = new Vector2();
+                newPos.set(x, y-1);
             }
         } else if (name.equals("west")) {
             if (game.moveIsValid(x-1, y)) {
-                robot.getPosition().set(x-1, y);
-                robot.getLayer().setCell(x, y, null);
+                newPos = new Vector2();
+                newPos.set(x-1, y);
             }
         } else {
             System.err.println("UNKNOWN DIRECTION: " + name);
         }
+
+        return newPos;
     }
 
     public void gear(Robot robot, TiledMapTileLayer layer) {

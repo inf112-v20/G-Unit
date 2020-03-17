@@ -123,6 +123,32 @@ public class Game extends InputAdapter implements Screen {
 
     }
 
+    /**
+     * This is only a helper method for the logic-method.
+     * It is solely here for reducing code reuse.
+     * It 'conveys' returns a position given a robot a set of conveyors.
+     * @param robot the robot to 'convey'
+     * @param conveyors the set of conveyors
+     * @return a valid new Vector2 position if the robot is on a conveyor
+     */
+    private Vector2 convey(Robot robot, ArrayList<TiledMapTileLayer> conveyors) {
+        // loop over each conveyor, checking if the robot is on it
+        // convey robot accordingly
+        for (TiledMapTileLayer layer : conveyors) {
+            if (layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
+                robot.getLayer().setCell((int) robot.getPositionX(), (int) robot.getPositionY(), null);
+                return board.convey(robot, layer);
+            }
+        }
+
+        // if the robot is not standing at a conveyor, return its original position
+        return robot.getPosition().cpy();
+    }
+
+    /**
+     * The logic-method handles all game logic
+     * based on the GameState
+     */
     private void logic() {
         switch (this.state) {
             case SETUP:
@@ -147,37 +173,29 @@ public class Game extends InputAdapter implements Screen {
                 // TODO: fix conveyors
             case CELL_MECHANIC_EXECUTION:
                 System.out.println("mechanics");
-                String name = "undefined";
 
-                for (TiledMapTileLayer layer : expressConveyors) {
+                if (tick % 30 == 0) {
                     for (Robot robot : robots) {
-                        if (layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
-                            board.conveyor(robot, layer);
+                        robot.getPosition().set(convey(robot, expressConveyors));
+                        robot.getPosition().set(convey(robot, allConveyors));
+                    }
+
+                    for (TiledMapTileLayer layer : gears) {
+                        for (Robot robot : robots) {
+                            if (layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
+                                board.gear(robot, layer);
+                            }
                         }
                     }
-                }
 
-                for (TiledMapTileLayer layer : allConveyors) {
-                    for (Robot robot : robots) {
-                        if (layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
-                            board.conveyor(robot, layer);
-                        }
+                    for (MapLayer l : map.getLayers()) {
+                        String name = "undefined";
+                        TiledMapTileLayer layer = (TiledMapTileLayer) l;
+                        name = layer.getName();
                     }
-                }
 
-                for (TiledMapTileLayer layer : gears) {
-                    for (Robot robot : robots) {
-                        if (layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
-                            board.gear(robot, layer);
-                        }
-                    }
+                    newPhase();
                 }
-
-                for (MapLayer l : map.getLayers()) {
-                    TiledMapTileLayer layer = (TiledMapTileLayer) l;
-                    name = layer.getName();
-                }
-
                 break;
             default:
                 System.err.println("GAME STATE NOT SET - FATAL ERROR OCCURRED.");
@@ -194,21 +212,7 @@ public class Game extends InputAdapter implements Screen {
         logic();
 
         // update the player
-        for (Robot robot : robots) {
-            robot.update();
-
-            /*
-            if (tick % 30 == 0) {
-                for (int i = 0; i < layers.length; i++) {
-                    if (layers[i].getName().equals("rotator_clockwise") && layers[i].getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
-                        robot.rotate(true, 1);
-                    } else if (layers[i].getName().equals("rotator_counter_clockwise") && layers[i].getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
-                        robot.rotate(false, 1);
-                    }
-                }
-            }
-             */
-        }
+        for (Robot robot : robots) robot.update();
     
         // render the tile-map
         tileRenderer.setView(camera);
@@ -221,7 +225,7 @@ public class Game extends InputAdapter implements Screen {
      * Initialise a new round
      */
     private void newRound() {
-        state = GameState.ANNOUNCE_POWERDOWN;
+        state = GameState.PROGRAM_CARD_EXECUTION;
         phase = 0;
     }
 
@@ -230,6 +234,7 @@ public class Game extends InputAdapter implements Screen {
      * Resets some variables, and retrieves cards from the robots
      */
     private void newPhase() {
+        state = GameState.PROGRAM_CARD_EXECUTION;
         phase++;
 
         if (phase >= 5) {

@@ -15,7 +15,11 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.board.Direction;
 import inf112.gunit.main.Main;
 import inf112.gunit.player.Robot;
+import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.TestPrograms;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * The Game class is a screen which is rendered
@@ -38,7 +42,9 @@ public class Game extends InputAdapter implements Screen {
     private OrthographicCamera camera;
     private OrthogonalTiledMapRenderer tileRenderer;
 
+    private int phase;
     private int cardIdx;
+    private ArrayList<ProgramCard> roundCards;
 
     /**
      * The Game constructor
@@ -50,6 +56,7 @@ public class Game extends InputAdapter implements Screen {
         this.map = map;
         this.robots = new Robot[numOfPlayers];
 
+        phase = -1;
         cardIdx = 0;
 
         MapLayers mapLayers = map.getLayers();
@@ -82,6 +89,8 @@ public class Game extends InputAdapter implements Screen {
         tileRenderer.setView(camera);
 
         Gdx.input.setInputProcessor(this);
+
+        newPhase();
     }
 
     @Override
@@ -115,11 +124,60 @@ public class Game extends InputAdapter implements Screen {
         tick++; // increase the game tick
     }
 
-    private void doTurn() {
-        for(Robot robot : robots) {
-            robot.doTurn(robot.getProgram()[cardIdx % 5]);
+    /**
+     * Initialise a new round
+     */
+    private void newRound() {
+        phase = 0;
+    }
+
+    /**
+     * Begin a new phase.
+     * Resets some variables, and retrieves cards from the robots
+     */
+    private void newPhase() {
+        phase++;
+
+        if (phase >= 5) {
+            newRound();
+            System.out.println("New round!");
         }
-        cardIdx++;
+
+        roundCards = new ArrayList<>();
+        cardIdx = 0;
+
+        for (Robot robot : robots) {
+            roundCards.add(robot.getProgram()[phase]);
+        }
+
+        //sort cards by priority
+        Collections.sort(roundCards);
+        Collections.reverse(roundCards);
+    }
+
+    /**
+     * Used for performing the appropriate program card in the current phase
+     */
+    private void doTurn() {
+        System.out.println();
+
+        // check if  all program cards have been executed
+        if (cardIdx >= roundCards.size()) {
+            newPhase();
+            System.out.println("New phase!");
+            return; // maybe remove this?
+        }
+
+        ProgramCard card = roundCards.get(cardIdx);
+
+        for (Robot robot : robots) {
+            if (card.equals(robot.getProgram()[phase])) {
+                System.out.println("Attempting to perform '" + card + "' on : '" + robot + "'");
+                robot.doTurn(card);
+                cardIdx++;
+                break;
+            }
+        }
     }
 
     // key-listener currently used for testing
@@ -188,7 +246,7 @@ public class Game extends InputAdapter implements Screen {
      * @param y the desired y coordinate
      * @return true if position has pla
      */
-    public boolean positionIsFree(int x, int y) {
+    private boolean positionIsFree(int x, int y) {
         // TODO: dont use for-loop here, find a more efficient way
         // perhaps storing player-layer id's in a global variable?
         for (int i = 0; i < robots.length; i++) {
@@ -207,8 +265,15 @@ public class Game extends InputAdapter implements Screen {
      */
     public boolean moveIsValid(int x, int y) {
         if (x >= 0 && x < props.get("width", Integer.class) && y >= 0 && y < props.get("height", Integer.class)) {
-            return positionIsFree(x, y);
+            // TODO: revert back to only this line when not debugging
+            //return positionIsFree(x, y);
+
+            if (positionIsFree(x, y)) {
+                System.out.println("Success! Moving...");
+                return true;
+            }
         }
+        System.out.println("Move is not valid!");
         return false;
     }
 

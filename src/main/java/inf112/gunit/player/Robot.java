@@ -265,4 +265,20 @@ public class Robot {
     public int getId() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        switch (id) {
+            case 0:
+                return "Red";
+            case 1:
+                return "Green";
+            case 2:
+                return "Yellow";
+            case 3:
+                return "Cyan";
+            default:
+                return "" + id;
+        }
+    }
 }

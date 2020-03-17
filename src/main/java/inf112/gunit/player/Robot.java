@@ -266,6 +266,14 @@ public class Robot {
         return id;
     }
 
+    /**
+     * Get the TiledMapTileLayer of the robot
+     * @return
+     */
+    public TiledMapTileLayer getLayer() {
+        return layer;
+    }
+
     @Override
     public String toString() {
         switch (id) {

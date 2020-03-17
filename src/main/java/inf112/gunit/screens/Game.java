@@ -6,18 +6,22 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import inf112.gunit.GameState;
+import inf112.gunit.board.Board;
 import inf112.gunit.board.Direction;
 import inf112.gunit.main.Main;
 import inf112.gunit.player.Robot;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.TestPrograms;
 
+import java.security.UnrecoverableEntryException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -27,14 +31,23 @@ import java.util.Collections;
  */
 public class Game extends InputAdapter implements Screen {
 
+    private static final int INTERVAL = 30;
+
+    private GameState state;
+
     public static TextureRegion[][] spriteSheet;
 
     private int tick;
 
     private Main main;
     private TiledMap map;
-    private TiledMapTileLayer[] layers;
     private MapProperties props;
+
+    private Board board;
+
+    private ArrayList<TiledMapTileLayer> expressConveyors = new ArrayList<>();;
+    private ArrayList<TiledMapTileLayer> allConveyors = new ArrayList<>();
+    private ArrayList<TiledMapTileLayer> gears = new ArrayList<>();
 
     private Robot[] robots;
     private Robot mainRobot;
@@ -55,15 +68,11 @@ public class Game extends InputAdapter implements Screen {
         this.main = main;
         this.map = map;
         this.robots = new Robot[numOfPlayers];
+        board = new Board(this);
+        state = GameState.PROGRAM_CARD_EXECUTION;
 
         phase = -1;
         cardIdx = 0;
-
-        MapLayers mapLayers = map.getLayers();
-        layers = new TiledMapTileLayer[mapLayers.size()];
-        for (int i = 0; i < layers.length; i++) {
-            layers[i] = (TiledMapTileLayer) mapLayers.get(i);
-        }
 
         tick = 0;
 
@@ -73,23 +82,39 @@ public class Game extends InputAdapter implements Screen {
         int tileWidth = map.getProperties().get("tilewidth", Integer.class);
         int tileHeight = map.getProperties().get("tileheight", Integer.class);
 
+        // only used for testing
         for (int i = 0; i < numOfPlayers; i++) {
             Robot p = new Robot(this, i);
             p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
             robots[i] = p;
         }
 
+        for (MapLayer l : map.getLayers()) {
+            TiledMapTileLayer layer = (TiledMapTileLayer) l;
+            String name = layer.getName();
+
+            if (name.contains("conveyor")) {
+                allConveyors.add(layer);
+                if (name.contains("express")) expressConveyors.add(layer);
+            } else if (name.contains("gear")) gears.add(layer);
+        }
+
+        // set the controllable robot (for testing)
         mainRobot = robots[0];
 
+        //set the camera accordingly
         camera = new OrthographicCamera();
         camera.setToOrtho(false, mapWidth * tileWidth, mapHeight * tileHeight);
         camera.update();
 
+        // set the tile renderer and add the camera view to it
         tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / tileWidth * tileHeight);
         tileRenderer.setView(camera);
 
+        // add this class as the input processor
         Gdx.input.setInputProcessor(this);
 
+        // start a new game-phase
         newPhase();
     }
 
@@ -98,14 +123,81 @@ public class Game extends InputAdapter implements Screen {
 
     }
 
+    private void logic() {
+        switch (this.state) {
+            case SETUP:
+                break;
+            case ANNOUNCE_POWERDOWN:
+                System.out.println("powerdown");
+                break;
+            case ROBOT_PROGRAMMING:
+                System.out.println("programming");
+                break;
+            case PROGRAM_CARD_EXECUTION:
+                // check if all cards have robot turns have been performed
+                // if they have, trigger the board mechanics
+                // else continue executing program cards
+                if (cardIdx >= roundCards.size()) {
+                    state = GameState.CELL_MECHANIC_EXECUTION;
+                } else if (tick % INTERVAL == 0) {
+                    doTurn();
+                }
+                break;
+
+                // TODO: fix conveyors
+            case CELL_MECHANIC_EXECUTION:
+                System.out.println("mechanics");
+                String name = "undefined";
+
+                for (TiledMapTileLayer layer : expressConveyors) {
+                    for (Robot robot : robots) {
+                        if (layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
+                            board.conveyor(robot, layer);
+                        }
+                    }
+                }
+
+                for (TiledMapTileLayer layer : allConveyors) {
+                    for (Robot robot : robots) {
+                        if (layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
+                            board.conveyor(robot, layer);
+                        }
+                    }
+                }
+
+                for (TiledMapTileLayer layer : gears) {
+                    for (Robot robot : robots) {
+                        if (layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
+                            board.gear(robot, layer);
+                        }
+                    }
+                }
+
+                for (MapLayer l : map.getLayers()) {
+                    TiledMapTileLayer layer = (TiledMapTileLayer) l;
+                    name = layer.getName();
+                }
+
+                break;
+            default:
+                System.err.println("GAME STATE NOT SET - FATAL ERROR OCCURRED.");
+                System.err.println("KERNEL BRUH MOMENT");
+                this.dispose();
+                System.exit(1);
+        }
+    }
+
     @Override
     public void render(float v) {
         Gdx.gl.glClearColor(1,0,0,1);
+
+        logic();
 
         // update the player
         for (Robot robot : robots) {
             robot.update();
 
+            /*
             if (tick % 30 == 0) {
                 for (int i = 0; i < layers.length; i++) {
                     if (layers[i].getName().equals("rotator_clockwise") && layers[i].getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
@@ -115,6 +207,7 @@ public class Game extends InputAdapter implements Screen {
                     }
                 }
             }
+             */
         }
     
         // render the tile-map
@@ -128,6 +221,7 @@ public class Game extends InputAdapter implements Screen {
      * Initialise a new round
      */
     private void newRound() {
+        state = GameState.ANNOUNCE_POWERDOWN;
         phase = 0;
     }
 
@@ -161,12 +255,14 @@ public class Game extends InputAdapter implements Screen {
     private void doTurn() {
         System.out.println();
 
+        /*
         // check if  all program cards have been executed
         if (cardIdx >= roundCards.size()) {
             newPhase();
             System.out.println("New phase!");
-            return; // maybe remove this?
+            return; // maybe remove this? it just adds an extra step
         }
+         */
 
         ProgramCard card = roundCards.get(cardIdx);
 

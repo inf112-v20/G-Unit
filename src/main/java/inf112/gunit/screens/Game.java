@@ -161,7 +161,8 @@ public class Game extends InputAdapter implements Screen {
     private void doTurn() {
         System.out.println();
 
-        if (cardIdx >= 4) {
+        // check if  all program cards have been executed
+        if (cardIdx >= roundCards.size()) {
             newPhase();
             System.out.println("New phase!");
             return; // maybe remove this?

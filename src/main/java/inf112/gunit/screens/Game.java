@@ -69,6 +69,9 @@ public class Game extends InputAdapter implements Screen {
         this.map = map;
         this.robots = new Robot[numOfPlayers];
         board = new Board(this);
+
+        // currently initialising the game in this state for testing purposes
+        // this should actually be initialised to GameState.SETUP
         state = GameState.PROGRAM_CARD_EXECUTION;
 
         phase = -1;
@@ -83,12 +86,14 @@ public class Game extends InputAdapter implements Screen {
         int tileHeight = map.getProperties().get("tileheight", Integer.class);
 
         // only used for testing
+        // gives each robot a program
         for (int i = 0; i < numOfPlayers; i++) {
             Robot p = new Robot(this, i);
             p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
             robots[i] = p;
         }
 
+        // add all conveyor- and gear-layers to their corresponding list
         for (MapLayer l : map.getLayers()) {
             TiledMapTileLayer layer = (TiledMapTileLayer) l;
             String name = layer.getName();
@@ -151,11 +156,14 @@ public class Game extends InputAdapter implements Screen {
      */
     private void logic() {
         switch (this.state) {
+            // TODO: Implement setup phase, where you place flags etc...
             case SETUP:
                 break;
+            // TODO: Implement powerdown phase, where each player gets the option to powerdown
             case ANNOUNCE_POWERDOWN:
                 System.out.println("powerdown");
                 break;
+            // TODO: Implement programming phase, where each player programs their robot
             case ROBOT_PROGRAMMING:
                 System.out.println("programming");
                 break;
@@ -169,17 +177,19 @@ public class Game extends InputAdapter implements Screen {
                     doTurn();
                 }
                 break;
-
-                // TODO: fix conveyors
+            // TODO: finish this part (i.e. implement all mechanics)
             case CELL_MECHANIC_EXECUTION:
                 System.out.println("mechanics");
 
-                if (tick % 30 == 0) {
+                if (tick % INTERVAL == 0) {
+
+                    // perform conveyor mechanics on all robots
                     for (Robot robot : robots) {
                         robot.getPosition().set(convey(robot, expressConveyors));
                         robot.getPosition().set(convey(robot, allConveyors));
                     }
 
+                    // perform gear mechanics on all robots
                     for (TiledMapTileLayer layer : gears) {
                         for (Robot robot : robots) {
                             if (layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
@@ -188,18 +198,23 @@ public class Game extends InputAdapter implements Screen {
                         }
                     }
 
+                    // perform rest of the mechanics (which currently is none)
                     for (MapLayer l : map.getLayers()) {
                         String name = "undefined";
                         TiledMapTileLayer layer = (TiledMapTileLayer) l;
                         name = layer.getName();
                     }
 
-                    newPhase();
+                    // initialise a new phase
+                    if (phase >= 5)
+                        newRound();
+                    else
+                        newPhase();
                 }
                 break;
             default:
                 System.err.println("GAME STATE NOT SET - FATAL ERROR OCCURRED.");
-                System.err.println("KERNEL BRUH MOMENT");
+                System.err.println("ROBORALLY BRUH MOMENT");
                 this.dispose();
                 System.exit(1);
         }
@@ -209,22 +224,25 @@ public class Game extends InputAdapter implements Screen {
     public void render(float v) {
         Gdx.gl.glClearColor(1,0,0,1);
 
+        // handle the game-logic
         logic();
 
-        // update the player
+        // update the robot rendering
         for (Robot robot : robots) robot.update();
     
         // render the tile-map
         tileRenderer.setView(camera);
         tileRenderer.render();
 
-        tick++; // increase the game tick
+        // increase the game tick
+        tick++;
     }
 
     /**
      * Initialise a new round
      */
     private void newRound() {
+        System.out.println("New round!");
         state = GameState.PROGRAM_CARD_EXECUTION;
         phase = 0;
     }
@@ -236,11 +254,6 @@ public class Game extends InputAdapter implements Screen {
     private void newPhase() {
         state = GameState.PROGRAM_CARD_EXECUTION;
         phase++;
-
-        if (phase >= 5) {
-            newRound();
-            System.out.println("New round!");
-        }
 
         roundCards = new ArrayList<>();
         cardIdx = 0;

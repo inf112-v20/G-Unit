@@ -24,14 +24,23 @@ public class Board {
         this.game = game;
     }
 
+    /**
+     * Moves the given robot according to the conveyor on which it stands
+     * @param robot the robot to 'convey'
+     * @param layer the TiledMapTileLayer corresponding to the conveyors
+     * @return a new Vector2 position which is the cell the robot should move to
+     */
     public Vector2 convey(Robot robot, TiledMapTileLayer layer) {
         Vector2 newPos = robot.getPosition().cpy();
 
         int x = (int) robot.getPositionX();
         int y = (int) robot.getPositionY();
 
+        // get the last word in the layer name
+
         String name = layer.getName().substring(layer.getName().lastIndexOf("_")+1);
 
+        // check the direction of the conveyor and set the position accordingly
         if (name.equals("north")) {
             if (game.moveIsValid(x, y+1)) {
                 newPos = new Vector2();
@@ -59,7 +68,13 @@ public class Board {
         return newPos;
     }
 
+    /**
+     * Rotate the given robot according to the gear it is standing on
+     * @param robot the robot to rotate
+     * @param layer the given TiledMapTileLayer corresponding to the gears
+     */
     public void gear(Robot robot, TiledMapTileLayer layer) {
+        // get the last word in the layer name
         String name = layer.getName().substring(layer.getName().lastIndexOf("_")+1);
 
         if (name.equals("clockwise"))

@@ -206,7 +206,7 @@ public class Game extends InputAdapter implements Screen {
                     }
 
                     // initialise a new phase
-                    if (phase >= 5)
+                    if (phase >= 4)
                         newRound();
                     else
                         newPhase();

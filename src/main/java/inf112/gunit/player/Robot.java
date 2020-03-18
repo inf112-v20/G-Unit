@@ -55,11 +55,11 @@ public class Robot {
      * @param game takes the Game object the robot is instantiated from
      * @param id the desired identifier for the robot
      */
-    public Robot(Game game, int id) {
+    public Robot(Game game, int id, Vector2 startPos) {
         this.game = game;
         this.props = game.getMap().getProperties();
         this.dir = Direction.NORTH;
-        this.position = new Vector2(id,0);
+        this.position = startPos;
         this.id = id;
 
         this.backupMemory = this.position;

@@ -65,6 +65,16 @@ public class Game extends InputAdapter implements Screen {
      * @param map takes a TiledMap as the board
      */
     public Game(Main main, TiledMap map, int numOfPlayers) {
+        if (numOfPlayers > 4) {
+            System.err.println("Number of players cant be greater than 4!!");
+            this.dispose();
+            System.exit(1);
+        } else if (numOfPlayers <= 0) {
+            System.err.println("Number of players cant be less than 1!!");
+            this.dispose();
+            System.exit(1);
+        }
+
         this.main = main;
         this.map = map;
         this.robots = new Robot[numOfPlayers];
@@ -88,7 +98,7 @@ public class Game extends InputAdapter implements Screen {
         // only used for testing
         // gives each robot a program
         for (int i = 0; i < numOfPlayers; i++) {
-            Robot p = new Robot(this, i);
+            Robot p = new Robot(this, i, board.getStartPosition(i));
             p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
             robots[i] = p;
         }
@@ -243,7 +253,8 @@ public class Game extends InputAdapter implements Screen {
      */
     private void newRound() {
         System.out.println("New round!");
-        state = GameState.PROGRAM_CARD_EXECUTION;
+        state = GameState.PROGRAM_CARD_EXECUTION; // here for testing
+        // state = GameState.ANNOUNCE_POWERDOWN;
         phase = 0;
     }
 

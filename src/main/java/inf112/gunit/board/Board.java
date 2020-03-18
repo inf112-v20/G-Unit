@@ -3,6 +3,8 @@ package inf112.gunit.board;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
@@ -81,5 +83,29 @@ public class Board {
             robot.rotate(true, 1);
         else
             robot.rotate(false, 1);
+    }
+
+    /**
+     * Get the starting position of a given robot id
+     * Used when initialising each robot
+     * @param id the given robot id/starting position
+     * @return the Vector2 starting position
+     */
+    public Vector2 getStartPosition(int id) {
+        Vector2 pos = null;
+        TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("start_" + id);
+        layer.setVisible(true);
+
+        for (int x = 0; x < (game.getMap().getProperties().get("width", Integer.class)); x++) {
+            for (int y = 0; y < (game.getMap().getProperties().get("height", Integer.class)); y++) {
+                if (layer.getCell(x, y) != null) {
+                    pos = new Vector2();
+                    pos.set(x, y);
+                    break;
+                }
+            }
+        }
+
+        return pos;
     }
 }

@@ -21,6 +21,8 @@ import java.util.Arrays;
  */
 public class Robot {
 
+    public int flagsCollected = 0;
+
     private int id;
 
     // these to are for testing, and (probably) wont be used in the actual game
@@ -55,11 +57,11 @@ public class Robot {
      * @param game takes the Game object the robot is instantiated from
      * @param id the desired identifier for the robot
      */
-    public Robot(Game game, int id) {
+    public Robot(Game game, int id, Vector2 startPos) {
         this.game = game;
         this.props = game.getMap().getProperties();
         this.dir = Direction.NORTH;
-        this.position = new Vector2(id,0);
+        this.position = startPos;
         this.id = id;
 
         this.backupMemory = this.position;
@@ -264,6 +266,14 @@ public class Robot {
      */
     public int getId() {
         return id;
+    }
+
+    /**
+     * Get the TiledMapTileLayer of the robot
+     * @return
+     */
+    public TiledMapTileLayer getLayer() {
+        return layer;
     }
 
     @Override

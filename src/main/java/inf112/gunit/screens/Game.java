@@ -5,13 +5,14 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import inf112.gunit.GameState;
+import inf112.gunit.board.Board;
 import inf112.gunit.board.Direction;
 import inf112.gunit.main.Main;
 import inf112.gunit.player.Robot;
@@ -27,14 +28,23 @@ import java.util.Collections;
  */
 public class Game extends InputAdapter implements Screen {
 
-    public static TextureRegion[][] spriteSheet;
+    private static final int INTERVAL = 30;
+
+    private GameState state;
+
+    private int numOfFlags;
 
     private int tick;
 
     private Main main;
     private TiledMap map;
-    private TiledMapTileLayer[] layers;
     private MapProperties props;
+
+    private Board board;
+
+    private ArrayList<TiledMapTileLayer> expressConveyors = new ArrayList<>();;
+    private ArrayList<TiledMapTileLayer> allConveyors = new ArrayList<>();
+    private ArrayList<TiledMapTileLayer> gears = new ArrayList<>();
 
     private Robot[] robots;
     private Robot mainRobot;
@@ -52,18 +62,29 @@ public class Game extends InputAdapter implements Screen {
      * @param map takes a TiledMap as the board
      */
     public Game(Main main, TiledMap map, int numOfPlayers) {
+        if (numOfPlayers > 4) {
+            System.err.println("Number of players cant be greater than 4!!");
+            this.dispose();
+            System.exit(1);
+        } else if (numOfPlayers <= 0) {
+            System.err.println("Number of players cant be less than 1!!");
+            this.dispose();
+            System.exit(1);
+        }
+
         this.main = main;
         this.map = map;
         this.robots = new Robot[numOfPlayers];
+        board = new Board(this);
+
+        numOfFlags = board.getNumberOfFlags();
+
+        // currently initialising the game in this state for testing purposes
+        // this should actually be initialised to GameState.SETUP
+        state = GameState.PROGRAM_CARD_EXECUTION;
 
         phase = -1;
         cardIdx = 0;
-
-        MapLayers mapLayers = map.getLayers();
-        layers = new TiledMapTileLayer[mapLayers.size()];
-        for (int i = 0; i < layers.length; i++) {
-            layers[i] = (TiledMapTileLayer) mapLayers.get(i);
-        }
 
         tick = 0;
 
@@ -73,23 +94,41 @@ public class Game extends InputAdapter implements Screen {
         int tileWidth = map.getProperties().get("tilewidth", Integer.class);
         int tileHeight = map.getProperties().get("tileheight", Integer.class);
 
+        // only used for testing
+        // gives each robot a program
         for (int i = 0; i < numOfPlayers; i++) {
-            Robot p = new Robot(this, i);
+            Robot p = new Robot(this, i, board.getStartPosition(i));
             p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
             robots[i] = p;
         }
 
+        // add all conveyor- and gear-layers to their corresponding list
+        for (MapLayer l : map.getLayers()) {
+            TiledMapTileLayer layer = (TiledMapTileLayer) l;
+            String name = layer.getName();
+
+            if (name.contains("conveyor")) {
+                allConveyors.add(layer);
+                if (name.contains("express")) expressConveyors.add(layer);
+            } else if (name.contains("gear")) gears.add(layer);
+        }
+
+        // set the controllable robot (for testing)
         mainRobot = robots[0];
 
+        //set the camera accordingly
         camera = new OrthographicCamera();
         camera.setToOrtho(false, mapWidth * tileWidth, mapHeight * tileHeight);
         camera.update();
 
+        // set the tile renderer and add the camera view to it
         tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / tileWidth * tileHeight);
         tileRenderer.setView(camera);
 
+        // add this class as the input processor
         Gdx.input.setInputProcessor(this);
 
+        // start a new game-phase
         newPhase();
     }
 
@@ -98,36 +137,140 @@ public class Game extends InputAdapter implements Screen {
 
     }
 
+    /**
+     * If a robot has collected all the flags, then the game is over
+     * @param winner the winning player/robot
+     */
+    private void gameOver(Robot winner) {
+        System.out.println();
+        System.out.println("Game over!");
+        System.out.println("Player with the " + winner + " robot won!");
+        this.dispose();
+        System.exit(0);
+    }
+
+    /**
+     * This is only a helper method for the logic-method.
+     * It is solely here for reducing code reuse.
+     * It 'conveys' returns a position given a robot a set of conveyors.
+     * @param robot the robot to 'convey'
+     * @param conveyors the set of conveyors
+     * @return a valid new Vector2 position if the robot is on a conveyor
+     */
+    private Vector2 convey(Robot robot, ArrayList<TiledMapTileLayer> conveyors) {
+        // loop over each conveyor, checking if the robot is on it
+        // convey robot accordingly
+        for (TiledMapTileLayer layer : conveyors) {
+            if (layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
+                robot.getLayer().setCell((int) robot.getPositionX(), (int) robot.getPositionY(), null);
+                return board.convey(robot, layer);
+            }
+        }
+
+        // if the robot is not standing at a conveyor, return its original position
+        return robot.getPosition().cpy();
+    }
+
+    /**
+     * The logic-method handles all game logic
+     * based on the GameState
+     */
+    private void logic() {
+
+        // check if a robot has collected all the flags
+        for (Robot robot : robots) {
+            if (robot.flagsCollected >= numOfFlags) gameOver(robot);
+        }
+
+        switch (this.state) {
+            // TODO: Implement setup phase, where you place flags etc...
+            // if flags already is placed on board in the tiledmap file, this is not needed
+            case SETUP:
+                break;
+            // TODO: Implement programming phase, where each player programs their robot
+            // TODO: Need to implement HUD first
+            case ROBOT_PROGRAMMING:
+                System.out.println("programming");
+                break;
+            case PROGRAM_CARD_EXECUTION:
+                // check if all cards have robot turns have been performed
+                // if they have, trigger the board mechanics
+                // else continue executing program cards
+                if (cardIdx >= roundCards.size()) {
+                    state = GameState.CELL_MECHANIC_EXECUTION;
+                } else if (tick % INTERVAL == 0) {
+                    doTurn();
+                }
+                break;
+            // TODO: finish this part (i.e. implement all mechanics)
+            case CELL_MECHANIC_EXECUTION:
+                System.out.println("mechanics");
+
+                if (tick % INTERVAL == 0) {
+
+                    // perform conveyor mechanics on all robots
+                    for (Robot robot : robots) {
+                        robot.getPosition().set(convey(robot, expressConveyors));
+                        robot.getPosition().set(convey(robot, allConveyors));
+                    }
+
+                    // perform gear mechanics on all robots
+                    for (TiledMapTileLayer layer : gears) {
+                        for (Robot robot : robots) {
+                            if (layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
+                                board.gear(robot, layer);
+                            }
+                        }
+                    }
+
+                    // perform rest of the mechanics (which currently is none)
+                    for (MapLayer l : map.getLayers()) {
+                        String name = "undefined";
+                        TiledMapTileLayer layer = (TiledMapTileLayer) l;
+                        name = layer.getName();
+                    }
+
+                    // initialise a new phase
+                    if (phase >= 4)
+                        newRound();
+                    else
+                        newPhase();
+                }
+                break;
+            default:
+                System.err.println("GAME STATE NOT SET - FATAL ERROR OCCURRED.");
+                System.err.println("ROBORALLY BRUH MOMENT");
+                this.dispose();
+                System.exit(1);
+        }
+    }
+
     @Override
     public void render(float v) {
         Gdx.gl.glClearColor(1,0,0,1);
+        tileRenderer.getBatch().begin();
 
-        // update the player
-        for (Robot robot : robots) {
-            robot.update();
+        // handle the game-logic
+        logic();
 
-            if (tick % 30 == 0) {
-                for (int i = 0; i < layers.length; i++) {
-                    if (layers[i].getName().equals("rotator_clockwise") && layers[i].getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
-                        robot.rotate(true, 1);
-                    } else if (layers[i].getName().equals("rotator_counter_clockwise") && layers[i].getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
-                        robot.rotate(false, 1);
-                    }
-                }
-            }
-        }
-    
+        // update the robot rendering
+        for (Robot robot : robots) robot.update();
+        tileRenderer.getBatch().end();
         // render the tile-map
         tileRenderer.setView(camera);
         tileRenderer.render();
 
-        tick++; // increase the game tick
+        // increase the game tick
+        tick++;
     }
 
     /**
      * Initialise a new round
      */
     private void newRound() {
+        System.out.println("New round!");
+        state = GameState.PROGRAM_CARD_EXECUTION; // here for testing
+        //state = GameState.ROBOT_PROGRAMMING;
         phase = 0;
     }
 
@@ -136,12 +279,8 @@ public class Game extends InputAdapter implements Screen {
      * Resets some variables, and retrieves cards from the robots
      */
     private void newPhase() {
+        state = GameState.PROGRAM_CARD_EXECUTION;
         phase++;
-
-        if (phase >= 5) {
-            newRound();
-            System.out.println("New round!");
-        }
 
         roundCards = new ArrayList<>();
         cardIdx = 0;
@@ -161,12 +300,14 @@ public class Game extends InputAdapter implements Screen {
     private void doTurn() {
         System.out.println();
 
+        /*
         // check if  all program cards have been executed
         if (cardIdx >= roundCards.size()) {
             newPhase();
             System.out.println("New phase!");
-            return; // maybe remove this?
+            return; // maybe remove this? it just adds an extra step
         }
+         */
 
         ProgramCard card = roundCards.get(cardIdx);
 
@@ -277,8 +418,20 @@ public class Game extends InputAdapter implements Screen {
         return false;
     }
 
+    /**
+     * Get the TiledMap of the board
+     * @return the TiledMap of the board
+     */
     public TiledMap getMap() {
         return map;
+    }
+
+    /**
+     * Get the number of flags on the game board
+     * @return the number of flags
+     */
+    public int getNumOfFlags() {
+        return numOfFlags;
     }
 
     @Override

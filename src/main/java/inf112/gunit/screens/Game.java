@@ -5,9 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -21,7 +20,6 @@ import inf112.gunit.player.Robot;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.TestPrograms;
 
-import java.security.UnrecoverableEntryException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -31,11 +29,17 @@ import java.util.Collections;
  */
 public class Game extends InputAdapter implements Screen {
 
+    private static final int BUTTON_WIDTH = 200;
+    private static final int BUTTON_HEIGHT = 100;
+    private static final int BUTTON_YES_X = (Main.WIDTH / 2) - (BUTTON_WIDTH/2);
+    private static final int BUTTON_YES_Y = (Main.HEIGHT / 2) - (BUTTON_HEIGHT/2);
+
     private static final int INTERVAL = 30;
 
-    private GameState state;
+    private Texture buttonYes = new Texture("assets/powerdown/button_yes.png");
+    private Texture buttonYesActive = new Texture("assets/powerdown/button_yes_active.png");
 
-    public static TextureRegion[][] spriteSheet;
+    private GameState state;
 
     private int tick;
 
@@ -169,10 +173,6 @@ public class Game extends InputAdapter implements Screen {
             // TODO: Implement setup phase, where you place flags etc...
             case SETUP:
                 break;
-            // TODO: Implement powerdown phase, where each player gets the option to powerdown
-            case ANNOUNCE_POWERDOWN:
-                System.out.println("powerdown");
-                break;
             // TODO: Implement programming phase, where each player programs their robot
             case ROBOT_PROGRAMMING:
                 System.out.println("programming");
@@ -233,13 +233,14 @@ public class Game extends InputAdapter implements Screen {
     @Override
     public void render(float v) {
         Gdx.gl.glClearColor(1,0,0,1);
+        tileRenderer.getBatch().begin();
 
         // handle the game-logic
         logic();
 
         // update the robot rendering
         for (Robot robot : robots) robot.update();
-    
+        tileRenderer.getBatch().end();
         // render the tile-map
         tileRenderer.setView(camera);
         tileRenderer.render();
@@ -254,7 +255,7 @@ public class Game extends InputAdapter implements Screen {
     private void newRound() {
         System.out.println("New round!");
         state = GameState.PROGRAM_CARD_EXECUTION; // here for testing
-        // state = GameState.ANNOUNCE_POWERDOWN;
+        //state = GameState.ROBOT_PROGRAMMING;
         phase = 0;
     }
 

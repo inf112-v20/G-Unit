@@ -1,9 +1,12 @@
 package inf112.gunit.board;
 
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.player.Robot;
 import inf112.gunit.screens.Game;
+
+import java.util.ArrayList;
 
 /**
  * Implement logic and mechanics here
@@ -97,5 +100,15 @@ public class Board {
         }
 
         return pos;
+    }
+
+    public int getNumberOfFlags() {
+        ArrayList<TiledMapTileLayer> layers = new ArrayList<>();
+
+        for (MapLayer layer : game.getMap().getLayers()) {
+            if (layer.getName().contains("flag")) layers.add((TiledMapTileLayer) layer);
+        }
+
+        return layers.size();
     }
 }

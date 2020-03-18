@@ -32,6 +32,8 @@ public class Game extends InputAdapter implements Screen {
 
     private GameState state;
 
+    private int numOfFlags;
+
     private int tick;
 
     private Main main;
@@ -74,6 +76,8 @@ public class Game extends InputAdapter implements Screen {
         this.map = map;
         this.robots = new Robot[numOfPlayers];
         board = new Board(this);
+
+        numOfFlags = board.getNumberOfFlags();
 
         // currently initialising the game in this state for testing purposes
         // this should actually be initialised to GameState.SETUP
@@ -134,6 +138,18 @@ public class Game extends InputAdapter implements Screen {
     }
 
     /**
+     * If a robot has collected all the flags, then the game is over
+     * @param winner the winning player/robot
+     */
+    private void gameOver(Robot winner) {
+        System.out.println();
+        System.out.println("Game over!");
+        System.out.println("Player with the " + winner + " robot won!");
+        this.dispose();
+        System.exit(0);
+    }
+
+    /**
      * This is only a helper method for the logic-method.
      * It is solely here for reducing code reuse.
      * It 'conveys' returns a position given a robot a set of conveyors.
@@ -160,11 +176,19 @@ public class Game extends InputAdapter implements Screen {
      * based on the GameState
      */
     private void logic() {
+
+        // check if a robot has collected all the flags
+        for (Robot robot : robots) {
+            if (robot.flagsCollected >= numOfFlags) gameOver(robot);
+        }
+
         switch (this.state) {
             // TODO: Implement setup phase, where you place flags etc...
+            // if flags already is placed on board in the tiledmap file, this is not needed
             case SETUP:
                 break;
             // TODO: Implement programming phase, where each player programs their robot
+            // TODO: Need to implement HUD first
             case ROBOT_PROGRAMMING:
                 System.out.println("programming");
                 break;
@@ -394,8 +418,20 @@ public class Game extends InputAdapter implements Screen {
         return false;
     }
 
+    /**
+     * Get the TiledMap of the board
+     * @return the TiledMap of the board
+     */
     public TiledMap getMap() {
         return map;
+    }
+
+    /**
+     * Get the number of flags on the game board
+     * @return the number of flags
+     */
+    public int getNumOfFlags() {
+        return numOfFlags;
     }
 
     @Override

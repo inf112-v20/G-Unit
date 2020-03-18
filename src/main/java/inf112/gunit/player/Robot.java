@@ -21,6 +21,8 @@ import java.util.Arrays;
  */
 public class Robot {
 
+    public int flagsCollected = 0;
+
     private int id;
 
     // these to are for testing, and (probably) wont be used in the actual game

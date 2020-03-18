@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -29,15 +28,7 @@ import java.util.Collections;
  */
 public class Game extends InputAdapter implements Screen {
 
-    private static final int BUTTON_WIDTH = 200;
-    private static final int BUTTON_HEIGHT = 100;
-    private static final int BUTTON_YES_X = (Main.WIDTH / 2) - (BUTTON_WIDTH/2);
-    private static final int BUTTON_YES_Y = (Main.HEIGHT / 2) - (BUTTON_HEIGHT/2);
-
     private static final int INTERVAL = 30;
-
-    private Texture buttonYes = new Texture("assets/powerdown/button_yes.png");
-    private Texture buttonYesActive = new Texture("assets/powerdown/button_yes_active.png");
 
     private GameState state;
 

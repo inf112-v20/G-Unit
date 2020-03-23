@@ -1,7 +1,6 @@
 package inf112.gunit.board;
 
 import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.player.Robot;
@@ -18,6 +17,10 @@ public class Board {
     }
 
     // TODO: add rotations for corners
+
+    /**
+     * Handle mechanics for all express conveyors
+     */
     public void conveyExpress() {
         for (Robot robot : game.getRobots()) {
             TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("conveyors");
@@ -28,11 +31,13 @@ public class Board {
                 String tileDir = cell.getTile().getProperties().get("direction").toString();
                 robot.setDirection(Direction.valueOf(tileDir));
                 robot.move(1);
-                System.out.println("Moving robot " + robot + " express");
             }
         }
     }
 
+    /**
+     * Handle mechanics for all conveyors
+     */
     public void convey() {
         for (Robot robot : game.getRobots()) {
             TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("conveyors");
@@ -43,11 +48,13 @@ public class Board {
                 String tileDir = cell.getTile().getProperties().get("direction").toString();
                 robot.setDirection(Direction.valueOf(tileDir));
                 robot.move(1);
-                System.out.println("Moving robot " + robot + " regular");
             }
         }
     }
 
+    /**
+     * Handle mechanics for all gears
+     */
     public void rotateGears() {
         for (Robot robot : game.getRobots()) {
             TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("gears");
@@ -84,6 +91,10 @@ public class Board {
         return pos;
     }
 
+    /**
+     * Get the number for starting flags on the board
+     * @return number of flags
+     */
     public int getNumberOfFlags() {
         ArrayList<TiledMapTileLayer> layers = new ArrayList<>();
 

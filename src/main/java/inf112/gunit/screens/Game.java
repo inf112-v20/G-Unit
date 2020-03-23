@@ -77,13 +77,14 @@ public class Game extends InputAdapter implements Screen {
         this.robots = new Robot[numOfPlayers];
         board = new Board(this);
 
+
         numOfFlags = board.getNumberOfFlags();
 
         // currently initialising the game in this state for testing purposes
         // this should actually be initialised to GameState.SETUP
         state = GameState.PROGRAM_CARD_EXECUTION;
 
-        phase = -1;
+        phase = 0;
         cardIdx = 0;
 
         tick = 0;
@@ -150,28 +151,6 @@ public class Game extends InputAdapter implements Screen {
     }
 
     /**
-     * This is only a helper method for the logic-method.
-     * It is solely here for reducing code reuse.
-     * It 'conveys' returns a position given a robot a set of conveyors.
-     * @param robot the robot to 'convey'
-     * @param conveyors the set of conveyors
-     * @return a valid new Vector2 position if the robot is on a conveyor
-     */
-    private Vector2 convey(Robot robot, ArrayList<TiledMapTileLayer> conveyors) {
-        // loop over each conveyor, checking if the robot is on it
-        // convey robot accordingly
-        for (TiledMapTileLayer layer : conveyors) {
-            if (layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
-                robot.getLayer().setCell((int) robot.getPositionX(), (int) robot.getPositionY(), null);
-                return board.convey(robot, layer);
-            }
-        }
-
-        // if the robot is not standing at a conveyor, return its original position
-        return robot.getPosition().cpy();
-    }
-
-    /**
      * The logic-method handles all game logic
      * based on the GameState
      */
@@ -193,9 +172,7 @@ public class Game extends InputAdapter implements Screen {
                 System.out.println("programming");
                 break;
             case PROGRAM_CARD_EXECUTION:
-                // check if all cards have robot turns have been performed
-                // if they have, trigger the board mechanics
-                // else continue executing program cards
+                // check if all cards this phase have been performed
                 if (cardIdx >= roundCards.size()) {
                     state = GameState.CELL_MECHANIC_EXECUTION;
                 } else if (tick % INTERVAL == 0) {
@@ -207,34 +184,17 @@ public class Game extends InputAdapter implements Screen {
                 System.out.println("mechanics");
 
                 if (tick % INTERVAL == 0) {
-
-                    // perform conveyor mechanics on all robots
-                    for (Robot robot : robots) {
-                        robot.getPosition().set(convey(robot, expressConveyors));
-                        robot.getPosition().set(convey(robot, allConveyors));
-                    }
-
-                    // perform gear mechanics on all robots
-                    for (TiledMapTileLayer layer : gears) {
-                        for (Robot robot : robots) {
-                            if (layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
-                                board.gear(robot, layer);
-                            }
-                        }
-                    }
-
-                    // perform rest of the mechanics (which currently is none)
-                    for (MapLayer l : map.getLayers()) {
-                        String name = "undefined";
-                        TiledMapTileLayer layer = (TiledMapTileLayer) l;
-                        name = layer.getName();
-                    }
+                    board.conveyExpress();
+                    board.convey();
+                    board.rotateGears();
 
                     // initialise a new phase
-                    if (phase >= 4)
+                    if (phase >= 4) {
                         newRound();
-                    else
+                    } else {
+                        phase++;
                         newPhase();
+                    }
                 }
                 break;
             default:
@@ -269,9 +229,10 @@ public class Game extends InputAdapter implements Screen {
      */
     private void newRound() {
         System.out.println("New round!");
-        state = GameState.PROGRAM_CARD_EXECUTION; // here for testing
-        //state = GameState.ROBOT_PROGRAMMING;
         phase = 0;
+        state = GameState.PROGRAM_CARD_EXECUTION; // here for testing
+        newPhase(); // testing
+        //state = GameState.ROBOT_PROGRAMMING;
     }
 
     /**
@@ -280,7 +241,6 @@ public class Game extends InputAdapter implements Screen {
      */
     private void newPhase() {
         state = GameState.PROGRAM_CARD_EXECUTION;
-        phase++;
 
         roundCards = new ArrayList<>();
         cardIdx = 0;
@@ -298,19 +258,8 @@ public class Game extends InputAdapter implements Screen {
      * Used for performing the appropriate program card in the current phase
      */
     private void doTurn() {
-        System.out.println();
-
-        /*
-        // check if  all program cards have been executed
-        if (cardIdx >= roundCards.size()) {
-            newPhase();
-            System.out.println("New phase!");
-            return; // maybe remove this? it just adds an extra step
-        }
-         */
-
+        // TODO: Get rid of the for-loop here by storing a 'currentRobot' as a field variable?
         ProgramCard card = roundCards.get(cardIdx);
-
         for (Robot robot : robots) {
             if (card.equals(robot.getProgram()[phase])) {
                 System.out.println("Attempting to perform '" + card + "' on : '" + robot + "'");
@@ -416,6 +365,14 @@ public class Game extends InputAdapter implements Screen {
         }
         System.out.println("Move is not valid!");
         return false;
+    }
+
+    /**
+     * Get the players/robots currently in the game
+     * @return the robots
+     */
+    public Robot[] getRobots() {
+        return robots;
     }
 
     /**

@@ -1,6 +1,7 @@
 package inf112.gunit.board;
 
 import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.player.Robot;
@@ -8,9 +9,6 @@ import inf112.gunit.screens.Game;
 
 import java.util.ArrayList;
 
-/**
- * Implement logic and mechanics here
- */
 public class Board {
 
     private Game game;
@@ -19,63 +17,47 @@ public class Board {
         this.game = game;
     }
 
-    /**
-     * Moves the given robot according to the conveyor on which it stands
-     * @param robot the robot to 'convey'
-     * @param layer the TiledMapTileLayer corresponding to the conveyors
-     * @return a new Vector2 position which is the cell the robot should move to
-     */
-    public Vector2 convey(Robot robot, TiledMapTileLayer layer) {
-        Vector2 newPos = robot.getPosition().cpy();
+    // TODO: add rotations for corners
+    public void conveyExpress() {
+        for (Robot robot : game.getRobots()) {
+            TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("conveyors");
+            TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
 
-        int x = (int) robot.getPositionX();
-        int y = (int) robot.getPositionY();
-
-        // get the last word in the layer name
-
-        String name = layer.getName().substring(layer.getName().lastIndexOf("_")+1);
-
-        // check the direction of the conveyor and set the position accordingly
-        if (name.equals("north")) {
-            if (game.moveIsValid(x, y+1)) {
-                newPos = new Vector2();
-                newPos.set(x, y+1);
+            if (cell != null && Boolean.parseBoolean(cell.getTile().getProperties().get("express").toString())) {
+                robot.getLayer().setCell((int) robot.getPositionX(), (int) robot.getPositionY(), null);
+                String tileDir = cell.getTile().getProperties().get("direction").toString();
+                robot.setDirection(Direction.valueOf(tileDir));
+                robot.move(1);
+                System.out.println("Moving robot " + robot + " express");
             }
-        } else if (name.equals("east")) {
-            if (game.moveIsValid(x+1, y)) {
-                newPos = new Vector2();
-                newPos.set(x+1, y);
-            }
-        } else if (name.equals("south")) {
-            if (game.moveIsValid(x, y-1)) {
-                newPos = new Vector2();
-                newPos.set(x, y-1);
-            }
-        } else if (name.equals("west")) {
-            if (game.moveIsValid(x-1, y)) {
-                newPos = new Vector2();
-                newPos.set(x-1, y);
-            }
-        } else {
-            System.err.println("UNKNOWN DIRECTION: " + name);
         }
-
-        return newPos;
     }
 
-    /**
-     * Rotate the given robot according to the gear it is standing on
-     * @param robot the robot to rotate
-     * @param layer the given TiledMapTileLayer corresponding to the gears
-     */
-    public void gear(Robot robot, TiledMapTileLayer layer) {
-        // get the last word in the layer name
-        String name = layer.getName().substring(layer.getName().lastIndexOf("_")+1);
+    public void convey() {
+        for (Robot robot : game.getRobots()) {
+            TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("conveyors");
+            TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
 
-        if (name.equals("clockwise"))
-            robot.rotate(true, 1);
-        else
-            robot.rotate(false, 1);
+            if (cell != null) {
+                robot.getLayer().setCell((int) robot.getPositionX(), (int) robot.getPositionY(), null);
+                String tileDir = cell.getTile().getProperties().get("direction").toString();
+                robot.setDirection(Direction.valueOf(tileDir));
+                robot.move(1);
+                System.out.println("Moving robot " + robot + " regular");
+            }
+        }
+    }
+
+    public void rotateGears() {
+        for (Robot robot : game.getRobots()) {
+            TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("gears");
+            TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
+
+            if (cell != null) {
+                boolean clockwise = Boolean.parseBoolean(cell.getTile().getProperties().get("clockwise").toString());
+                robot.rotate(clockwise, 1);
+            }
+        }
     }
 
     /**

@@ -64,7 +64,7 @@ public class Robot {
         this.position = startPos;
         this.id = id;
 
-        this.backupMemory = this.position;
+        this.backupMemory = startPos;
 
         int tileWidth = props.get("tilewidth", Integer.class);
         int tileHeight = props.get("tileheight", Integer.class);
@@ -195,12 +195,24 @@ public class Robot {
         this.program = Arrays.copyOf(program, 5);
     }
 
+    public int getLifeToken() {
+        return lifeToken;
+    }
+
+    public Vector2 getBackupMemory() {
+        return backupMemory;
+    }
+
+    public void setPosition(Vector2 position) {
+        this.position = position;
+    }
+
     /**
      * Checks to see if robot has any lifeToken left, if so,
      * removes 1 lifeToken, and then respawn player/robot at backupMemory.
      * If the player/robot has no lifeTokens left, he/she is removed from the board entirely.
      */
-    public void died(){
+    public void die(){
         if (this.lifeToken <= 0) {
             //if player/robot is dead and has no life tokens, this happens.
             //die

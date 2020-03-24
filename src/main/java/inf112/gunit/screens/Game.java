@@ -45,6 +45,7 @@ public class Game extends InputAdapter implements Screen {
     private ArrayList<TiledMapTileLayer> expressConveyors = new ArrayList<>();;
     private ArrayList<TiledMapTileLayer> allConveyors = new ArrayList<>();
     private ArrayList<TiledMapTileLayer> gears = new ArrayList<>();
+    private TiledMapTileLayer holesTileLayer;
 
     private Robot[] robots;
     private Robot mainRobot;
@@ -76,6 +77,8 @@ public class Game extends InputAdapter implements Screen {
         this.map = map;
         this.robots = new Robot[numOfPlayers];
         board = new Board(this);
+
+        holesTileLayer = (TiledMapTileLayer) map.getLayers().get("holes");
 
         numOfFlags = board.getNumberOfFlags();
 
@@ -204,7 +207,6 @@ public class Game extends InputAdapter implements Screen {
                 break;
             // TODO: finish this part (i.e. implement all mechanics)
             case CELL_MECHANIC_EXECUTION:
-                System.out.println("mechanics");
 
                 if (tick % INTERVAL == 0) {
 
@@ -243,6 +245,26 @@ public class Game extends InputAdapter implements Screen {
                 this.dispose();
                 System.exit(1);
         }
+        // Checks if robot is standing on a "hole", and calls method died() if so.
+
+        for (Robot robot : robots) {
+            if(robot.getId() == 2){
+                System.out.println(robot.getPosition());
+                System.out.println("backup " + robot.getBackupMemory());
+            }
+            if (holesTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null){
+                System.out.println("lifeToken : " + robot.getLifeToken());
+                System.out.println("position : " + robot.getPosition());
+                System.out.println("backupMemory :" + robot.getBackupMemory());
+                System.out.println(robot + "died!!!!!!!!!!!!!!!!!!!!!!!!");
+                robot.die();
+                System.out.println("lifeToken : " + robot.getLifeToken());
+                System.out.println("position : " + robot.getPosition());
+                System.out.println("backupMemory :" + robot.getBackupMemory());
+                System.out.println(robot + "died!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }
+
     }
 
     @Override

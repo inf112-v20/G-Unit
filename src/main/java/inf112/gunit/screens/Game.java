@@ -245,26 +245,12 @@ public class Game extends InputAdapter implements Screen {
                 this.dispose();
                 System.exit(1);
         }
-        // Checks if robot is standing on a "hole", and calls method died() if so.
-
+        // Checks if a robot is standing on a "hole", and calls method die() if so.
         for (Robot robot : robots) {
-            if(robot.getId() == 2){
-                System.out.println(robot.getPosition());
-                System.out.println("backup " + robot.getBackupMemory());
-            }
             if (holesTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null){
-                System.out.println("lifeToken : " + robot.getLifeToken());
-                System.out.println("position : " + robot.getPosition());
-                System.out.println("backupMemory :" + robot.getBackupMemory());
-                System.out.println(robot + "died!!!!!!!!!!!!!!!!!!!!!!!!");
                 robot.die();
-                System.out.println("lifeToken : " + robot.getLifeToken());
-                System.out.println("position : " + robot.getPosition());
-                System.out.println("backupMemory :" + robot.getBackupMemory());
-                System.out.println(robot + "died!!!!!!!!!!!!!!!!!!!!!!!!");
             }
         }
-
     }
 
     @Override

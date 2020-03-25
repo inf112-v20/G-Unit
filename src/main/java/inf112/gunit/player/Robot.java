@@ -64,7 +64,7 @@ public class Robot {
         this.position = startPos;
         this.id = id;
 
-        this.backupMemory = startPos;
+        this.backupMemory = startPos.cpy();
 
         int tileWidth = props.get("tilewidth", Integer.class);
         int tileHeight = props.get("tileheight", Integer.class);
@@ -212,17 +212,7 @@ public class Robot {
      * removes 1 lifeToken, and then respawn player/robot at backupMemory.
      * If the player/robot has no lifeTokens left, he/she is removed from the board entirely.
      */
-    public void die(){
-        if (this.lifeToken <= 0) {
-            //if player/robot is dead and has no life tokens, this happens.
-            //die
-        }
-        else { // Moves player/robot back to backupMemory and restores damageMarkers.
-            this.lifeToken--;
-            this.position = backupMemory;
-            this.damageMarker = 10;
-        }
-    }
+
 
     /**
      * Get the current program of the robot

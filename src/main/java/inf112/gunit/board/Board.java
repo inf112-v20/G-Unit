@@ -90,18 +90,4 @@ public class Board {
 
         return pos;
     }
-
-    /**
-     * Get the number for starting flags on the board
-     * @return number of flags
-     */
-    public int getNumberOfFlags() {
-        ArrayList<TiledMapTileLayer> layers = new ArrayList<>();
-
-        for (MapLayer layer : game.getMap().getLayers()) {
-            if (layer.getName().contains("flag")) layers.add((TiledMapTileLayer) layer);
-        }
-
-        return layers.size();
-    }
 }

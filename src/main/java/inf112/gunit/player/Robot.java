@@ -224,6 +224,14 @@ public class Robot {
         }
     }
 
+    public int getFlagsCollected() {
+        return flagsCollected;
+    }
+
+    public void setFlagsCollected(int flagsCollected) {
+        this.flagsCollected = flagsCollected;
+    }
+
     /**
      * Get the current program of the robot
      * @return the current program

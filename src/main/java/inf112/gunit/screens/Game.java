@@ -45,7 +45,6 @@ public class Game extends InputAdapter implements Screen {
     private ArrayList<TiledMapTileLayer> expressConveyors = new ArrayList<>();;
     private ArrayList<TiledMapTileLayer> allConveyors = new ArrayList<>();
     private ArrayList<TiledMapTileLayer> gears = new ArrayList<>();
-    private TiledMapTileLayer holesTileLayer;
 
     private Robot[] robots;
     private Robot mainRobot;
@@ -77,8 +76,6 @@ public class Game extends InputAdapter implements Screen {
         this.map = map;
         this.robots = new Robot[numOfPlayers];
         board = new Board(this);
-
-        holesTileLayer = (TiledMapTileLayer) map.getLayers().get("holes");
 
         numOfFlags = board.getNumberOfFlags();
 
@@ -205,6 +202,7 @@ public class Game extends InputAdapter implements Screen {
                 System.exit(1);
         }
         // Checks if a robot is standing on a "hole", and calls method die() if so.
+        TiledMapTileLayer holesTileLayer = (TiledMapTileLayer) map.getLayers().get("holes");
         for (Robot robot : robots) {
             if (holesTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null){
                 robot.die();

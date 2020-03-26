@@ -77,8 +77,6 @@ public class Game extends InputAdapter implements Screen {
         this.robots = new Robot[numOfPlayers];
         board = new Board(this);
 
-        numOfFlags = board.getNumberOfFlags();
-
         // currently initialising the game in this state for testing purposes
         // this should actually be initialised to GameState.SETUP
         state = GameState.PROGRAM_CARD_EXECUTION;
@@ -155,11 +153,6 @@ public class Game extends InputAdapter implements Screen {
      */
     private void logic() {
 
-        // check if a robot has collected all the flags
-        for (Robot robot : robots) {
-            if (robot.flagsCollected >= numOfFlags) gameOver(robot);
-        }
-
         switch (this.state) {
             // TODO: Implement setup phase, where you place flags etc...
             // if flags already is placed on board in the tiledmap file, this is not needed
@@ -201,11 +194,26 @@ public class Game extends InputAdapter implements Screen {
                 this.dispose();
                 System.exit(1);
         }
-        // Checks if a robot is standing on a "hole", and calls method die() if so.
+        // Checks if a robot is standing on a specific tile, and calls corresponding methods accordingly.
         TiledMapTileLayer holesTileLayer = (TiledMapTileLayer) map.getLayers().get("holes");
+        TiledMapTileLayer flagsTileLayer = (TiledMapTileLayer) map.getLayers().get("flags");
+
         for (Robot robot : robots) {
             if (holesTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null){
                 robot.die();
+            }
+            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(0, 5)){
+                robot.setFlagsCollected(1);
+            }
+            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(4, 7) && robot.getFlagsCollected() == 1){
+                robot.setFlagsCollected(2);
+            }
+            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(8, 0) && robot.getFlagsCollected() == 2){
+                robot.setFlagsCollected(3);
+            }
+            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(2, 2) && robot.getFlagsCollected() == 3){
+                robot.setFlagsCollected(4);
+                gameOver(robot);
             }
         }
     }

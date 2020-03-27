@@ -12,8 +12,16 @@ public class Board {
 
     private Game game;
 
+    private int width;
+    private int height;
+
+    private ArrayList<Vector2> flagPositions = new ArrayList<>();
+
     public Board(Game game) {
         this.game = game;
+        this.width = game.getMap().getProperties().get("width", Integer.class);
+        this.height = game.getMap().getProperties().get("height", Integer.class);
+        this.flagPositions = loadFlagPositions();
     }
 
     // TODO: add rotations for corners
@@ -78,8 +86,8 @@ public class Board {
         TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("start_" + id);
         layer.setVisible(true);
 
-        for (int x = 0; x < (game.getMap().getProperties().get("width", Integer.class)); x++) {
-            for (int y = 0; y < (game.getMap().getProperties().get("height", Integer.class)); y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 if (layer.getCell(x, y) != null) {
                     pos = new Vector2();
                     pos.set(x, y);
@@ -91,6 +99,9 @@ public class Board {
         return pos;
     }
 
+    /**
+     * Perform hole mechanics
+     */
     public void holes() {
         TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("holes");
 
@@ -99,22 +110,66 @@ public class Board {
         }
     }
 
+    /**
+     * Perform flag mechanics
+     */
     public void flags() {
-        TiledMapTileLayer flagsTileLayer = (TiledMapTileLayer) game.getMap().getLayers().get("flags");
+        TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("flags");
         for (Robot robot : game.getRobots()) {
-            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(0, 5)){
-                robot.setFlagsCollected(1);
+            TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
+
+            if (cell != null) {
+                int flagNum = (int) cell.getTile().getProperties().get("num");
+                if (flagNum == robot.flagsCollected + 1) {
+                    robot.setFlagsCollected(robot.getFlagsCollected() + 1);
+                }
             }
-            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(4, 7) && robot.getFlagsCollected() == 1){
-                robot.setFlagsCollected(2);
-            }
-            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(8, 0) && robot.getFlagsCollected() == 2){
-                robot.setFlagsCollected(3);
-            }
-            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(2, 2) && robot.getFlagsCollected() == 3){
-                robot.setFlagsCollected(4);
-                game.gameOver(robot);
-            }
+
+            if (robot.getFlagsCollected() >= 4) game.gameOver(robot);
         }
     }
+
+    /**
+     * Load flag positions into an ArrayList
+     * @return an ArrayList containing all flags corresponding Vector2-positions
+     */
+    private ArrayList<Vector2> loadFlagPositions() {
+        Vector2[] positions = new Vector2[4];
+        TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("flags");
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (layer.getCell(x, y) != null) {
+                    int n = (int) layer.getCell(x, y).getTile().getProperties().get("num");
+
+                    switch (n) {
+                        case 1:
+                            positions[0]= new Vector2(x, y);
+                            break;
+                        case 2:
+                            positions[1]= new Vector2(x, y);
+                            break;
+                        case 3:
+                            positions[2]= new Vector2(x, y);
+                            break;
+                        case 4:
+                            positions[3]= new Vector2(x, y);
+                            break;
+                        default:
+                            System.err.println("Unknown flag id " + n);
+                            break;
+                    }
+                }
+            }
+        }
+
+        ArrayList<Vector2> result = new ArrayList<>();
+        for (Vector2 pos : positions) {
+            if (pos != null) result.add(pos);
+        }
+
+        System.out.println(result);
+        return result;
+    }
+
 }

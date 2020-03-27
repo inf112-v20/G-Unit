@@ -296,7 +296,7 @@ public class Game extends InputAdapter implements Screen {
             case Input.Keys.LEFT:
                 if (x - 1 < 0 || x - 1 >= props.get("width", Integer.class))
                     return false;
-                else {
+                else if (moveIsValid(x - 1, y)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.WEST);
                     position.set(x - 1, y);
@@ -306,7 +306,7 @@ public class Game extends InputAdapter implements Screen {
             case Input.Keys.RIGHT:
                 if (x + 1 < 0 || x + 1 >= props.get("width", Integer.class))
                     return false;
-                else {
+                else if (moveIsValid(x + 1, y)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.EAST);
                     position.set(x + 1, y);
@@ -316,7 +316,7 @@ public class Game extends InputAdapter implements Screen {
             case Input.Keys.UP:
                 if (y + 1 < 0 || y + 1 >= props.get("height", Integer.class))
                     return false;
-                else {
+                else if (moveIsValid(x, y + 1)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.NORTH);
                     position.set(x, y + 1);
@@ -326,7 +326,7 @@ public class Game extends InputAdapter implements Screen {
             case Input.Keys.DOWN:
                 if (y - 1 < 0 || y - 1 >= props.get("height", Integer.class))
                     return false;
-                else {
+                else if (moveIsValid(x, y - 1)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.SOUTH);
                     position.set(x, y - 1);
@@ -352,11 +352,13 @@ public class Game extends InputAdapter implements Screen {
     private boolean positionIsFree(int x, int y) {
         // TODO: dont use for-loop here, find a more efficient way
         // perhaps storing player-layer id's in a global variable?
+
         for (int i = 0; i < robots.length; i++) {
             if (((TiledMapTileLayer) map.getLayers().get("player_" + i)).getCell(x, y) != null)
                 return false;
         }
-        return true;
+
+        return ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y) == null;
     }
 
     /**

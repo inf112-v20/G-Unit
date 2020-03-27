@@ -276,7 +276,7 @@ public class Game extends InputAdapter implements Screen {
         for (Robot robot : robots) {
             if (card.equals(robot.getProgram()[phase])) {
                 System.out.println("Attempting to perform '" + card + "' on : '" + robot + "'");
-                robot.doTurn(card);
+                //robot.doTurn(card);
                 cardIdx++;
                 break;
             }
@@ -296,7 +296,7 @@ public class Game extends InputAdapter implements Screen {
             case Input.Keys.LEFT:
                 if (x - 1 < 0 || x - 1 >= props.get("width", Integer.class))
                     return false;
-                else if (moveIsValid(x - 1, y)) {
+                else if (moveIsValid(Direction.WEST, x - 1, y)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.WEST);
                     position.set(x - 1, y);
@@ -306,7 +306,7 @@ public class Game extends InputAdapter implements Screen {
             case Input.Keys.RIGHT:
                 if (x + 1 < 0 || x + 1 >= props.get("width", Integer.class))
                     return false;
-                else if (moveIsValid(x + 1, y)) {
+                else if (moveIsValid(Direction.EAST, x + 1, y)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.EAST);
                     position.set(x + 1, y);
@@ -316,7 +316,7 @@ public class Game extends InputAdapter implements Screen {
             case Input.Keys.UP:
                 if (y + 1 < 0 || y + 1 >= props.get("height", Integer.class))
                     return false;
-                else if (moveIsValid(x, y + 1)) {
+                else if (moveIsValid(Direction.NORTH, x, y + 1)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.NORTH);
                     position.set(x, y + 1);
@@ -326,7 +326,7 @@ public class Game extends InputAdapter implements Screen {
             case Input.Keys.DOWN:
                 if (y - 1 < 0 || y - 1 >= props.get("height", Integer.class))
                     return false;
-                else if (moveIsValid(x, y - 1)) {
+                else if (moveIsValid(Direction.SOUTH, x, y - 1)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.SOUTH);
                     position.set(x, y - 1);
@@ -349,7 +349,7 @@ public class Game extends InputAdapter implements Screen {
      * @param y the desired y coordinate
      * @return true if position has pla
      */
-    private boolean positionIsFree(int x, int y) {
+    private boolean positionIsFree(Direction dir, int x, int y) {
         // TODO: dont use for-loop here, find a more efficient way
         // perhaps storing player-layer id's in a global variable?
 
@@ -358,7 +358,35 @@ public class Game extends InputAdapter implements Screen {
                 return false;
         }
 
-        return ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y) == null;
+        TiledMapTileLayer.Cell wallCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y);
+        TiledMapTileLayer.Cell prevCell = null;
+
+        switch (Direction.flip(dir)) {
+            case NORTH:
+                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y + 1);
+            case EAST:
+                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x + 1, y);
+            case SOUTH:
+                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y - 1);
+            case WEST:
+                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x - 1, y);
+        }
+
+        if (wallCell != null) {
+           Direction wallDir = Direction.lookup(wallCell.getTile().getProperties().get("direction").toString());
+
+            if (dir == Direction.flip(wallDir))
+                return false;
+        }
+
+        if (prevCell != null) {
+            Direction prevDir = Direction.lookup(wallCell.getTile().getProperties().get("directoin").toString());
+
+            if (dir == Direction.flip(prevDir))
+                return false;
+        }
+
+        return true;
     }
 
     /**
@@ -368,12 +396,12 @@ public class Game extends InputAdapter implements Screen {
      * @param y the desired y-position to move to
      * @return true if move is possible, false otherwise
      */
-    public boolean moveIsValid(int x, int y) {
+    public boolean moveIsValid(Direction dir, int x, int y) {
         if (x >= 0 && x < props.get("width", Integer.class) && y >= 0 && y < props.get("height", Integer.class)) {
             // TODO: revert back to only this line when not debugging
             //return positionIsFree(x, y);
 
-            if (positionIsFree(x, y)) {
+            if (positionIsFree(dir, x, y)) {
                 System.out.println("Success! Moving...");
                 return true;
             }

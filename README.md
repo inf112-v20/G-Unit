@@ -40,8 +40,7 @@ If executed properly you are presented with the main screen of the game.
 
 ## Playing the game
 
--   Press space to execute a program card
--   Move around with the arrow keys (this is only present in this release for debugging)
+-   The game is currently not playable. The robots will execute a selection of random program cards. You can see the game mechanics in action by watchin the robots move around.
 
 ## Notes
 

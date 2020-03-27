@@ -55,3 +55,6 @@ Det finnes et par bugs når roboter treffer vegger, noen ganger ignorerer de veg
 
 ### Forklar kort hvilke hovedkrav dere anser som en del av MVP
 -   Vi bruker labels på issues, der MVP er en av disse. Vennligst ta en titt på Project Boardet vårt for å se dette.
+
+### Eventuelt
+Vi har opprettet en ny branch som heter 'development'. Denne bruker vi som hovedbranch når vi jobber på prosjektet og legger til nye features. Før hver release, merger vi den til 'master', og fjerner all kode som ikke er direkte relevant for realeasen vår (funskjoner for debugging, printing til terminalen osv.).

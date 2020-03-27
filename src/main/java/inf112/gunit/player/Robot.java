@@ -119,25 +119,25 @@ public class Robot {
 
         switch (dir) {
             case NORTH:
-                if (game.moveIsValid(x, y + distance)) {
+                if (game.moveIsValid(dir, x, y + distance)) {
                     layer.setCell((int) x, (int) y, null);
                     position.set(x, y + distance);
                 }
                 break;
             case EAST:
-                if (game.moveIsValid(x + distance, y)) {
+                if (game.moveIsValid(dir, x + distance, y)) {
                     layer.setCell((int) x, (int) y, null);
                     position.set(x + distance, y);
                 }
                 break;
             case SOUTH:
-                if (game.moveIsValid(x, y - distance)) {
+                if (game.moveIsValid(dir, x, y - distance)) {
                     layer.setCell((int) x, (int) y, null);
                     position.set(x, y - distance);
                 }
                 break;
             case WEST:
-                if (game.moveIsValid(x - distance, y)) {
+                if (game.moveIsValid(dir, x - distance, y)) {
                     layer.setCell((int) x, (int) y, null);
                     position.set(x - distance, y);
                 }

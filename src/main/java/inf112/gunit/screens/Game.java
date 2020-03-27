@@ -313,7 +313,7 @@ public class Game extends InputAdapter implements Screen {
             case Input.Keys.LEFT:
                 if (x - 1 < 0 || x - 1 >= props.get("width", Integer.class))
                     return false;
-                else {
+                else if (moveIsValid(Direction.WEST, x - 1, y)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.WEST);
                     position.set(x - 1, y);
@@ -323,7 +323,7 @@ public class Game extends InputAdapter implements Screen {
             case Input.Keys.RIGHT:
                 if (x + 1 < 0 || x + 1 >= props.get("width", Integer.class))
                     return false;
-                else {
+                else if (moveIsValid(Direction.EAST, x + 1, y)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.EAST);
                     position.set(x + 1, y);
@@ -333,7 +333,7 @@ public class Game extends InputAdapter implements Screen {
             case Input.Keys.UP:
                 if (y + 1 < 0 || y + 1 >= props.get("height", Integer.class))
                     return false;
-                else {
+                else if (moveIsValid(Direction.NORTH, x, y + 1)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.NORTH);
                     position.set(x, y + 1);
@@ -343,7 +343,7 @@ public class Game extends InputAdapter implements Screen {
             case Input.Keys.DOWN:
                 if (y - 1 < 0 || y - 1 >= props.get("height", Integer.class))
                     return false;
-                else {
+                else if (moveIsValid(Direction.SOUTH, x, y - 1)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.SOUTH);
                     position.set(x, y - 1);
@@ -366,13 +366,53 @@ public class Game extends InputAdapter implements Screen {
      * @param y the desired y coordinate
      * @return true if position has pla
      */
-    private boolean positionIsFree(int x, int y) {
+    private boolean positionIsFree(Direction dir, int x, int y) {
         // TODO: dont use for-loop here, find a more efficient way
         // perhaps storing player-layer id's in a global variable?
+
         for (int i = 0; i < robots.length; i++) {
             if (((TiledMapTileLayer) map.getLayers().get("player_" + i)).getCell(x, y) != null)
                 return false;
         }
+
+        // wallCell is the cell you are trying to move to
+        // prevCell is the cell you are currently standing on,
+        // aka the cell you are moving from
+        TiledMapTileLayer.Cell wallCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y);
+        TiledMapTileLayer.Cell prevCell = null;
+
+        // Gets the cell you are currently on (before moving) by flipping the direction you are
+        // trying to move to, and getting the cell at those coordinates
+        switch (Direction.flip(dir)) {
+            case NORTH:
+                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y + 1);
+            case EAST:
+                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x + 1, y);
+            case SOUTH:
+                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y - 1);
+            case WEST:
+                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x - 1, y);
+        }
+
+        // Gets the direction the wall is facing, if the cell you are trying to move to has a wall
+        if (wallCell != null) {
+           Direction wallDir = Direction.lookup(wallCell.getTile().getProperties().get("direction").toString());
+
+           // If the wall on the cell you are trying to move to is not facing you,
+            // return true. Else return false.
+           return dir != Direction.flip(wallDir);
+        }
+
+        // Gets the direction the wall is facing, if the cell you are currently on has a wall
+        if (prevCell != null) {
+            Direction prevDir = Direction.lookup(prevCell.getTile().getProperties().get("direction").toString());
+
+            // If the wall on the cell you are currently on is not facing you,
+            // return true. Else return false.
+            return dir != Direction.flip(prevDir);
+        }
+
+        // Return true if nothing is in the way
         return true;
     }
 
@@ -383,12 +423,12 @@ public class Game extends InputAdapter implements Screen {
      * @param y the desired y-position to move to
      * @return true if move is possible, false otherwise
      */
-    public boolean moveIsValid(int x, int y) {
+    public boolean moveIsValid(Direction dir, int x, int y) {
         if (x >= 0 && x < props.get("width", Integer.class) && y >= 0 && y < props.get("height", Integer.class)) {
             // TODO: revert back to only this line when not debugging
             //return positionIsFree(x, y);
 
-            if (positionIsFree(x, y)) {
+            if (positionIsFree(dir, x, y)) {
                 System.out.println("Success! Moving...");
                 return true;
             }

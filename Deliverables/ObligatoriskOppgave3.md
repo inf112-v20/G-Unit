@@ -50,5 +50,8 @@
                 -   Implementere en client thread
                 -   Implementere en screen for å bli med i et spill ved å skrive inn en IP
 
+#### Bugs
+Det finnes et par bugs når roboter treffer vegger, noen ganger ignorerer de veggene, andre ganger funker det som forventet. Dette fikses fortløpende.
+
 ### Forklar kort hvilke hovedkrav dere anser som en del av MVP
 -   Vi bruker labels på issues, der MVP er en av disse. Vennligst ta en titt på Project Boardet vårt for å se dette.

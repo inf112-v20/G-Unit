@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.GameState;
@@ -42,10 +43,6 @@ public class Game extends InputAdapter implements Screen {
 
     private Board board;
 
-    private ArrayList<TiledMapTileLayer> expressConveyors = new ArrayList<>();;
-    private ArrayList<TiledMapTileLayer> allConveyors = new ArrayList<>();
-    private ArrayList<TiledMapTileLayer> gears = new ArrayList<>();
-
     private Robot[] robots;
     private Robot mainRobot;
 
@@ -61,7 +58,7 @@ public class Game extends InputAdapter implements Screen {
      * @param main takes a main
      * @param map takes a TiledMap as the board
      */
-    public Game(Main main, TiledMap map, int numOfPlayers) {
+    public Game(Main main, int numOfPlayers) {
         if (numOfPlayers > 4) {
             System.err.println("Number of players cant be greater than 4!!");
             this.dispose();
@@ -73,7 +70,7 @@ public class Game extends InputAdapter implements Screen {
         }
 
         this.main = main;
-        this.map = map;
+        this.map = new TmxMapLoader().load("assets/board_new.tmx");
         this.robots = new Robot[numOfPlayers];
         board = new Board(this);
 
@@ -100,17 +97,6 @@ public class Game extends InputAdapter implements Screen {
             robots[i] = p;
         }
 
-        // add all conveyor- and gear-layers to their corresponding list
-        for (MapLayer l : map.getLayers()) {
-            TiledMapTileLayer layer = (TiledMapTileLayer) l;
-            String name = layer.getName();
-
-            if (name.contains("conveyor")) {
-                allConveyors.add(layer);
-                if (name.contains("express")) expressConveyors.add(layer);
-            } else if (name.contains("gear")) gears.add(layer);
-        }
-
         // set the controllable robot (for testing)
         mainRobot = robots[0];
 
@@ -125,6 +111,47 @@ public class Game extends InputAdapter implements Screen {
 
         // add this class as the input processor
         Gdx.input.setInputProcessor(this);
+
+        // start a new game-phase
+        newPhase();
+    }
+
+    public Game(int numOfPlayers) {
+        if (numOfPlayers > 4) {
+            System.err.println("Number of players cant be greater than 4!!");
+            this.dispose();
+            System.exit(1);
+        } else if (numOfPlayers <= 0) {
+            System.err.println("Number of players cant be less than 1!!");
+            this.dispose();
+            System.exit(1);
+        }
+
+        this.map = new TmxMapLoader().load("assets/board_new.tmx");
+        this.robots = new Robot[numOfPlayers];
+        board = new Board(this);
+
+        // currently initialising the game in this state for testing purposes
+        // this should actually be initialised to GameState.SETUP
+        state = GameState.PROGRAM_CARD_EXECUTION;
+
+        phase = 0;
+        cardIdx = 0;
+
+        tick = 0;
+
+        props = map.getProperties();
+
+        // only used for testing
+        // gives each robot a program
+        for (int i = 0; i < numOfPlayers; i++) {
+            Robot p = new Robot(this, i, board.getStartPosition(i));
+            p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
+            robots[i] = p;
+        }
+
+        // set the controllable robot (for testing)
+        mainRobot = robots[0];
 
         // start a new game-phase
         newPhase();

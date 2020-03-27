@@ -48,7 +48,7 @@ public class Menu implements Screen {
 
             //start game when button is pressed
             if (Gdx.input.isTouched()) {
-                main.setScreen(new Game(main, new TmxMapLoader().load("assets/board_new.tmx"), 4));
+                main.setScreen(new Game(main, 4));
                 this.dispose();
             }
 

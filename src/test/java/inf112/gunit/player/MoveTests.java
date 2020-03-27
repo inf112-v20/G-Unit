@@ -1,8 +1,12 @@
 package inf112.gunit.player;
 
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import inf112.gunit.main.GdxTestRunner;
+import inf112.gunit.main.Main;
+import inf112.gunit.screens.Game;
+import inf112.gunit.screens.Menu;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,7 +15,28 @@ import static org.junit.Assert.assertEquals;
  *
  * Players start-direction is always north, see player constructor
  */
+@RunWith(GdxTestRunner.class)
 public class MoveTests {
+
+    Game game;
+    Robot robot;
+    int x;
+    int y;
+
+    @Before
+    public void initialise() {
+        this.game = new Game(1);
+        this.robot = game.getRobots()[0];
+        int x = (int) robot.getPositionX();
+        int y = (int) robot.getPositionY();
+
+    }
+
+    @Test
+    public void testTest() {
+        assertEquals(1, game.getRobots().length);
+    }
+
     /*
     TiledMap map = new TmxMapLoader().load("assets/tile_map_3Kx3K_full.tmx"); //nullpointer exception on load
     Player player = new Player(map, map.getProperties());

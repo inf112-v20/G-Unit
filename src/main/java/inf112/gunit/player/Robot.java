@@ -120,25 +120,25 @@ public class Robot {
         switch (dir) {
             case NORTH:
                 if (game.moveIsValid(dir, x, y + distance)) {
-                    layer.setCell((int) x, (int) y, null);
+                    layer.setCell(x, y, null);
                     position.set(x, y + distance);
                 }
                 break;
             case EAST:
                 if (game.moveIsValid(dir, x + distance, y)) {
-                    layer.setCell((int) x, (int) y, null);
+                    layer.setCell(x, y, null);
                     position.set(x + distance, y);
                 }
                 break;
             case SOUTH:
                 if (game.moveIsValid(dir, x, y - distance)) {
-                    layer.setCell((int) x, (int) y, null);
+                    layer.setCell(x, y, null);
                     position.set(x, y - distance);
                 }
                 break;
             case WEST:
                 if (game.moveIsValid(dir, x - distance, y)) {
-                    layer.setCell((int) x, (int) y, null);
+                    layer.setCell(x, y, null);
                     position.set(x - distance, y);
                 }
                 break;
@@ -233,15 +233,10 @@ public class Robot {
      * If the player/robot has no lifeTokens left, he/she is removed from the board entirely.
      */
     public void die(){
-        if (this.lifeTokens <= 0) {
-            //if player/robot is dead and has no life tokens, this happens.
-            //die
-        }
-        else { // Moves player/robot back to backupMemory and restores damageMarkers.
-            this.lifeTokens--;
-            this.position = backupMemory;
-            this.damageMarkers = 10;
-        }
+        // Moves player/robot back to backupMemory and restores damageMarkers.
+        this.lifeTokens--;
+        this.position = backupMemory;
+        this.damageMarkers = 10;
     }
 
     /**

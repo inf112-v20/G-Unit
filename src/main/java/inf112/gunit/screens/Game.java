@@ -1,8 +1,6 @@
 package inf112.gunit.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapProperties;
@@ -10,7 +8,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.GameState;
 import inf112.gunit.board.Board;
 import inf112.gunit.board.Direction;
@@ -26,14 +23,12 @@ import java.util.Collections;
  * The Game class is a screen which is rendered
  * when the Play-button is pressed in menu
  */
-public class Game extends InputAdapter implements Screen {
+public class Game implements Screen {
 
     private static final int INTERVAL = 30;
 
     private GameState state;
     private boolean gameIsOver = false;
-
-    private int numOfFlags;
 
     private int tick;
 
@@ -44,7 +39,6 @@ public class Game extends InputAdapter implements Screen {
     private Board board;
 
     private Robot[] robots;
-    private Robot mainRobot;
 
     private OrthographicCamera camera;
     private OrthogonalTiledMapRenderer tileRenderer;
@@ -97,9 +91,6 @@ public class Game extends InputAdapter implements Screen {
             robots[i] = p;
         }
 
-        // set the controllable robot (for testing)
-        mainRobot = robots[0];
-
         //set the camera accordingly
         camera = new OrthographicCamera();
         camera.setToOrtho(false, mapWidth * tileWidth, mapHeight * tileHeight);
@@ -108,9 +99,6 @@ public class Game extends InputAdapter implements Screen {
         // set the tile renderer and add the camera view to it
         tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / tileWidth * tileHeight);
         tileRenderer.setView(camera);
-
-        // add this class as the input processor
-        Gdx.input.setInputProcessor(this);
 
         // start a new game-phase
         newPhase();
@@ -153,9 +141,6 @@ public class Game extends InputAdapter implements Screen {
             p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
             robots[i] = p;
         }
-
-        // set the controllable robot (for testing)
-        mainRobot = robots[0];
 
         // start a new game-phase
         newPhase();
@@ -300,65 +285,6 @@ public class Game extends InputAdapter implements Screen {
         }
     }
 
-    // key-listener currently used for testing
-    @Override
-    public boolean keyUp(int keyCode) {
-        Vector2 position = mainRobot.getPosition();
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get("player_0");
-
-        int x = (int) position.x;
-        int y = (int) position.y;
-
-        switch (keyCode) {
-            case Input.Keys.LEFT:
-                if (x - 1 < 0 || x - 1 >= props.get("width", Integer.class))
-                    return false;
-                else if (moveIsValid(Direction.WEST, x - 1, y)) {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    mainRobot.setDirection(Direction.WEST);
-                    position.set(x - 1, y);
-                    return true;
-                }
-
-            case Input.Keys.RIGHT:
-                if (x + 1 < 0 || x + 1 >= props.get("width", Integer.class))
-                    return false;
-                else if (moveIsValid(Direction.EAST, x + 1, y)) {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    mainRobot.setDirection(Direction.EAST);
-                    position.set(x + 1, y);
-                    return true;
-                }
-
-            case Input.Keys.UP:
-                if (y + 1 < 0 || y + 1 >= props.get("height", Integer.class))
-                    return false;
-                else if (moveIsValid(Direction.NORTH, x, y + 1)) {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    mainRobot.setDirection(Direction.NORTH);
-                    position.set(x, y + 1);
-                    return true;
-                }
-
-            case Input.Keys.DOWN:
-                if (y - 1 < 0 || y - 1 >= props.get("height", Integer.class))
-                    return false;
-                else if (moveIsValid(Direction.SOUTH, x, y - 1)) {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    mainRobot.setDirection(Direction.SOUTH);
-                    position.set(x, y - 1);
-                    return true;
-                }
-
-            case Input.Keys.SPACE:
-                this.doTurn();
-                return true;
-
-            default:
-                return false;
-        }
-    }
-
     /**
      * Check if a given position at x- and y-coordinate is free
      * (basically means that, it doesn't contain a player)
@@ -451,14 +377,6 @@ public class Game extends InputAdapter implements Screen {
      */
     public TiledMap getMap() {
         return map;
-    }
-
-    /**
-     * Get the number of flags on the game board
-     * @return the number of flags
-     */
-    public int getNumOfFlags() {
-        return numOfFlags;
     }
 
     /**

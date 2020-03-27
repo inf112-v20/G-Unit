@@ -1,6 +1,5 @@
 package inf112.gunit.board;
 
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.player.Robot;

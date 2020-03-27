@@ -90,4 +90,31 @@ public class Board {
 
         return pos;
     }
+
+    public void holes() {
+        TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("holes");
+
+        for (Robot robot : game.getRobots()) {
+            if(layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) robot.die();
+        }
+    }
+
+    public void flags() {
+        TiledMapTileLayer flagsTileLayer = (TiledMapTileLayer) game.getMap().getLayers().get("flags");
+        for (Robot robot : game.getRobots()) {
+            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(0, 5)){
+                robot.setFlagsCollected(1);
+            }
+            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(4, 7) && robot.getFlagsCollected() == 1){
+                robot.setFlagsCollected(2);
+            }
+            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(8, 0) && robot.getFlagsCollected() == 2){
+                robot.setFlagsCollected(3);
+            }
+            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(2, 2) && robot.getFlagsCollected() == 3){
+                robot.setFlagsCollected(4);
+                game.gameOver(robot);
+            }
+        }
+    }
 }

@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -56,7 +55,7 @@ public class Game extends InputAdapter implements Screen {
     /**
      * The Game constructor
      * @param main takes a main
-     * @param map takes a TiledMap as the board
+     * @param numOfPlayers number of players
      */
     public Game(Main main, int numOfPlayers) {
         if (numOfPlayers > 4) {
@@ -116,6 +115,10 @@ public class Game extends InputAdapter implements Screen {
         newPhase();
     }
 
+    /**
+     * Testing constructor used by the unit-tests
+     * @param numOfPlayers number of players
+     */
     public Game(int numOfPlayers) {
         if (numOfPlayers > 4) {
             System.err.println("Number of players cant be greater than 4!!");
@@ -166,7 +169,7 @@ public class Game extends InputAdapter implements Screen {
      * If a robot has collected all the flags, then the game is over
      * @param winner the winning player/robot
      */
-    private void gameOver(Robot winner) {
+    public void gameOver(Robot winner) {
         System.out.println();
         System.out.println("Game over!");
         System.out.println("Player with the " + winner + " robot won!");
@@ -218,31 +221,14 @@ public class Game extends InputAdapter implements Screen {
             default:
                 System.err.println("GAME STATE NOT SET - FATAL ERROR OCCURRED.");
                 System.err.println("ROBORALLY BRUH MOMENT");
-                this.dispose();
-                System.exit(1);
+                //this.dispose();
+                //System.exit(1);
         }
-        // Checks if a robot is standing on a specific tile, and calls corresponding methods accordingly.
-        TiledMapTileLayer holesTileLayer = (TiledMapTileLayer) map.getLayers().get("holes");
-        TiledMapTileLayer flagsTileLayer = (TiledMapTileLayer) map.getLayers().get("flags");
 
-        for (Robot robot : robots) {
-            if (holesTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null){
-                robot.die();
-            }
-            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(0, 5)){
-                robot.setFlagsCollected(1);
-            }
-            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(4, 7) && robot.getFlagsCollected() == 1){
-                robot.setFlagsCollected(2);
-            }
-            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(8, 0) && robot.getFlagsCollected() == 2){
-                robot.setFlagsCollected(3);
-            }
-            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(2, 2) && robot.getFlagsCollected() == 3){
-                robot.setFlagsCollected(4);
-                gameOver(robot);
-            }
-        }
+        //handle rest of game mechanics
+        board.holes();
+        board.flags();
+
     }
 
     @Override

@@ -168,8 +168,15 @@ public class Board {
             if (pos != null) result.add(pos);
         }
 
-        System.out.println(result);
         return result;
+    }
+
+    /**
+     * Get all flag positions
+     * @return an ArrayList containing all flags corresponding Vector2-positions
+     */
+    public ArrayList<Vector2> getFlagPositions() {
+        return flagPositions;
     }
 
 }

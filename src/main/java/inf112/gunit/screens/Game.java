@@ -31,6 +31,7 @@ public class Game extends InputAdapter implements Screen {
     private static final int INTERVAL = 30;
 
     private GameState state;
+    private boolean gameIsOver = false;
 
     private int numOfFlags;
 
@@ -170,11 +171,12 @@ public class Game extends InputAdapter implements Screen {
      * @param winner the winning player/robot
      */
     public void gameOver(Robot winner) {
+        gameIsOver = true;
         System.out.println();
         System.out.println("Game over!");
         System.out.println("Player with the " + winner + " robot won!");
         this.dispose();
-        System.exit(0);
+        //System.exit(0);
     }
 
     /**
@@ -415,6 +417,14 @@ public class Game extends InputAdapter implements Screen {
      */
     public int getNumOfFlags() {
         return numOfFlags;
+    }
+
+    /**
+     * Check if game is over
+     * @return true if game is over, false otherwise
+     */
+    public boolean getGameOver() {
+        return gameIsOver;
     }
 
     @Override

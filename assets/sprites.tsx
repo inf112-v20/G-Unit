@@ -199,6 +199,11 @@
    <property name="clockwise" type="bool" value="true"/>
   </properties>
  </tile>
+ <tile id="54">
+  <properties>
+   <property name="num" type="int" value="1"/>
+  </properties>
+ </tile>
  <tile id="56">
   <properties>
    <property name="express" type="bool" value="false"/>
@@ -227,6 +232,11 @@
  <tile id="61">
   <properties>
    <property name="express" type="bool" value="false"/>
+  </properties>
+ </tile>
+ <tile id="62">
+  <properties>
+   <property name="num" type="int" value="2"/>
   </properties>
  </tile>
  <tile id="64">
@@ -259,6 +269,11 @@
    <property name="express" type="bool" value="false"/>
   </properties>
  </tile>
+ <tile id="70">
+  <properties>
+   <property name="num" type="int" value="3"/>
+  </properties>
+ </tile>
  <tile id="72">
   <properties>
    <property name="express" type="bool" value="true"/>
@@ -287,6 +302,11 @@
  <tile id="77">
   <properties>
    <property name="express" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="78">
+  <properties>
+   <property name="num" type="int" value="4"/>
   </properties>
  </tile>
  <tile id="80">

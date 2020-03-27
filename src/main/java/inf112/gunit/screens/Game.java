@@ -5,10 +5,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.GameState;
@@ -31,6 +31,7 @@ public class Game extends InputAdapter implements Screen {
     private static final int INTERVAL = 30;
 
     private GameState state;
+    private boolean gameIsOver = false;
 
     private int numOfFlags;
 
@@ -41,10 +42,6 @@ public class Game extends InputAdapter implements Screen {
     private MapProperties props;
 
     private Board board;
-
-    private ArrayList<TiledMapTileLayer> expressConveyors = new ArrayList<>();;
-    private ArrayList<TiledMapTileLayer> allConveyors = new ArrayList<>();
-    private ArrayList<TiledMapTileLayer> gears = new ArrayList<>();
 
     private Robot[] robots;
     private Robot mainRobot;
@@ -59,9 +56,9 @@ public class Game extends InputAdapter implements Screen {
     /**
      * The Game constructor
      * @param main takes a main
-     * @param map takes a TiledMap as the board
+     * @param numOfPlayers number of players
      */
-    public Game(Main main, TiledMap map, int numOfPlayers) {
+    public Game(Main main, int numOfPlayers) {
         if (numOfPlayers > 4) {
             System.err.println("Number of players cant be greater than 4!!");
             this.dispose();
@@ -73,7 +70,7 @@ public class Game extends InputAdapter implements Screen {
         }
 
         this.main = main;
-        this.map = map;
+        this.map = new TmxMapLoader().load("assets/board_new.tmx");
         this.robots = new Robot[numOfPlayers];
         board = new Board(this);
 
@@ -100,17 +97,6 @@ public class Game extends InputAdapter implements Screen {
             robots[i] = p;
         }
 
-        // add all conveyor- and gear-layers to their corresponding list
-        for (MapLayer l : map.getLayers()) {
-            TiledMapTileLayer layer = (TiledMapTileLayer) l;
-            String name = layer.getName();
-
-            if (name.contains("conveyor")) {
-                allConveyors.add(layer);
-                if (name.contains("express")) expressConveyors.add(layer);
-            } else if (name.contains("gear")) gears.add(layer);
-        }
-
         // set the controllable robot (for testing)
         mainRobot = robots[0];
 
@@ -130,6 +116,51 @@ public class Game extends InputAdapter implements Screen {
         newPhase();
     }
 
+    /**
+     * Testing constructor used by the unit-tests
+     * @param numOfPlayers number of players
+     */
+    public Game(int numOfPlayers) {
+        if (numOfPlayers > 4) {
+            System.err.println("Number of players cant be greater than 4!!");
+            this.dispose();
+            System.exit(1);
+        } else if (numOfPlayers <= 0) {
+            System.err.println("Number of players cant be less than 1!!");
+            this.dispose();
+            System.exit(1);
+        }
+
+        this.map = new TmxMapLoader().load("assets/board_new.tmx");
+        this.robots = new Robot[numOfPlayers];
+        board = new Board(this);
+
+        // currently initialising the game in this state for testing purposes
+        // this should actually be initialised to GameState.SETUP
+        state = GameState.PROGRAM_CARD_EXECUTION;
+
+        phase = 0;
+        cardIdx = 0;
+
+        tick = 0;
+
+        props = map.getProperties();
+
+        // only used for testing
+        // gives each robot a program
+        for (int i = 0; i < numOfPlayers; i++) {
+            Robot p = new Robot(this, i, board.getStartPosition(i));
+            p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
+            robots[i] = p;
+        }
+
+        // set the controllable robot (for testing)
+        mainRobot = robots[0];
+
+        // start a new game-phase
+        newPhase();
+    }
+
     @Override
     public void show() {
 
@@ -139,12 +170,15 @@ public class Game extends InputAdapter implements Screen {
      * If a robot has collected all the flags, then the game is over
      * @param winner the winning player/robot
      */
-    private void gameOver(Robot winner) {
+    public void gameOver(Robot winner) {
+        gameIsOver = true;
+        state = GameState.SETUP;
         System.out.println();
         System.out.println("Game over!");
         System.out.println("Player with the " + winner + " robot won!");
         this.dispose();
-        System.exit(0);
+        if (main != null) main.setScreen(new Menu(main));
+        //System.exit(0);
     }
 
     /**
@@ -191,31 +225,14 @@ public class Game extends InputAdapter implements Screen {
             default:
                 System.err.println("GAME STATE NOT SET - FATAL ERROR OCCURRED.");
                 System.err.println("ROBORALLY BRUH MOMENT");
-                this.dispose();
-                System.exit(1);
+                //this.dispose();
+                //System.exit(1);
         }
-        // Checks if a robot is standing on a specific tile, and calls corresponding methods accordingly.
-        TiledMapTileLayer holesTileLayer = (TiledMapTileLayer) map.getLayers().get("holes");
-        TiledMapTileLayer flagsTileLayer = (TiledMapTileLayer) map.getLayers().get("flags");
 
-        for (Robot robot : robots) {
-            if (holesTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null){
-                robot.die();
-            }
-            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(0, 5)){
-                robot.setFlagsCollected(1);
-            }
-            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(4, 7) && robot.getFlagsCollected() == 1){
-                robot.setFlagsCollected(2);
-            }
-            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(8, 0) && robot.getFlagsCollected() == 2){
-                robot.setFlagsCollected(3);
-            }
-            if (flagsTileLayer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) == flagsTileLayer.getCell(2, 2) && robot.getFlagsCollected() == 3){
-                robot.setFlagsCollected(4);
-                gameOver(robot);
-            }
-        }
+        //handle rest of game mechanics
+        board.holes();
+        board.flags();
+
     }
 
     @Override
@@ -402,6 +419,14 @@ public class Game extends InputAdapter implements Screen {
      */
     public int getNumOfFlags() {
         return numOfFlags;
+    }
+
+    /**
+     * Check if game is over
+     * @return true if game is over, false otherwise
+     */
+    public boolean getGameOver() {
+        return gameIsOver;
     }
 
     @Override

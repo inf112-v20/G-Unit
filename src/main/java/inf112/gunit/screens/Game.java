@@ -276,7 +276,7 @@ public class Game extends InputAdapter implements Screen {
         for (Robot robot : robots) {
             if (card.equals(robot.getProgram()[phase])) {
                 System.out.println("Attempting to perform '" + card + "' on : '" + robot + "'");
-                //robot.doTurn(card);
+                robot.doTurn(card);
                 cardIdx++;
                 break;
             }
@@ -358,9 +358,14 @@ public class Game extends InputAdapter implements Screen {
                 return false;
         }
 
+        // wallCell is the cell you are trying to move to
+        // prevCell is the cell you are currently standing on,
+        // aka the cell you are moving from
         TiledMapTileLayer.Cell wallCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y);
         TiledMapTileLayer.Cell prevCell = null;
 
+        // Gets the cell you are currently on (before moving) by flipping the direction you are
+        // trying to move to, and getting the cell at those coordinates
         switch (Direction.flip(dir)) {
             case NORTH:
                 prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y + 1);
@@ -372,20 +377,25 @@ public class Game extends InputAdapter implements Screen {
                 prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x - 1, y);
         }
 
+        // Gets the direction the wall is facing, if the cell you are trying to move to has a wall
         if (wallCell != null) {
            Direction wallDir = Direction.lookup(wallCell.getTile().getProperties().get("direction").toString());
 
-            if (dir == Direction.flip(wallDir))
-                return false;
+           // If the wall on the cell you are trying to move to is not facing you,
+            // return true. Else return false.
+           return dir != Direction.flip(wallDir);
         }
 
+        // Gets the direction the wall is facing, if the cell you are currently on has a wall
         if (prevCell != null) {
-            Direction prevDir = Direction.lookup(wallCell.getTile().getProperties().get("directoin").toString());
+            Direction prevDir = Direction.lookup(prevCell.getTile().getProperties().get("direction").toString());
 
-            if (dir == Direction.flip(prevDir))
-                return false;
+            // If the wall on the cell you are currently on is not facing you,
+            // return true. Else return false.
+            return dir != Direction.flip(prevDir);
         }
 
+        // Return true if nothing is in the way
         return true;
     }
 

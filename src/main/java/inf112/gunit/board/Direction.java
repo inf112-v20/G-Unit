@@ -10,6 +10,12 @@ public enum Direction {
     WEST,
     INVALID;
 
+    /**
+     * Safe way of getting the direction from a string
+     *
+     * @param str The string to be parsed as a direction
+     * @return a direction enum
+     */
     public static Direction lookup(String str) {
         try {
             return valueOf(str);
@@ -19,6 +25,12 @@ public enum Direction {
         }
     }
 
+    /**
+     * Flips the direction. Ex: SOUTH returns NORTH, WEST returns EAST etc..
+     *
+     * @param dir The direction to flip
+     * @return the opposite direction of the input direction
+     */
     public static Direction flip(Direction dir) {
         switch (dir) {
             case NORTH:

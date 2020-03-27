@@ -47,10 +47,10 @@ public class Robot {
 
     // Each robot starts out with 3 lifeTokens, where one token is subtracted
     // each time a robot dies (is killed or falls down a hole/pit).
-    private int lifeToken = 3;
+    private int lifeTokens = 3;
 
     // Each player/robot starts with 10 damageMarkers, which represents health points.
-    private int damageMarker = 10;
+    private int damageMarkers = 10;
 
     /**
      * The Robot constructor
@@ -119,25 +119,25 @@ public class Robot {
 
         switch (dir) {
             case NORTH:
-                if (game.moveIsValid(x, y + distance)) {
+                if (game.moveIsValid(dir, x, y + distance)) {
                     layer.setCell((int) x, (int) y, null);
                     position.set(x, y + distance);
                 }
                 break;
             case EAST:
-                if (game.moveIsValid(x + distance, y)) {
+                if (game.moveIsValid(dir, x + distance, y)) {
                     layer.setCell((int) x, (int) y, null);
                     position.set(x + distance, y);
                 }
                 break;
             case SOUTH:
-                if (game.moveIsValid(x, y - distance)) {
+                if (game.moveIsValid(dir, x, y - distance)) {
                     layer.setCell((int) x, (int) y, null);
                     position.set(x, y - distance);
                 }
                 break;
             case WEST:
-                if (game.moveIsValid(x - distance, y)) {
+                if (game.moveIsValid(dir, x - distance, y)) {
                     layer.setCell((int) x, (int) y, null);
                     position.set(x - distance, y);
                 }
@@ -195,14 +195,34 @@ public class Robot {
         this.program = Arrays.copyOf(program, 5);
     }
 
-    public int getLifeToken() {
-        return lifeToken;
+    /**
+     * Get the number of life tokes of the robot
+     * @return the number of life tokens
+     */
+    public int getLifeTokens() {
+        return lifeTokens;
     }
 
+    /**
+     * Get the number of damage markers of the robot
+     * @return the number of damage markers
+     */
+    public int getDamageMarkers() {
+        return damageMarkers;
+    }
+
+    /**
+     * Get the backup memory position
+     * @return the Vector2 backup memory
+     */
     public Vector2 getBackupMemory() {
         return backupMemory;
     }
 
+    /**
+     * Set the position of the robot
+     * @param position the desired position
+     */
     public void setPosition(Vector2 position) {
         this.position = position;
     }
@@ -213,21 +233,29 @@ public class Robot {
      * If the player/robot has no lifeTokens left, he/she is removed from the board entirely.
      */
     public void die(){
-        if (this.lifeToken <= 0) {
+        if (this.lifeTokens <= 0) {
             //if player/robot is dead and has no life tokens, this happens.
             //die
         }
         else { // Moves player/robot back to backupMemory and restores damageMarkers.
-            this.lifeToken--;
+            this.lifeTokens--;
             this.position = backupMemory;
-            this.damageMarker = 10;
+            this.damageMarkers = 10;
         }
     }
 
+    /**
+     * Get the number of flags collected by the robot
+     * @return number of flags collected
+     */
     public int getFlagsCollected() {
         return flagsCollected;
     }
 
+    /**
+     * Set the number of flags collected by the robot
+     * @param flagsCollected number of flags
+     */
     public void setFlagsCollected(int flagsCollected) {
         this.flagsCollected = flagsCollected;
     }

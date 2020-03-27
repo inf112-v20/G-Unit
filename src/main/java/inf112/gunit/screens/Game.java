@@ -172,10 +172,12 @@ public class Game extends InputAdapter implements Screen {
      */
     public void gameOver(Robot winner) {
         gameIsOver = true;
+        state = GameState.SETUP;
         System.out.println();
         System.out.println("Game over!");
         System.out.println("Player with the " + winner + " robot won!");
         this.dispose();
+        if (main != null) main.setScreen(new Menu(main));
         //System.exit(0);
     }
 

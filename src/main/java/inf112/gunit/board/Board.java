@@ -25,6 +25,15 @@ public class Board {
 
     // TODO: add rotations for corners
 
+    private void conveyRegular(Robot robot, TiledMapTileLayer.Cell cell) {
+        String tileDir = cell.getTile().getProperties().get("direction").toString();
+        robot.move(1, Direction.lookup(tileDir));
+
+        TiledMapTileLayer.Cell newCell = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) robot.getPositionX(), (int) robot.getPositionY());
+        if (newCell != null && Boolean.parseBoolean(newCell.getTile().getProperties().get("rotation").toString()))
+            robot.setDirection(Direction.lookup(newCell.getTile().getProperties().get("direction").toString()));
+    }
+
     /**
      * Handle mechanics for all express conveyors
      */
@@ -33,29 +42,20 @@ public class Board {
             TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("conveyors");
             TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
 
-            if (cell != null && Boolean.parseBoolean(cell.getTile().getProperties().get("express").toString())) {
-                robot.getLayer().setCell((int) robot.getPositionX(), (int) robot.getPositionY(), null);
-                String tileDir = cell.getTile().getProperties().get("direction").toString();
-                robot.setDirection(Direction.valueOf(tileDir));
-                robot.move(1);
-            }
+            if (cell != null && Boolean.parseBoolean(cell.getTile().getProperties().get("express").toString()))
+                conveyRegular(robot, cell);
         }
     }
 
     /**
      * Handle mechanics for all conveyors
      */
-    public void convey() {
+    public void conveyRegular() {
         for (Robot robot : game.getRobots()) {
             TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("conveyors");
             TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
 
-            if (cell != null) {
-                robot.getLayer().setCell((int) robot.getPositionX(), (int) robot.getPositionY(), null);
-                String tileDir = cell.getTile().getProperties().get("direction").toString();
-                robot.setDirection(Direction.valueOf(tileDir));
-                robot.move(1);
-            }
+            if (cell != null) conveyRegular(robot,cell);
         }
     }
 

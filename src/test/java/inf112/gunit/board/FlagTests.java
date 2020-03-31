@@ -1,5 +1,6 @@
 package inf112.gunit.board;
 
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.main.GdxTestRunner;
 import inf112.gunit.player.Robot;
@@ -14,13 +15,13 @@ import static org.junit.Assert.assertTrue;
 @RunWith(GdxTestRunner.class)
 public class FlagTests {
 
-    Game game;
-    Robot robot;
-    Board board;
+    private Game game;
+    private Robot robot;
+    private Board board;
 
     @Before
     public void initialise() {
-        this.game = new Game(1);
+        this.game = new Game(1, new TmxMapLoader().load("assets/board_new.tmx"));
         this.robot = game.getRobots()[0];
         this.board = new Board(game);
         robot.setPosition(new Vector2(0,0));

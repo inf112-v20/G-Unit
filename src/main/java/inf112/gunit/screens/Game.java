@@ -108,7 +108,7 @@ public class Game implements Screen {
      * Testing constructor used by the unit-tests
      * @param numOfPlayers number of players
      */
-    public Game(int numOfPlayers) {
+    public Game(int numOfPlayers, TiledMap map) {
         if (numOfPlayers > 4) {
             System.err.println("Number of players cant be greater than 4!!");
             this.dispose();
@@ -119,7 +119,7 @@ public class Game implements Screen {
             System.exit(1);
         }
 
-        this.map = new TmxMapLoader().load("assets/board_new.tmx");
+        this.map = map;
         this.robots = new Robot[numOfPlayers];
         board = new Board(this);
 
@@ -195,7 +195,7 @@ public class Game implements Screen {
 
                 if (tick % INTERVAL == 0) {
                     board.conveyExpress();
-                    board.convey();
+                    board.conveyRegular();
                     board.rotateGears();
 
                     // initialise a new phase
@@ -282,6 +282,65 @@ public class Game implements Screen {
                 cardIdx++;
                 break;
             }
+        }
+    }
+
+    // key-listener currently used for testing
+    @Override
+    public boolean keyUp(int keyCode) {
+        Vector2 position = mainRobot.getPosition();
+        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get("player_0");
+
+        int x = (int) position.x;
+        int y = (int) position.y;
+
+        switch (keyCode) {
+            case Input.Keys.LEFT:
+                if (x - 1 < 0 || x - 1 >= props.get("width", Integer.class))
+                    return false;
+                else if (moveIsValid(Direction.WEST, x - 1, y)) {
+                    layer.setCell((int) position.x, (int) position.y, null);
+                    mainRobot.setDirection(Direction.WEST);
+                    mainRobot.move(1);
+                    return true;
+                }
+
+            case Input.Keys.RIGHT:
+                if (x + 1 < 0 || x + 1 >= props.get("width", Integer.class))
+                    return false;
+                else if (moveIsValid(Direction.EAST, x + 1, y)) {
+                    layer.setCell((int) position.x, (int) position.y, null);
+                    mainRobot.setDirection(Direction.EAST);
+                    mainRobot.move(1);
+                    return true;
+                }
+
+            case Input.Keys.UP:
+                if (y + 1 < 0 || y + 1 >= props.get("height", Integer.class))
+                    return false;
+                else if (moveIsValid(Direction.NORTH, x, y + 1)) {
+                    layer.setCell((int) position.x, (int) position.y, null);
+                    mainRobot.setDirection(Direction.NORTH);
+                    mainRobot.move(1);
+                    return true;
+                }
+
+            case Input.Keys.DOWN:
+                if (y - 1 < 0 || y - 1 >= props.get("height", Integer.class))
+                    return false;
+                else if (moveIsValid(Direction.SOUTH, x, y - 1)) {
+                    layer.setCell((int) position.x, (int) position.y, null);
+                    mainRobot.setDirection(Direction.SOUTH);
+                    mainRobot.move(1);
+                    return true;
+                }
+
+            case Input.Keys.SPACE:
+                this.doTurn();
+                return true;
+
+            default:
+                return false;
         }
     }
 

@@ -1,16 +1,13 @@
 package inf112.gunit.network;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.JsonSerialization;
 import com.esotericsoftware.kryonet.Listener;
-import inf112.gunit.player.card.MovementCard;
+
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ClientThread implements Runnable {
     public final static String HOST = "127.0.0.1";

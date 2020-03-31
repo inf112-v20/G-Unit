@@ -1,14 +1,12 @@
 package inf112.gunit.network;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.JsonSerialization;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
-import inf112.gunit.player.card.MovementCard;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerThread implements Runnable  {
     public final static int WRITE_BUFFER = 256 * 1024;

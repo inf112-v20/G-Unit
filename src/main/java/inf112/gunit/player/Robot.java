@@ -3,6 +3,7 @@ package inf112.gunit.player;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
@@ -114,35 +115,70 @@ public class Robot {
      * @param distance how many tiles to move the robot
      */
     public void move(int distance) {
+        move(distance, null);
+    }
+
+    /**
+     * Move the robot a given distance in a given direction
+     * @param distance how many tiles to move the robot
+     * @param dir the direction to move the robot
+     */
+    public void move(int distance, Direction dir) {
+        Direction direction;
+
+        if (dir != null) direction = dir;
+        else direction = this.dir;
+
         int x = (int) this.getPositionX();
         int y = (int) this.getPositionY();
 
-        switch (dir) {
+        switch (direction) {
             case NORTH:
-                if (game.moveIsValid(dir, x, y + distance)) {
-                    layer.setCell((int) x, (int) y, null);
+                if (game.moveIsValid(direction, x, y + distance)) {
+                    layer.setCell(x, y, null);
                     position.set(x, y + distance);
+                    setProperRotation();
                 }
                 break;
             case EAST:
-                if (game.moveIsValid(dir, x + distance, y)) {
-                    layer.setCell((int) x, (int) y, null);
+                if (game.moveIsValid(direction, x + distance, y)) {
+                    layer.setCell(x, y, null);
                     position.set(x + distance, y);
+                    setProperRotation();
                 }
                 break;
             case SOUTH:
-                if (game.moveIsValid(dir, x, y - distance)) {
-                    layer.setCell((int) x, (int) y, null);
+                if (game.moveIsValid(direction, x, y - distance)) {
+                    layer.setCell(x, y, null);
                     position.set(x, y - distance);
+                    setProperRotation();
                 }
                 break;
             case WEST:
-                if (game.moveIsValid(dir, x - distance, y)) {
-                    layer.setCell((int) x, (int) y, null);
+                if (game.moveIsValid(direction, x - distance, y)) {
+                    layer.setCell(x, y, null);
                     position.set(x - distance, y);
+                    setProperRotation();
                 }
                 break;
+            default:
+                System.err.println("Invalid direction: " + direction + "!");
+                System.err.println("Not moving!");
+                break;
         }
+    }
+
+    /**
+     * Set rotation according current tile
+     */
+    private void setProperRotation() {
+        TiledMapTileLayer.Cell cell = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) this.getPositionX(), (int) this.getPositionY());
+        if (cell == null) return;
+
+        TiledMapTile tile = cell.getTile();
+
+        if (Boolean.parseBoolean(tile.getProperties().get("rotation").toString()))
+            this.setDirection(Direction.lookup(tile.getProperties().get("direction").toString()));
     }
 
     /**

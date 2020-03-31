@@ -1,5 +1,6 @@
 package inf112.gunit.board;
 
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.main.GdxTestRunner;
 import inf112.gunit.player.Robot;
@@ -15,28 +16,27 @@ import static org.junit.Assert.assertEquals;
  */
 // TODO: check that tile matches desired conveyor
 @RunWith(GdxTestRunner.class)
-public class ConveyorTests {
+public class LinearConveyorTests {
 
-    Game game;
-    Robot robot;
-    Board board;
+    private Robot robot;
+    private Board board;
 
     // setting the positions for the conveyors according to the tiled-map
-    Vector2 expressNorthPos = new Vector2(4, 0);
-    Vector2 regularNorthPos = new Vector2(3, 0);
+    private Vector2 expressNorthPos = new Vector2(8, 6);
+    private Vector2 regularNorthPos = new Vector2(0, 1);
 
-    Vector2 expressEastPos = new Vector2(5, 1);
-    Vector2 regularEastPos = new Vector2(8, 4);
+    private Vector2 expressEastPos = new Vector2(1, 3);
+    private Vector2 regularEastPos = new Vector2(2, 6);
 
-    Vector2 expressSouthPos = new Vector2(4, 3);
-    Vector2 regularSouthPos = new Vector2(3, 7);
+    private Vector2 expressSouthPos = new Vector2(4, 4);
+    private Vector2 regularSouthPos = new Vector2(3, 6);
 
-    Vector2 expressWestPos = new Vector2(4, 1);
-    Vector2 regularWestPos = new Vector2(9, 4);
+    private Vector2 expressWestPos = new Vector2(5, 7);
+    private Vector2 regularWestPos = new Vector2(6, 7);
 
     @Before
     public void initialise() {
-        this.game = new Game(1);
+        Game game = new Game(1, new TmxMapLoader().load("assets/conveyor_testboard.tmx"));
         this.robot = game.getRobots()[0];
         this.board = new Board(game);
         robot.setPosition(new Vector2(0,0));
@@ -51,7 +51,7 @@ public class ConveyorTests {
     public void testRegularConveyorNorthMovesRobot() {
         robot.setPosition(regularNorthPos.cpy());
         int y = (int) robot.getPositionY();
-        board.convey();
+        board.conveyRegular();
         assertEquals(y+1, (int) robot.getPositionY());
     }
 
@@ -63,7 +63,7 @@ public class ConveyorTests {
     public void testRegularConveyorEastMovesRobot() {
         robot.setPosition(regularEastPos.cpy());
         int x = (int) robot.getPositionX();
-        board.convey();
+        board.conveyRegular();
         assertEquals(x+1, (int) robot.getPositionX());
     }
 
@@ -75,7 +75,7 @@ public class ConveyorTests {
     public void testRegularConveyorSouthMovesRobot() {
         robot.setPosition(regularSouthPos.cpy());
         int y = (int) robot.getPositionY();
-        board.convey();
+        board.conveyRegular();
         assertEquals(y-1, (int) robot.getPositionY());
     }
 
@@ -87,7 +87,7 @@ public class ConveyorTests {
     public void testRegularConveyorWestMovesRobot() {
         robot.setPosition(regularWestPos.cpy());
         int x = (int) robot.getPositionX();
-        board.convey();
+        board.conveyRegular();
         assertEquals(x-1, (int) robot.getPositionX());
     }
 
@@ -97,8 +97,8 @@ public class ConveyorTests {
      */
     @Test
     public void testExpressConveyorNorthMovesRobot() {
-        int y = (int) robot.getPositionY();
         robot.setPosition(expressNorthPos.cpy());
+        int y = (int) robot.getPositionY();
         board.conveyExpress();
         assertEquals(y+1, (int) robot.getPositionY());
     }

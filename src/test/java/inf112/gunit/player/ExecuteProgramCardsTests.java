@@ -1,5 +1,6 @@
 package inf112.gunit.player;
 
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.board.Direction;
 import inf112.gunit.main.GdxTestRunner;
@@ -18,12 +19,12 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(GdxTestRunner.class)
 public class ExecuteProgramCardsTests {
-    Game game;
-    Robot robot;
+
+    private Robot robot;
 
     @Before
     public void initialise() {
-        this.game = new Game(1);
+        Game game = new Game(1, new TmxMapLoader().load("assets/conveyor_testboard.tmx"));
         this.robot = game.getRobots()[0];
         robot.setPosition(new Vector2(0,0));
         robot.setDirection(Direction.NORTH);

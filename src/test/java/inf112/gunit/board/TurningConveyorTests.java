@@ -11,12 +11,21 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Tests for checking that conveyor mechanics works
+ * as expected for conveyors with rotations
+ */
 @RunWith(GdxTestRunner.class)
 public class TurningConveyorTests {
 
     Game game;
     Robot robot;
     Board board;
+
+    Vector2 expressNorthEastPos = new Vector2(6, 6);
+    Vector2 expressSouthWestPos = new Vector2(9, 8);
+    Vector2 regularWestNorthPos = new Vector2(2, 0);
+    Vector2 regularEastSouthPos = new Vector2(6, 3);
 
     @Before
     public void initialise() {
@@ -28,8 +37,35 @@ public class TurningConveyorTests {
     }
 
     @Test
-    public void testRegularWestSouthConveyor() {
-        robot.setPosition(new Vector2(0, 9));
+    public void testExpressNorthEastConveyor() {
+        robot.setPosition(expressNorthEastPos.cpy());
+        int x = (int) robot.getPositionX();
+        robot.setDirection(Direction.EAST);
+        board.conveyExpress();
+        assertEquals(x+1, (int) robot.getPositionX());
+    }
+
+    @Test
+    public void testExpressSouthWestConveyor() {
+        robot.setPosition(expressSouthWestPos.cpy());
+        int x = (int) robot.getPositionX();
+        robot.setDirection(Direction.WEST);
+        board.conveyExpress();
+        assertEquals(x-1, (int) robot.getPositionX());
+    }
+
+    @Test
+    public void testRegularWestNorthConveyor() {
+        robot.setPosition(regularWestNorthPos.cpy());
+        int y = (int) robot.getPositionY();
+        robot.setDirection(Direction.NORTH);
+        board.conveyRegular();
+        assertEquals(y+1, (int) robot.getPositionY());
+    }
+
+    @Test
+    public void testRegularEastSouthConveyor() {
+        robot.setPosition(regularEastSouthPos.cpy());
         int y = (int) robot.getPositionY();
         robot.setDirection(Direction.SOUTH);
         board.conveyRegular();

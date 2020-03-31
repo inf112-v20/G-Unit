@@ -23,9 +23,13 @@ public class Board {
         this.flagPositions = loadFlagPositions();
     }
 
-    // TODO: add rotations for corners
-
-    private void conveyRegular(Robot robot, TiledMapTileLayer.Cell cell) {
+    /**
+     * Private helper method that conveys a robot
+     * called by conveyExpress and conveyRegular
+     * @param robot the given robot to convey
+     * @param cell the given cell the robot is standing on
+     */
+    private void convey(Robot robot, TiledMapTileLayer.Cell cell) {
         String tileDir = cell.getTile().getProperties().get("direction").toString();
         robot.move(1, Direction.lookup(tileDir));
 
@@ -43,7 +47,7 @@ public class Board {
             TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
 
             if (cell != null && Boolean.parseBoolean(cell.getTile().getProperties().get("express").toString()))
-                conveyRegular(robot, cell);
+                convey(robot, cell);
         }
     }
 
@@ -55,7 +59,7 @@ public class Board {
             TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("conveyors");
             TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
 
-            if (cell != null) conveyRegular(robot,cell);
+            if (cell != null) convey(robot,cell);
         }
     }
 

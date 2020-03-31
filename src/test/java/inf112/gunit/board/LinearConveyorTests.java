@@ -18,22 +18,22 @@ import static org.junit.Assert.assertEquals;
 @RunWith(GdxTestRunner.class)
 public class LinearConveyorTests {
 
-    Game game;
-    Robot robot;
-    Board board;
+    private Game game;
+    private Robot robot;
+    private Board board;
 
     // setting the positions for the conveyors according to the tiled-map
-    Vector2 expressNorthPos = new Vector2(8, 6);
-    Vector2 regularNorthPos = new Vector2(0, 1);
+    private Vector2 expressNorthPos = new Vector2(8, 6);
+    private Vector2 regularNorthPos = new Vector2(0, 1);
 
-    Vector2 expressEastPos = new Vector2(1, 3);
-    Vector2 regularEastPos = new Vector2(2, 6);
+    private Vector2 expressEastPos = new Vector2(1, 3);
+    private Vector2 regularEastPos = new Vector2(2, 6);
 
-    Vector2 expressSouthPos = new Vector2(4, 4);
-    Vector2 regularSouthPos = new Vector2(3, 6);
+    private Vector2 expressSouthPos = new Vector2(4, 4);
+    private Vector2 regularSouthPos = new Vector2(3, 6);
 
-    Vector2 expressWestPos = new Vector2(5, 7);
-    Vector2 regularWestPos = new Vector2(6, 7);
+    private Vector2 expressWestPos = new Vector2(5, 7);
+    private Vector2 regularWestPos = new Vector2(6, 7);
 
     @Before
     public void initialise() {

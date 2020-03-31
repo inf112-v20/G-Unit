@@ -17,8 +17,8 @@ import static org.junit.Assert.assertEquals;
 @RunWith(GdxTestRunner.class)
 public class RotationTests {
 
-    Game game;
-    Robot robot;
+    private Game game;
+    private Robot robot;
 
     @Before
     public void initialise() {

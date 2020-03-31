@@ -164,6 +164,7 @@ public class Robot {
             default:
                 System.err.println("Invalid direction: " + direction + "!");
                 System.err.println("Not moving!");
+                break;
         }
     }
 

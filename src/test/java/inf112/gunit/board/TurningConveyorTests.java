@@ -18,14 +18,14 @@ import static org.junit.Assert.assertEquals;
 @RunWith(GdxTestRunner.class)
 public class TurningConveyorTests {
 
-    Game game;
-    Robot robot;
-    Board board;
+    private Game game;
+    private Robot robot;
+    private Board board;
 
-    Vector2 expressNorthEastPos = new Vector2(6, 6);
-    Vector2 expressSouthWestPos = new Vector2(9, 8);
-    Vector2 regularWestNorthPos = new Vector2(2, 0);
-    Vector2 regularEastSouthPos = new Vector2(6, 3);
+    private Vector2 expressNorthEastPos = new Vector2(6, 6);
+    private Vector2 expressSouthWestPos = new Vector2(9, 8);
+    private Vector2 regularWestNorthPos = new Vector2(2, 0);
+    private Vector2 regularEastSouthPos = new Vector2(6, 3);
 
     @Before
     public void initialise() {

@@ -15,9 +15,9 @@ import static org.junit.Assert.assertTrue;
 @RunWith(GdxTestRunner.class)
 public class FlagTests {
 
-    Game game;
-    Robot robot;
-    Board board;
+    private Game game;
+    private Robot robot;
+    private Board board;
 
     @Before
     public void initialise() {

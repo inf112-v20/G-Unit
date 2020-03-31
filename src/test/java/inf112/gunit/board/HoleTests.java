@@ -14,11 +14,11 @@ import static org.junit.Assert.assertEquals;
 @RunWith(GdxTestRunner.class)
 public class HoleTests {
 
-    Game game;
-    Robot robot;
-    Board board;
+    private Game game;
+    private Robot robot;
+    private Board board;
 
-    Vector2 holePos = new Vector2(3,3);
+    private Vector2 holePos = new Vector2(3,3);
 
     @Before
     public void initialise() {

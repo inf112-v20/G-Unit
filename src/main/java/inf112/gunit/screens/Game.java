@@ -210,7 +210,7 @@ public class Game extends InputAdapter implements Screen {
 
                 if (tick % INTERVAL == 0) {
                     board.conveyExpress();
-                    board.convey();
+                    board.conveyRegular();
                     board.rotateGears();
 
                     // initialise a new phase
@@ -293,7 +293,7 @@ public class Game extends InputAdapter implements Screen {
         for (Robot robot : robots) {
             if (card.equals(robot.getProgram()[phase])) {
                 System.out.println("Attempting to perform '" + card + "' on : '" + robot + "'");
-                robot.doTurn(card);
+                //robot.doTurn(card);
                 cardIdx++;
                 break;
             }
@@ -316,7 +316,7 @@ public class Game extends InputAdapter implements Screen {
                 else if (moveIsValid(Direction.WEST, x - 1, y)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.WEST);
-                    position.set(x - 1, y);
+                    mainRobot.move(1);
                     return true;
                 }
 
@@ -326,7 +326,7 @@ public class Game extends InputAdapter implements Screen {
                 else if (moveIsValid(Direction.EAST, x + 1, y)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.EAST);
-                    position.set(x + 1, y);
+                    mainRobot.move(1);
                     return true;
                 }
 
@@ -336,7 +336,7 @@ public class Game extends InputAdapter implements Screen {
                 else if (moveIsValid(Direction.NORTH, x, y + 1)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.NORTH);
-                    position.set(x, y + 1);
+                    mainRobot.move(1);
                     return true;
                 }
 
@@ -346,7 +346,7 @@ public class Game extends InputAdapter implements Screen {
                 else if (moveIsValid(Direction.SOUTH, x, y - 1)) {
                     layer.setCell((int) position.x, (int) position.y, null);
                     mainRobot.setDirection(Direction.SOUTH);
-                    position.set(x, y - 1);
+                    mainRobot.move(1);
                     return true;
                 }
 

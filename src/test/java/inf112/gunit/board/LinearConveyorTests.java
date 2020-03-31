@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
  */
 // TODO: check that tile matches desired conveyor
 @RunWith(GdxTestRunner.class)
-public class ConveyorTests {
+public class LinearConveyorTests {
 
     Game game;
     Robot robot;
@@ -51,7 +51,7 @@ public class ConveyorTests {
     public void testRegularConveyorNorthMovesRobot() {
         robot.setPosition(regularNorthPos.cpy());
         int y = (int) robot.getPositionY();
-        board.convey();
+        board.conveyRegular();
         assertEquals(y+1, (int) robot.getPositionY());
     }
 
@@ -63,7 +63,7 @@ public class ConveyorTests {
     public void testRegularConveyorEastMovesRobot() {
         robot.setPosition(regularEastPos.cpy());
         int x = (int) robot.getPositionX();
-        board.convey();
+        board.conveyRegular();
         assertEquals(x+1, (int) robot.getPositionX());
     }
 
@@ -75,7 +75,7 @@ public class ConveyorTests {
     public void testRegularConveyorSouthMovesRobot() {
         robot.setPosition(regularSouthPos.cpy());
         int y = (int) robot.getPositionY();
-        board.convey();
+        board.conveyRegular();
         assertEquals(y-1, (int) robot.getPositionY());
     }
 
@@ -87,7 +87,7 @@ public class ConveyorTests {
     public void testRegularConveyorWestMovesRobot() {
         robot.setPosition(regularWestPos.cpy());
         int x = (int) robot.getPositionX();
-        board.convey();
+        board.conveyRegular();
         assertEquals(x-1, (int) robot.getPositionX());
     }
 

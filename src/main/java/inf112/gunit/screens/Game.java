@@ -33,8 +33,6 @@ public class Game extends InputAdapter implements Screen {
     private GameState state;
     private boolean gameIsOver = false;
 
-    private int numOfFlags;
-
     private int tick;
 
     private Main main;
@@ -451,14 +449,6 @@ public class Game extends InputAdapter implements Screen {
      */
     public TiledMap getMap() {
         return map;
-    }
-
-    /**
-     * Get the number of flags on the game board
-     * @return the number of flags
-     */
-    public int getNumOfFlags() {
-        return numOfFlags;
     }
 
     /**

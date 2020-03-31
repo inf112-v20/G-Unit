@@ -1,6 +1,8 @@
 package inf112.gunit.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapProperties;
@@ -8,6 +10,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.GameState;
 import inf112.gunit.board.Board;
 import inf112.gunit.board.Direction;
@@ -23,7 +26,7 @@ import java.util.Collections;
  * The Game class is a screen which is rendered
  * when the Play-button is pressed in menu
  */
-public class Game implements Screen {
+public class Game extends InputAdapter implements Screen {
 
     private static final int INTERVAL = 30;
 
@@ -39,6 +42,7 @@ public class Game implements Screen {
     private Board board;
 
     private Robot[] robots;
+    private Robot mainRobot;
 
     private OrthographicCamera camera;
     private OrthogonalTiledMapRenderer tileRenderer;
@@ -91,6 +95,9 @@ public class Game implements Screen {
             robots[i] = p;
         }
 
+        // set the controllable robot (for testing)
+        mainRobot = robots[0];
+
         //set the camera accordingly
         camera = new OrthographicCamera();
         camera.setToOrtho(false, mapWidth * tileWidth, mapHeight * tileHeight);
@@ -99,6 +106,9 @@ public class Game implements Screen {
         // set the tile renderer and add the camera view to it
         tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / tileWidth * tileHeight);
         tileRenderer.setView(camera);
+
+        // add this class as the input processor
+        Gdx.input.setInputProcessor(this);
 
         // start a new game-phase
         newPhase();
@@ -141,6 +151,9 @@ public class Game implements Screen {
             p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
             robots[i] = p;
         }
+
+        // set the controllable robot (for testing)
+        mainRobot = robots[0];
 
         // start a new game-phase
         newPhase();

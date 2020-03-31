@@ -3,7 +3,6 @@ package inf112.gunit.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import inf112.gunit.main.Main;
 
 /**
@@ -48,7 +47,7 @@ public class Menu implements Screen {
 
             //start game when button is pressed
             if (Gdx.input.isTouched()) {
-                main.setScreen(new Game(main, new TmxMapLoader().load("assets/tile_map_3Kx3K_full.tmx"), 4));
+                main.setScreen(new Game(main, 4));
                 this.dispose();
             }
 

@@ -1,6 +1,5 @@
 package inf112.gunit.board;
 
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.player.Robot;
@@ -8,74 +7,71 @@ import inf112.gunit.screens.Game;
 
 import java.util.ArrayList;
 
-/**
- * Implement logic and mechanics here
- */
 public class Board {
 
     private Game game;
 
+    private int width;
+    private int height;
+
+    private ArrayList<Vector2> flagPositions = new ArrayList<>();
+
     public Board(Game game) {
         this.game = game;
+        this.width = game.getMap().getProperties().get("width", Integer.class);
+        this.height = game.getMap().getProperties().get("height", Integer.class);
+        this.flagPositions = loadFlagPositions();
     }
 
+    // TODO: add rotations for corners
+
     /**
-     * Moves the given robot according to the conveyor on which it stands
-     * @param robot the robot to 'convey'
-     * @param layer the TiledMapTileLayer corresponding to the conveyors
-     * @return a new Vector2 position which is the cell the robot should move to
+     * Handle mechanics for all express conveyors
      */
-    public Vector2 convey(Robot robot, TiledMapTileLayer layer) {
-        Vector2 newPos = robot.getPosition().cpy();
+    public void conveyExpress() {
+        for (Robot robot : game.getRobots()) {
+            TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("conveyors");
+            TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
 
-        int x = (int) robot.getPositionX();
-        int y = (int) robot.getPositionY();
-
-        // get the last word in the layer name
-
-        String name = layer.getName().substring(layer.getName().lastIndexOf("_")+1);
-
-        // check the direction of the conveyor and set the position accordingly
-        if (name.equals("north")) {
-            if (game.moveIsValid(x, y+1)) {
-                newPos = new Vector2();
-                newPos.set(x, y+1);
+            if (cell != null && Boolean.parseBoolean(cell.getTile().getProperties().get("express").toString())) {
+                robot.getLayer().setCell((int) robot.getPositionX(), (int) robot.getPositionY(), null);
+                String tileDir = cell.getTile().getProperties().get("direction").toString();
+                robot.setDirection(Direction.valueOf(tileDir));
+                robot.move(1);
             }
-        } else if (name.equals("east")) {
-            if (game.moveIsValid(x+1, y)) {
-                newPos = new Vector2();
-                newPos.set(x+1, y);
-            }
-        } else if (name.equals("south")) {
-            if (game.moveIsValid(x, y-1)) {
-                newPos = new Vector2();
-                newPos.set(x, y-1);
-            }
-        } else if (name.equals("west")) {
-            if (game.moveIsValid(x-1, y)) {
-                newPos = new Vector2();
-                newPos.set(x-1, y);
-            }
-        } else {
-            System.err.println("UNKNOWN DIRECTION: " + name);
         }
-
-        return newPos;
     }
 
     /**
-     * Rotate the given robot according to the gear it is standing on
-     * @param robot the robot to rotate
-     * @param layer the given TiledMapTileLayer corresponding to the gears
+     * Handle mechanics for all conveyors
      */
-    public void gear(Robot robot, TiledMapTileLayer layer) {
-        // get the last word in the layer name
-        String name = layer.getName().substring(layer.getName().lastIndexOf("_")+1);
+    public void convey() {
+        for (Robot robot : game.getRobots()) {
+            TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("conveyors");
+            TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
 
-        if (name.equals("clockwise"))
-            robot.rotate(true, 1);
-        else
-            robot.rotate(false, 1);
+            if (cell != null) {
+                robot.getLayer().setCell((int) robot.getPositionX(), (int) robot.getPositionY(), null);
+                String tileDir = cell.getTile().getProperties().get("direction").toString();
+                robot.setDirection(Direction.valueOf(tileDir));
+                robot.move(1);
+            }
+        }
+    }
+
+    /**
+     * Handle mechanics for all gears
+     */
+    public void rotateGears() {
+        for (Robot robot : game.getRobots()) {
+            TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("gears");
+            TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
+
+            if (cell != null) {
+                boolean clockwise = Boolean.parseBoolean(cell.getTile().getProperties().get("clockwise").toString());
+                robot.rotate(clockwise, 1);
+            }
+        }
     }
 
     /**
@@ -89,8 +85,8 @@ public class Board {
         TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("start_" + id);
         layer.setVisible(true);
 
-        for (int x = 0; x < (game.getMap().getProperties().get("width", Integer.class)); x++) {
-            for (int y = 0; y < (game.getMap().getProperties().get("height", Integer.class)); y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 if (layer.getCell(x, y) != null) {
                     pos = new Vector2();
                     pos.set(x, y);
@@ -102,13 +98,84 @@ public class Board {
         return pos;
     }
 
-    public int getNumberOfFlags() {
-        ArrayList<TiledMapTileLayer> layers = new ArrayList<>();
+    /**
+     * Perform hole mechanics
+     */
+    public void holes() {
+        TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("holes");
 
-        for (MapLayer layer : game.getMap().getLayers()) {
-            if (layer.getName().contains("flag")) layers.add((TiledMapTileLayer) layer);
+        for (Robot robot : game.getRobots()) {
+            if(layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) robot.die();
+        }
+    }
+
+    /**
+     * Perform flag mechanics
+     */
+    public void flags() {
+        TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("flags");
+        for (Robot robot : game.getRobots()) {
+            TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
+
+            if (cell != null) {
+                int flagNum = (int) cell.getTile().getProperties().get("num");
+                if (flagNum == robot.flagsCollected + 1) {
+                    robot.setFlagsCollected(robot.getFlagsCollected() + 1);
+                }
+            }
+
+            if (robot.getFlagsCollected() >= 4) game.gameOver(robot);
+        }
+    }
+
+    /**
+     * Load flag positions into an ArrayList
+     * @return an ArrayList containing all flags corresponding Vector2-positions
+     */
+    private ArrayList<Vector2> loadFlagPositions() {
+        Vector2[] positions = new Vector2[4];
+        TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("flags");
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (layer.getCell(x, y) != null) {
+                    int n = (int) layer.getCell(x, y).getTile().getProperties().get("num");
+
+                    switch (n) {
+                        case 1:
+                            positions[0]= new Vector2(x, y);
+                            break;
+                        case 2:
+                            positions[1]= new Vector2(x, y);
+                            break;
+                        case 3:
+                            positions[2]= new Vector2(x, y);
+                            break;
+                        case 4:
+                            positions[3]= new Vector2(x, y);
+                            break;
+                        default:
+                            System.err.println("Unknown flag id " + n);
+                            break;
+                    }
+                }
+            }
         }
 
-        return layers.size();
+        ArrayList<Vector2> result = new ArrayList<>();
+        for (Vector2 pos : positions) {
+            if (pos != null) result.add(pos);
+        }
+
+        return result;
     }
+
+    /**
+     * Get all flag positions
+     * @return an ArrayList containing all flags corresponding Vector2-positions
+     */
+    public ArrayList<Vector2> getFlagPositions() {
+        return flagPositions;
+    }
+
 }

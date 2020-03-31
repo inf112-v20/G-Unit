@@ -120,7 +120,7 @@ public class Game extends InputAdapter implements Screen {
      * Testing constructor used by the unit-tests
      * @param numOfPlayers number of players
      */
-    public Game(int numOfPlayers) {
+    public Game(int numOfPlayers, TiledMap map) {
         if (numOfPlayers > 4) {
             System.err.println("Number of players cant be greater than 4!!");
             this.dispose();
@@ -131,7 +131,7 @@ public class Game extends InputAdapter implements Screen {
             System.exit(1);
         }
 
-        this.map = new TmxMapLoader().load("assets/board_new.tmx");
+        this.map = map;
         this.robots = new Robot[numOfPlayers];
         board = new Board(this);
 
@@ -293,7 +293,7 @@ public class Game extends InputAdapter implements Screen {
         for (Robot robot : robots) {
             if (card.equals(robot.getProgram()[phase])) {
                 System.out.println("Attempting to perform '" + card + "' on : '" + robot + "'");
-                //robot.doTurn(card);
+                robot.doTurn(card);
                 cardIdx++;
                 break;
             }

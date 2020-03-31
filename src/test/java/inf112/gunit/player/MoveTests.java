@@ -1,5 +1,6 @@
 package inf112.gunit.player;
 
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.main.GdxTestRunner;
 import inf112.gunit.main.Main;
@@ -24,7 +25,7 @@ public class MoveTests {
 
     @Before
     public void initialise() {
-        this.game = new Game(1);
+        this.game = new Game(1, new TmxMapLoader().load("assets/board_new.tmx"));
         this.robot = game.getRobots()[0];
         robot.setPosition(new Vector2(0,0));
     }

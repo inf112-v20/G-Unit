@@ -17,12 +17,11 @@ import static org.junit.Assert.assertEquals;
 @RunWith(GdxTestRunner.class)
 public class RotationTests {
 
-    private Game game;
     private Robot robot;
 
     @Before
     public void initialise() {
-        this.game = new Game(1, new TmxMapLoader().load("assets/board_new.tmx"));
+        Game game = new Game(1, new TmxMapLoader().load("assets/board_new.tmx"));
         this.robot = game.getRobots()[0];
         robot.setPosition(new Vector2(0,0));
         robot.setDirection(Direction.NORTH);

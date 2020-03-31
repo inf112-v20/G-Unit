@@ -18,7 +18,6 @@ import static org.junit.Assert.assertEquals;
 @RunWith(GdxTestRunner.class)
 public class TurningConveyorTests {
 
-    private Game game;
     private Robot robot;
     private Board board;
 
@@ -29,7 +28,7 @@ public class TurningConveyorTests {
 
     @Before
     public void initialise() {
-        this.game = new Game(1, new TmxMapLoader().load("assets/conveyor_testboard.tmx"));
+        Game game = new Game(1, new TmxMapLoader().load("assets/conveyor_testboard.tmx"));
         this.robot = game.getRobots()[0];
         this.board = new Board(game);
         robot.setPosition(new Vector2(0,0));

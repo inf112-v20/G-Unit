@@ -14,7 +14,6 @@ import static org.junit.Assert.assertEquals;
 @RunWith(GdxTestRunner.class)
 public class HoleTests {
 
-    private Game game;
     private Robot robot;
     private Board board;
 
@@ -22,7 +21,7 @@ public class HoleTests {
 
     @Before
     public void initialise() {
-        this.game = new Game(1, new TmxMapLoader().load("assets/board_new.tmx"));
+        Game game = new Game(1, new TmxMapLoader().load("assets/board_new.tmx"));
         this.robot = game.getRobots()[0];
         this.board = new Board(game);
         robot.setPosition(new Vector2(0,0));

@@ -20,12 +20,11 @@ import static org.junit.Assert.assertEquals;
 @RunWith(GdxTestRunner.class)
 public class ExecuteProgramCardsTests {
 
-    private Game game;
     private Robot robot;
 
     @Before
     public void initialise() {
-        this.game = new Game(1, new TmxMapLoader().load("assets/conveyor_testboard.tmx"));
+        Game game = new Game(1, new TmxMapLoader().load("assets/conveyor_testboard.tmx"));
         this.robot = game.getRobots()[0];
         robot.setPosition(new Vector2(0,0));
         robot.setDirection(Direction.NORTH);

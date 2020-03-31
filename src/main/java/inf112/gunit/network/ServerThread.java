@@ -1,14 +1,16 @@
 package inf112.gunit.network;
+
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.JsonSerialization;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
+import inf112.gunit.player.card.MovementCard;
 
-public class ServerThread implements Runnable {
-
+public class ServerThread implements Runnable  {
     public final static int WRITE_BUFFER = 256 * 1024;
     public final static int READ_BUFFER = 256 * 1024;
     public final static int PORT_TCP = 56555;
@@ -41,9 +43,7 @@ public class ServerThread implements Runnable {
         @Override
         public void received(Connection connection, Object object) {
             System.out.println("Recived from client: " + connection.getID() + " object: " + object);
-            //connection.sendUDP();
+            connection.sendUDP(new Ping());
         }
     }
-
 }
-

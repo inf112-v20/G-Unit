@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.GameState;
 import inf112.gunit.board.Board;
 import inf112.gunit.board.Direction;
+import inf112.gunit.hud.Hud;
 import inf112.gunit.main.Main;
 import inf112.gunit.player.Robot;
 import inf112.gunit.player.card.ProgramCard;
@@ -27,6 +28,8 @@ import java.util.Collections;
  * when the Play-button is pressed in menu
  */
 public class Game extends InputAdapter implements Screen {
+
+    private Hud hud;
 
     private static final int INTERVAL = 30;
 
@@ -106,6 +109,8 @@ public class Game extends InputAdapter implements Screen {
         // set the tile renderer and add the camera view to it
         tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / tileWidth * tileHeight);
         tileRenderer.setView(camera);
+
+        hud = new Hud(main.batch, this);
 
         // add this class as the input processor
         Gdx.input.setInputProcessor(this);
@@ -247,6 +252,9 @@ public class Game extends InputAdapter implements Screen {
         // render the tile-map
         tileRenderer.setView(camera);
         tileRenderer.render();
+
+        main.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        hud.stage.draw();
 
         // increase the game tick
         tick++;

@@ -50,8 +50,8 @@ public class Robot {
     // each time a robot dies (is killed or falls down a hole/pit).
     private int lifeTokens = 3;
 
-    // Each player/robot starts with 10 damageMarkers, which represents health points.
-    private int damageMarkers = 10;
+    // Each player/robot starts with 0 damageMarkers, which represents health points.
+    private int damageMarkers = 0;
 
     /**
      * The Robot constructor
@@ -272,7 +272,7 @@ public class Robot {
         // Moves player/robot back to backupMemory and restores damageMarkers.
         this.lifeTokens--;
         this.position = backupMemory;
-        this.damageMarkers = 10;
+        this.damageMarkers = 0;
     }
 
     /**

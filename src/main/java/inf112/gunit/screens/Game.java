@@ -46,6 +46,7 @@ public class Game extends InputAdapter implements Screen {
 
     private Robot[] robots;
     private Robot mainRobot;
+    private Robot playerRobot;
 
     private OrthographicCamera camera;
     private OrthogonalTiledMapRenderer tileRenderer;
@@ -100,14 +101,15 @@ public class Game extends InputAdapter implements Screen {
 
         // set the controllable robot (for testing)
         mainRobot = robots[0];
+        playerRobot = mainRobot;
 
         //set the camera accordingly
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, mapWidth * tileWidth, mapHeight * tileHeight);
+        camera.setToOrtho(false, (mapWidth * tileWidth) * ((float) Main.WIDTH / (float) Main.HEIGHT), mapHeight * tileHeight);
         camera.update();
 
         // set the tile renderer and add the camera view to it
-        tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / tileWidth * tileHeight);
+        tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / (tileWidth) * (tileHeight));
         tileRenderer.setView(camera);
 
         hud = new Hud(main.batch, this);
@@ -215,6 +217,8 @@ public class Game extends InputAdapter implements Screen {
                     board.conveyExpress();
                     board.conveyRegular();
                     board.rotateGears();
+                    board.holes();
+                    board.flags();
 
                     // initialise a new phase
                     if (phase >= 4) {
@@ -232,15 +236,11 @@ public class Game extends InputAdapter implements Screen {
                 //System.exit(1);
         }
 
-        //handle rest of game mechanics
-        board.holes();
-        board.flags();
-
     }
 
     @Override
     public void render(float v) {
-        Gdx.gl.glClearColor(1,0,0,1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         tileRenderer.getBatch().begin();
 
         // handle the game-logic
@@ -254,7 +254,7 @@ public class Game extends InputAdapter implements Screen {
         tileRenderer.render();
 
         main.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-        hud.stage.draw();
+        hud.draw();
 
         // increase the game tick
         tick++;
@@ -449,6 +449,14 @@ public class Game extends InputAdapter implements Screen {
      */
     public Robot[] getRobots() {
         return robots;
+    }
+
+    /**
+     * Get the local players robot
+     * @return the local players robot
+     */
+    public Robot getPlayerRobot() {
+        return playerRobot;
     }
 
     /**

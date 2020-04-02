@@ -13,12 +13,11 @@ import inf112.gunit.screens.Menu;
 public class Main extends Game {
 
     //put globals here
-    public static final int WIDTH = 1000;
+    public static final int WIDTH = 1500;
     public static final int HEIGHT = 1000;
 
     public SpriteBatch batch;
     public BitmapFont font;
-
 
     @Override
     public void create() {

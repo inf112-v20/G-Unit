@@ -115,7 +115,7 @@ public class Game extends InputAdapter implements Screen {
         hud = new Hud(main.batch, this);
 
         // add this class as the input processor
-        Gdx.input.setInputProcessor(this);
+        //Gdx.input.setInputProcessor(this);
 
         // start a new game-phase
         newPhase();

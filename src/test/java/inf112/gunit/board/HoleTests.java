@@ -28,7 +28,6 @@ public class HoleTests {
         robot.setDirection(Direction.NORTH);
     }
 
-
     @Test
     public void fallIntoHoleReturnsToBackup() {
         Vector2 backupPos = robot.getBackupMemory().cpy();

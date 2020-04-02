@@ -1,18 +1,17 @@
 package inf112.gunit.hud;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -20,7 +19,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import inf112.gunit.main.Main;
 import inf112.gunit.screens.Game;
 
-public class Hud implements Disposable {
+public class Hud extends ClickListener implements Disposable {
 
     private final Game game;
     private final Texture bg = new Texture("assets/program_sheet_bg.png");
@@ -52,6 +51,8 @@ public class Hud implements Disposable {
         viewport = new FitViewport(Main.WIDTH, Main.HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, batch);
 
+        Gdx.input.setInputProcessor(stage);
+
         damageTokenTable = new Table();
         damageTokenTable.top();
         damageTokenTable.setFillParent(true);
@@ -63,20 +64,63 @@ public class Hud implements Disposable {
         lifeTokenTable.setFillParent(true);
         lifeTokenTable.setPosition(400, -250);
 
-        powerDownButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(POWER_DOWN)));
+        ImageButton.ImageButtonStyle powerDownStyle = new ImageButton.ImageButtonStyle();
+        powerDownStyle.imageUp = new TextureRegionDrawable(new TextureRegion(POWER_DOWN_GREY));
+        powerDownStyle.imageChecked = new TextureRegionDrawable(new TextureRegion(POWER_DOWN));
+        // TODO: make own texture for this
+        powerDownStyle.imageDown = new TextureRegionDrawable(new TextureRegion(POWER_DOWN));
+        powerDownStyle.imageOver = new TextureRegionDrawable(new TextureRegion(POWER_DOWN));
+        powerDownButton = new ImageButton(powerDownStyle);
         powerDownButton.setPosition(Main.WIDTH - 500 + TEXTURE_PADDING, Main.HEIGHT - POWER_DOWN.getHeight() - TEXTURE_PADDING);
+        powerDownButton.addListener(addButtonListener(powerDownButton));
+        powerDownButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                System.out.println("powerdown");
+            }
+        });
 
-        submitButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(SUBMIT_GREY)));
+        ImageButton.ImageButtonStyle submitStyle = new ImageButton.ImageButtonStyle();
+        submitStyle.imageUp = new TextureRegionDrawable(new TextureRegion(SUBMIT_GREY));
+        submitStyle.imageChecked = new TextureRegionDrawable(new TextureRegion(SUBMIT_GREEN));
+        // TODO: make own texture for this
+        submitStyle.imageDown = new TextureRegionDrawable(new TextureRegion(SUBMIT_GREEN));
+        submitStyle.imageOver = new TextureRegionDrawable(new TextureRegion(SUBMIT_GREEN));
+        submitButton = new ImageButton(submitStyle);
         submitButton.setPosition(Main.WIDTH - 200, 200);
+        submitButton.addListener(addButtonListener(submitButton));
+        submitButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                System.out.println("submit");
+            }
+        });
 
         stage.addActor(damageTokenTable);
         stage.addActor(lifeTokenTable);
-
         stage.addActor(powerDownButton);
         stage.addActor(submitButton);
 
         updateDamageTokens();
         updateLifeTokens();
+    }
+
+    private ClickListener addButtonListener(final ImageButton button) {
+        return new ClickListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                super.enter(event, x, y, pointer, fromActor);
+                button.setChecked(true);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                super.exit(event, x, y, pointer, toActor);
+                button.setChecked(false);
+            }
+        };
     }
 
     private void updateDamageTokens() {

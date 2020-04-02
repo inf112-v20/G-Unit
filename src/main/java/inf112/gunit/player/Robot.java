@@ -14,6 +14,7 @@ import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
 import inf112.gunit.screens.Game;
 
+import javax.xml.soap.Text;
 import java.util.Arrays;
 
 /**
@@ -39,6 +40,7 @@ public class Robot {
 
     // the TiledMap layer of the robot, texture-spritesheet and position.
     private TiledMapTileLayer layer;
+    private TextureRegion[][] textureSplit;
     private Cell[] textures;
     private Vector2 position;
 
@@ -74,8 +76,7 @@ public class Robot {
         layer = (TiledMapTileLayer) game.getMap().getLayers().get("player_" + id);
 
         // load the textures
-        Texture texture = new Texture("assets/players_300x300.png");
-        TextureRegion[][] textureSplit = TextureRegion.split(texture, tileWidth, tileHeight);
+        textureSplit = TextureRegion.split(new Texture("assets/players_300x300.png"), tileWidth, tileHeight);
 
         // store the textures
         textures = new Cell[4];
@@ -345,6 +346,10 @@ public class Robot {
      */
     public int getId() {
         return id;
+    }
+
+    public TextureRegion getTexture() {
+        return textureSplit[0][id];
     }
 
     /**

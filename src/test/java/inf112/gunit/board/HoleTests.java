@@ -50,6 +50,6 @@ public class HoleTests {
     public void fallIntoHolesResetDamageMarkers() {
         robot.setPosition(holePos.cpy());
         board.holes();
-        assertEquals(10, robot.getDamageMarkers());
+        assertEquals(0, robot.getDamageMarkers());
     }
 }

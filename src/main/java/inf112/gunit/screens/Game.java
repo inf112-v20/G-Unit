@@ -381,16 +381,14 @@ public class Game extends InputAdapter implements Screen {
 
         // Gets the cell you are currently on (before moving) by flipping the direction you are
         // trying to move to, and getting the cell at those coordinates
-        switch (Direction.flip(dir)) {
-            case NORTH:
-                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y + 1);
-            case EAST:
-                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x + 1, y);
-            case SOUTH:
-                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y - 1);
-            case WEST:
-                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x - 1, y);
-        }
+        if (Direction.flip(dir) == Direction.NORTH)
+            prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y + 1);
+        if (Direction.flip(dir) == Direction.EAST)
+            prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x - 1, y);
+        if (Direction.flip(dir) == Direction.SOUTH)
+            prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y - 1);
+        if (Direction.flip(dir) == Direction.WEST)
+            prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x + 1, y);
 
         // Gets the direction the wall is facing, if the cell you are trying to move to has a wall
         if (wallCell != null) {
@@ -407,7 +405,7 @@ public class Game extends InputAdapter implements Screen {
 
             // If the wall on the cell you are currently on is not facing you,
             // return true. Else return false.
-            return dir != Direction.flip(prevDir);
+            return dir != prevDir;
         }
 
         // Return true if nothing is in the way

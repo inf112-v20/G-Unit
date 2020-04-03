@@ -291,7 +291,7 @@ public class Game extends InputAdapter implements Screen {
         for (Robot robot : robots) {
             if (card.equals(robot.getProgram()[phase])) {
                 System.out.println("Attempting to perform '" + card + "' on : '" + robot + "'");
-                //robot.doTurn(card);
+                robot.doTurn(card);
                 cardIdx++;
                 break;
             }
@@ -374,8 +374,8 @@ public class Game extends InputAdapter implements Screen {
         }
 
         // wallCell is the cell you are trying to move to
-        // prevCell is the cell you are currently standing on,
-        // aka the cell you are moving from
+        // prevCell is the cell you are currently standing on, aka the cell you are moving from
+        // Also checks for lasers, since they are also walls
         TiledMapTileLayer.Cell wallCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y);
         TiledMapTileLayer.Cell laserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x, y);
         TiledMapTileLayer.Cell prevCell = null;
@@ -408,6 +408,8 @@ public class Game extends InputAdapter implements Screen {
         }
 
         if (laserCell != null) {
+            // The direction of a laser is in the direction it shoots, so the actual wall is in the opposite direction
+            // of the direction property of the laser
             Direction laserDir = Direction.lookup(laserCell.getTile().getProperties().get("direction").toString());
 
             return dir != laserDir;
@@ -416,7 +418,6 @@ public class Game extends InputAdapter implements Screen {
         // Gets the direction the wall is facing, if the cell you are currently on has a wall
         if (prevCell != null) {
             Direction prevDir = Direction.lookup(prevCell.getTile().getProperties().get("direction").toString());
-            System.out.println("prevCell dir: " + dir.toString());
             // If the wall on the cell you are currently on is not facing you,
             // return true. Else return false.
             return dir != prevDir;

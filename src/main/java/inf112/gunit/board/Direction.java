@@ -29,7 +29,7 @@ public enum Direction {
      * Flips the direction. Ex: SOUTH returns NORTH, WEST returns EAST etc..
      *
      * @param dir The direction to flip
-     * @return the opposite direction of the input direction
+     * @return the opposite direction of the direction given as the argument
      */
     public static Direction flip(Direction dir) {
         switch (dir) {

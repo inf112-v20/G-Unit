@@ -19,7 +19,6 @@ public class Main extends Game {
     public SpriteBatch batch;
     public BitmapFont font;
 
-
     @Override
     public void create() {
         this.batch = new SpriteBatch();
@@ -46,5 +45,4 @@ public class Main extends Game {
 
         new LwjglApplication(new Main(), cfg);
     }
-
 }

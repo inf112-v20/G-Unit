@@ -90,7 +90,7 @@ public class MoveTests {
 
     @Test
     public void moveIllegalCloseWallFromWest() {
-        robot.setPosition(new Vector2(1, 4));
+        robot.setPosition(new Vector2(2, 4));
         int x = (int) robot.getPositionX();
         robot.rotate(true, 1);
         robot.move(1);
@@ -99,7 +99,7 @@ public class MoveTests {
 
     @Test
     public void moveIllegalFarWallFromEast() {
-        robot.setPosition(new Vector2(2, 4));
+        robot.setPosition(new Vector2(3, 4));
         int x = (int) robot.getPositionX();
         robot.rotate(false, 1);
         robot.move(1);

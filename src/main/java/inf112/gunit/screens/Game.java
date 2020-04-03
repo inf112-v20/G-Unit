@@ -291,7 +291,7 @@ public class Game extends InputAdapter implements Screen {
         for (Robot robot : robots) {
             if (card.equals(robot.getProgram()[phase])) {
                 System.out.println("Attempting to perform '" + card + "' on : '" + robot + "'");
-                robot.doTurn(card);
+                //robot.doTurn(card);
                 cardIdx++;
                 break;
             }
@@ -377,35 +377,55 @@ public class Game extends InputAdapter implements Screen {
         // prevCell is the cell you are currently standing on,
         // aka the cell you are moving from
         TiledMapTileLayer.Cell wallCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y);
+        TiledMapTileLayer.Cell laserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x, y);
         TiledMapTileLayer.Cell prevCell = null;
+        TiledMapTileLayer.Cell prevLaserCell = null;
 
         // Gets the cell you are currently on (before moving) by flipping the direction you are
         // trying to move to, and getting the cell at those coordinates
-        if (Direction.flip(dir) == Direction.NORTH)
+        if (Direction.flip(dir) == Direction.NORTH) {
             prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y + 1);
-        if (Direction.flip(dir) == Direction.EAST)
-            prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x - 1, y);
-        if (Direction.flip(dir) == Direction.SOUTH)
-            prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y - 1);
-        if (Direction.flip(dir) == Direction.WEST)
+            prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x, y + 1);
+        }
+        if (Direction.flip(dir) == Direction.EAST) {
             prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x + 1, y);
-
+            prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x + 1, y);
+        }
+        if (Direction.flip(dir) == Direction.SOUTH) {
+            prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y - 1);
+            prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x, y - 1);
+        }
+        if (Direction.flip(dir) == Direction.WEST) {
+            prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x - 1, y);
+            prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x - 1, y);
+        }
         // Gets the direction the wall is facing, if the cell you are trying to move to has a wall
         if (wallCell != null) {
            Direction wallDir = Direction.lookup(wallCell.getTile().getProperties().get("direction").toString());
-
            // If the wall on the cell you are trying to move to is not facing you,
             // return true. Else return false.
            return dir != Direction.flip(wallDir);
         }
 
+        if (laserCell != null) {
+            Direction laserDir = Direction.lookup(laserCell.getTile().getProperties().get("direction").toString());
+
+            return dir != laserDir;
+        }
+
         // Gets the direction the wall is facing, if the cell you are currently on has a wall
         if (prevCell != null) {
             Direction prevDir = Direction.lookup(prevCell.getTile().getProperties().get("direction").toString());
-
+            System.out.println("prevCell dir: " + dir.toString());
             // If the wall on the cell you are currently on is not facing you,
             // return true. Else return false.
             return dir != prevDir;
+        }
+
+        if (prevLaserCell != null) {
+            Direction prevLaserDir = Direction.lookup(prevLaserCell.getTile().getProperties().get("direction").toString());
+
+            return dir != Direction.flip(prevLaserDir);
         }
 
         // Return true if nothing is in the way
@@ -424,12 +444,10 @@ public class Game extends InputAdapter implements Screen {
             // TODO: revert back to only this line when not debugging
             //return positionIsFree(x, y);
 
-            if (positionIsFree(dir, x, y)) {
-                System.out.println("Success! Moving...");
-                return true;
-            }
+            //System.out.println("Success! Moving...");
+            return positionIsFree(dir, x, y);
         }
-        System.out.println("Move is not valid!");
+        //System.out.println("Move is not valid!");
         return false;
     }
 

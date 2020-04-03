@@ -111,10 +111,7 @@ public class Board {
 
         for (Robot robot : game.getRobots()) {
             TiledMapTileLayer robotLayer = (TiledMapTileLayer) game.getMap().getLayers().get("player_" + robot.getId());
-            if(holes.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
-                robotLayer.setCell((int) robot.getPositionX(), (int) robot.getPositionY(), null);
-                robot.die();
-            }
+            if(holes.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) robot.die();
         }
     }
 

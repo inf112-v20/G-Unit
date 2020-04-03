@@ -135,28 +135,28 @@ public class Robot {
 
         switch (direction) {
             case NORTH:
-                if (game.moveIsValid(direction, x, y + distance)) {
+                if (game.moveIsValid(Direction.NORTH, x, y + distance)) {
                     layer.setCell(x, y, null);
                     position.set(x, y + distance);
                     setProperRotation();
                 }
                 break;
             case EAST:
-                if (game.moveIsValid(direction, x + distance, y)) {
+                if (game.moveIsValid(Direction.EAST, x + distance, y)) {
                     layer.setCell(x, y, null);
                     position.set(x + distance, y);
                     setProperRotation();
                 }
                 break;
             case SOUTH:
-                if (game.moveIsValid(direction, x, y - distance)) {
+                if (game.moveIsValid(Direction.SOUTH, x, y - distance)) {
                     layer.setCell(x, y, null);
                     position.set(x, y - distance);
                     setProperRotation();
                 }
                 break;
             case WEST:
-                if (game.moveIsValid(direction, x - distance, y)) {
+                if (game.moveIsValid(Direction.WEST, x - distance, y)) {
                     layer.setCell(x, y, null);
                     position.set(x - distance, y);
                     setProperRotation();

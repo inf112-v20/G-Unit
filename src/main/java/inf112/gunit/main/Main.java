@@ -45,5 +45,4 @@ public class Main extends Game {
 
         new LwjglApplication(new Main(), cfg);
     }
-
 }

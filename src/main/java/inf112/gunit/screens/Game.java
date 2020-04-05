@@ -210,6 +210,16 @@ public class Game extends InputAdapter implements Screen {
                     board.conveyExpress();
                     board.conveyRegular();
                     board.rotateGears();
+                    System.out.println("damageMarkers: RED: " + robots[0].getDamageMarkers());
+                    System.out.println("damageMarkers: GREEN: " + robots[1].getDamageMarkers());
+                    System.out.println("damageMarkers: YELLOW: " + robots[2].getDamageMarkers());
+                    System.out.println("damageMarkers: CYAN: " + robots[3].getDamageMarkers());
+                    board.robotsFire();
+
+                    for (Robot robot : robots){
+                        if (robot.getDamageMarkers() <= 0)
+                            robot.die();
+                    }
 
                     // initialise a new phase
                     if (phase >= 4) {
@@ -230,7 +240,6 @@ public class Game extends InputAdapter implements Screen {
         //handle rest of game mechanics
         board.holes();
         board.flags();
-
     }
 
     @Override
@@ -243,6 +252,7 @@ public class Game extends InputAdapter implements Screen {
 
         // update the robot rendering
         for (Robot robot : robots) robot.update();
+
         tileRenderer.getBatch().end();
         // render the tile-map
         tileRenderer.setView(camera);
@@ -364,7 +374,7 @@ public class Game extends InputAdapter implements Screen {
      * @param y the desired y coordinate
      * @return true if position has pla
      */
-    private boolean positionIsFree(Direction dir, int x, int y) {
+    public boolean positionIsFree(Direction dir, int x, int y) {
         // TODO: dont use for-loop here, find a more efficient way
         // perhaps storing player-layer id's in a global variable?
 
@@ -474,6 +484,10 @@ public class Game extends InputAdapter implements Screen {
      */
     public boolean getGameOver() {
         return gameIsOver;
+    }
+
+    public MapProperties getProps() {
+        return props;
     }
 
     @Override

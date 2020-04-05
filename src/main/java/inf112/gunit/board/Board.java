@@ -132,6 +132,12 @@ public class Board {
         }
     }
 
+    public void robotsFire(){
+        for (Robot robot : game.getRobots()) {
+            robot.shootLaser();
+        }
+    }
+
     /**
      * Load flag positions into an ArrayList
      * @return an ArrayList containing all flags corresponding Vector2-positions

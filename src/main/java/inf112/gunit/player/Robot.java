@@ -273,6 +273,9 @@ public class Robot {
         this.lifeTokens--;
         this.position = backupMemory;
         this.damageMarkers = 10;
+        if (this.lifeTokens <= 0){
+            // TODO : Remove/dispose robots, that have zero lifeTokens and zero damageMarkers, from the game.
+        }
     }
 
     /**
@@ -353,6 +356,56 @@ public class Robot {
      */
     public TiledMapTileLayer getLayer() {
         return layer;
+    }
+
+    public void shootLaser() {
+        for (Robot robot : game.getRobots()){
+            switch(dir){
+                case NORTH:
+                    //Checks how many cells are left on the board from the robot to the edge of the board
+                    // by taking the length of the board, minus (the robots position + 1 (added 1 because cell 0 is a cell, not zero cells)).
+                    for (int i = 1; i < game.getProps().get("height", Integer.class) - this.getPositionY() + 1 ; i++){
+                        // See if one of those cells contain a player or.
+                        // TODO : Let it be possible to search for other things, such as a wall.
+                        if (!game.moveIsValid(dir,(int) this.getPositionX(), (int) this.getPositionY() + i)){
+                            // See which player/robot that is.
+                            if (this.getPositionX() == robot.getPositionX() && this.getPositionY() + i == robot.getPositionY()) {
+                                // Remove damage from that robot.
+                                robot.damageMarkers--;
+                                // TODO : Let it be possible to take more than 1 damage, via weapons.
+                                System.out.println("The " + this.toString() + " robot shot the " + robot.toString() + " robot, while facing " + dir);
+                            }
+                        }
+                    }
+                case SOUTH:
+                    for (int i = 1; i < game.getProps().get("height", Integer.class) - (game.getProps().get("height", Integer.class) - this.getPositionY()); i++){
+                        if (!game.moveIsValid(dir,(int) this.getPositionX(), (int) this.getPositionY() - i)){
+                            if (this.getPositionX() == robot.getPositionX() && this.getPositionY() -i == robot.getPositionY()) {
+                                robot.damageMarkers--;
+                                System.out.println("The " + this.toString() + " robot shot the " + robot.toString() + " robot, while facing " + dir);
+                            }
+                        }
+                    }
+                case EAST:
+                    for (int i = 1; i < game.getProps().get("width", Integer.class) - this.getPositionX() + 1 ; i++){
+                        if (!game.moveIsValid(dir,(int) this.getPositionX() + i, (int) this.getPositionY())){
+                            if (this.getPositionX() + i == robot.getPositionX() && this.getPositionY() == robot.getPositionY()) {
+                                robot.damageMarkers--;
+                                System.out.println("The " + this.toString() + " robot shot the " + robot.toString() + " robot, while facing " + dir);
+                            }
+                        }
+                    }
+                case WEST:
+                    for (int i = 1; i < game.getProps().get("width", Integer.class) - (game.getProps().get("width", Integer.class) - this.getPositionX()); i++){
+                        if (!game.moveIsValid(dir,(int) this.getPositionX() - i, (int) this.getPositionY())){
+                            if (this.getPositionX() - i == robot.getPositionX() && this.getPositionY() == robot.getPositionY()) {
+                                robot.damageMarkers--;
+                                System.out.println("The " + this.toString() + " robot shot the " + robot.toString() + " robot, while facing " + dir);
+                            }
+                        }
+                    }
+            }
+        }
     }
 
     @Override

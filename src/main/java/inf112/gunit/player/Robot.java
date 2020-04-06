@@ -9,13 +9,16 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.board.Direction;
+import inf112.gunit.player.card.CardType;
 import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
 import inf112.gunit.screens.Game;
 
 import javax.xml.soap.Text;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * The Robot class is used to perform all kinds of
@@ -31,6 +34,8 @@ public class Robot {
     // program stores a program to execute
     // while counter is a global variable to keep track of what card to execute
     private ProgramCard[] program;
+
+    private ArrayList<ProgramCard> cardDeck = new ArrayList<>();
 
     private Game game;
     private MapProperties props;
@@ -230,6 +235,38 @@ public class Robot {
     public void setProgram(ProgramCard[] program) {
         if (program.length != 5) throw new IllegalArgumentException("Program must be of length 5");
         this.program = Arrays.copyOf(program, 5);
+    }
+
+    /**
+     * At the start of each phase, deal random program cards to each player
+     */
+    public void dealCards() {
+        Random r = new Random();
+        cardDeck = new ArrayList<>();
+
+        //compute number of cards to be dealt based on damage tokens
+        int numOfCards = (damageMarkers >= 4) ? 5 : 9 - damageMarkers;
+        for (int i = 0; i < numOfCards; i++) {
+            boolean isMoveCard = r.nextBoolean();
+            int priority = (r.nextInt(70) + 10) * 10;
+
+            if (isMoveCard) {
+                int distance = r.nextInt(3) + 1;
+                cardDeck.add(new MovementCard(priority, distance));
+            } else {
+                boolean clockwise = r.nextBoolean();
+                int rotations = r.nextInt(1) + 1;
+                cardDeck.add(new RotationCard(priority, rotations, clockwise));
+            }
+        }
+    }
+
+    /**
+     * Get the robots card deck
+     * @return the card deck
+     */
+    public ArrayList<ProgramCard> getCardDeck() {
+        return cardDeck;
     }
 
     /**

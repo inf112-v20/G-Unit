@@ -53,7 +53,7 @@ public class Game extends InputAdapter implements Screen {
 
     private int phase;
     private int cardIdx;
-    private ArrayList<ProgramCard> roundCards;
+    private ArrayList<ProgramCard> roundCards = new ArrayList<>();
 
     /**
      * The Game constructor
@@ -78,7 +78,7 @@ public class Game extends InputAdapter implements Screen {
 
         // currently initialising the game in this state for testing purposes
         // this should actually be initialised to GameState.SETUP
-        state = GameState.PROGRAM_CARD_EXECUTION;
+        state = GameState.ROBOT_PROGRAMMING;
 
         phase = 0;
         cardIdx = 0;
@@ -116,9 +116,6 @@ public class Game extends InputAdapter implements Screen {
 
         // add this class as the input processor
         //Gdx.input.setInputProcessor(this);
-
-        // start a new game-phase
-        newPhase();
     }
 
     /**
@@ -200,6 +197,8 @@ public class Game extends InputAdapter implements Screen {
             // TODO: Implement programming phase, where each player programs their robot
             // TODO: Need to implement HUD first
             case ROBOT_PROGRAMMING:
+                for (Robot robot : robots) robot.dealCards();
+                state = GameState.PROGRAM_CARD_EXECUTION;
                 System.out.println("programming");
                 break;
             case PROGRAM_CARD_EXECUTION:
@@ -253,7 +252,7 @@ public class Game extends InputAdapter implements Screen {
         tileRenderer.setView(camera);
         tileRenderer.render();
 
-        main.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        Main.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.draw();
 
         // increase the game tick
@@ -266,9 +265,9 @@ public class Game extends InputAdapter implements Screen {
     private void newRound() {
         System.out.println("New round!");
         phase = 0;
-        state = GameState.PROGRAM_CARD_EXECUTION; // here for testing
-        newPhase(); // testing
-        //state = GameState.ROBOT_PROGRAMMING;
+        //state = GameState.PROGRAM_CARD_EXECUTION; // here for testing
+        //newPhase(); // testing
+        state = GameState.ROBOT_PROGRAMMING;
     }
 
     /**
@@ -490,6 +489,14 @@ public class Game extends InputAdapter implements Screen {
      */
     public boolean getGameOver() {
         return gameIsOver;
+    }
+
+    /**
+     * Get the current state of the game
+     * @return the current game state
+     */
+    public GameState getState() {
+        return state;
     }
 
     @Override

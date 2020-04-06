@@ -3,6 +3,7 @@ package inf112.gunit.hud;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -10,14 +11,23 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import inf112.gunit.GameState;
 import inf112.gunit.main.Main;
+import inf112.gunit.player.card.CardType;
+import inf112.gunit.player.card.MovementCard;
+import inf112.gunit.player.card.ProgramCard;
+import inf112.gunit.player.card.RotationCard;
 import inf112.gunit.screens.Game;
+
+import javax.smartcardio.Card;
 
 public class Hud extends ClickListener implements Disposable {
 
@@ -31,6 +41,8 @@ public class Hud extends ClickListener implements Disposable {
     private final Texture POWER_DOWN_GREY = new Texture("assets/power_down_grey.png");
     private final Texture SUBMIT_GREEN = new Texture("assets/submit_green.png");
     private final Texture SUBMIT_GREY = new Texture("assets/submit_grey.png");
+
+    private final TextureRegion[][] CARD_TEXTURES = TextureRegion.split(new Texture("assets/card_sprites.png"), 75, 100);
 
     private final int TEXTURE_PADDING = 30;
 
@@ -60,9 +72,13 @@ public class Hud extends ClickListener implements Disposable {
 
         lifeTokenTable = new Table();
         lifeTokenTable.top();
-
         lifeTokenTable.setFillParent(true);
         lifeTokenTable.setPosition(400, -250);
+
+        cardTable = new Table();
+        cardTable.top();
+        cardTable.setFillParent(true);
+        cardTable.setPosition(500, 0);
 
         ImageButton.ImageButtonStyle powerDownStyle = new ImageButton.ImageButtonStyle();
         powerDownStyle.imageUp = new TextureRegionDrawable(new TextureRegion(POWER_DOWN_GREY));
@@ -100,11 +116,13 @@ public class Hud extends ClickListener implements Disposable {
 
         stage.addActor(damageTokenTable);
         stage.addActor(lifeTokenTable);
+        stage.addActor(cardTable);
         stage.addActor(powerDownButton);
         stage.addActor(submitButton);
 
         updateDamageTokens();
         updateLifeTokens();
+        updateCards();
     }
 
     private ClickListener addButtonListener(final ImageButton button) {
@@ -145,6 +163,37 @@ public class Hud extends ClickListener implements Disposable {
 
     }
 
+    public void updateCards() {
+        cardTable.reset();
+
+        for (ProgramCard card : game.getPlayerRobot().getCardDeck()) {
+            CardType type = card.getType();
+            int x;
+            int y;
+
+            if (type == CardType.MOVEMENT) {
+                y = 0;
+                x = ((MovementCard) card).getDistance() - 1;
+            } else {
+                y = 1;
+                if (((RotationCard) card).getRotations() == 2) {
+                    x = 2;
+                } else {
+                    x = (((RotationCard) card).isClockwise()) ? 1 : 0;
+                }
+            }
+            ImageTextButton.ImageTextButtonStyle style = new ImageTextButton.ImageTextButtonStyle();
+            style.imageUp = new TextureRegionDrawable(CARD_TEXTURES[y][x]);
+            style.font = Main.font;
+            ImageTextButton button = new ImageTextButton(String.valueOf(card.getPriority()), style);
+            button.getLabel().setPosition(-100, 0);
+
+            cardTable.add(button).pad(10);
+            if (cardTable.getCells().size % 3 == 0) cardTable.row();
+        }
+
+    }
+
     public void draw() {
         stage.act(Gdx.graphics.getDeltaTime());
 
@@ -155,6 +204,8 @@ public class Hud extends ClickListener implements Disposable {
 
         updateDamageTokens();
         updateLifeTokens();
+        if (game.getState() == GameState.ROBOT_PROGRAMMING) updateCards();
+        else cardTable.reset();
 
         stage.draw();
     }

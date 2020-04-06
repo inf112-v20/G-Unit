@@ -16,8 +16,8 @@ public class Main extends Game {
     public static final int WIDTH = 1500;
     public static final int HEIGHT = 1000;
 
-    public SpriteBatch batch;
-    public BitmapFont font;
+    public static SpriteBatch batch;
+    public static BitmapFont font;
 
     @Override
     public void create() {

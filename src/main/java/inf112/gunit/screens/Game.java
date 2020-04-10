@@ -210,11 +210,11 @@ public class Game extends InputAdapter implements Screen {
                     board.conveyExpress();
                     board.conveyRegular();
                     board.rotateGears();
-                    System.out.println("damageMarkers: RED: " + robots[0].getDamageMarkers());
-                    System.out.println("damageMarkers: GREEN: " + robots[1].getDamageMarkers());
-                    System.out.println("damageMarkers: YELLOW: " + robots[2].getDamageMarkers());
-                    System.out.println("damageMarkers: CYAN: " + robots[3].getDamageMarkers());
                     board.robotsFire();
+                    System.out.println("damageMarkers AFTER SHOOTING: RED: " + robots[0].getDamageMarkers());
+                    System.out.println("damageMarkers AFTER SHOOTING: GREEN: " + robots[1].getDamageMarkers());
+                    System.out.println("damageMarkers AFTER SHOOTING: YELLOW: " + robots[2].getDamageMarkers());
+                    System.out.println("damageMarkers AFTER SHOOTING: CYAN: " + robots[3].getDamageMarkers());
 
                     for (Robot robot : robots){
                         if (robot.getDamageMarkers() <= 0)
@@ -270,6 +270,7 @@ public class Game extends InputAdapter implements Screen {
         phase = 0;
         state = GameState.PROGRAM_CARD_EXECUTION; // here for testing
         newPhase(); // testing
+
         //state = GameState.ROBOT_PROGRAMMING;
     }
 
@@ -285,6 +286,9 @@ public class Game extends InputAdapter implements Screen {
 
         for (Robot robot : robots) {
             roundCards.add(robot.getProgram()[phase]);
+            // When new phase starts, robots will be able to search and shoot again.
+            robot.setHasFired(false);
+            robot.setHasSearched(false);
         }
 
         //sort cards by priority
@@ -383,6 +387,7 @@ public class Game extends InputAdapter implements Screen {
                 return false;
         }
 
+
         // wallCell is the cell you are trying to move to
         // prevCell is the cell you are currently standing on, aka the cell you are moving from
         // Also checks for lasers, since they are also walls
@@ -462,6 +467,15 @@ public class Game extends InputAdapter implements Screen {
         return false;
     }
 
+    public boolean cellIsOccupied(int x, int y){
+        for (int i = 0; i < robots.length; i++) {
+            if (((TiledMapTileLayer) map.getLayers().get("player_" + i)).getCell(x, y) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Get the players/robots currently in the game
      * @return the robots
@@ -488,6 +502,14 @@ public class Game extends InputAdapter implements Screen {
 
     public MapProperties getProps() {
         return props;
+    }
+
+    public Robot getRobot(int x, int y){
+        for (Robot robot : robots){
+            if (robot.getPositionX() == x && robot.getPositionY() == y)
+                return robot;
+        }
+        return null;
     }
 
     @Override

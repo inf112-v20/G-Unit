@@ -53,6 +53,15 @@ public class Robot {
     // Each player/robot starts with 10 damageMarkers, which represents health points.
     private int damageMarkers = 10;
 
+    // Each player has one shot each "round"/phase.
+    private boolean hasFired = false;
+
+    // Each robot can search only once each "round"/phase.
+    private boolean hasSearched = false;
+
+    // The amount of damage a robots weapon takes.
+    private int power = 1;
+
     /**
      * The Robot constructor
      * @param game takes the Game object the robot is instantiated from
@@ -358,52 +367,103 @@ public class Robot {
         return layer;
     }
 
+    /**
+     * Get the boolean value hasFired of the robot.
+     * @return hasFired.
+     */
+    public boolean getHasFired() {
+        return hasFired;
+    }
+
+    /**
+     * Set hasFired to true or false.
+     * @param hasFired
+     */
+    public void setHasFired(boolean hasFired) {
+        this.hasFired = hasFired;
+    }
+
+    /**
+     * Set hasSearched to true or false.
+     * @param hasSearched
+     */
+    public void setHasSearched(boolean hasSearched) {
+        this.hasSearched = hasSearched;
+    }
+
+    /**
+     * This is called on a robot that is taking damage.
+     * @param power is the amount of damage taken.
+     */
+    public void handleDamage(int power){
+        this.damageMarkers -= power;
+    }
+
+    /**
+     * This method is called when the robots shoot.
+     */
     public void shootLaser() {
-        for (Robot robot : game.getRobots()){
-            switch(dir){
-                case NORTH:
-                    //Checks how many cells are left on the board from the robot to the edge of the board
-                    // by taking the length of the board, minus (the robots position + 1 (added 1 because cell 0 is a cell, not zero cells)).
-                    for (int i = 1; i < game.getProps().get("height", Integer.class) - this.getPositionY() + 1 ; i++){
-                        // See if one of those cells contain a player or.
-                        // TODO : Let it be possible to search for other things, such as a wall.
-                        if (!game.moveIsValid(dir,(int) this.getPositionX(), (int) this.getPositionY() + i)){
-                            // See which player/robot that is.
-                            if (this.getPositionX() == robot.getPositionX() && this.getPositionY() + i == robot.getPositionY()) {
-                                // Remove damage from that robot.
-                                robot.damageMarkers--;
-                                // TODO : Let it be possible to take more than 1 damage, via weapons.
-                                System.out.println("The " + this.toString() + " robot shot the " + robot.toString() + " robot, while facing " + dir);
-                            }
+        int x = (int) this.getPositionX();
+        int y = (int) this.getPositionY();
+        // Check if robot hasn't fired this "round"/phase.
+        if(!this.hasFired){
+            // Checks which direction this robot is facing.
+            if (this.getDirection() == Direction.NORTH) {
+                //Checks how many cells are left on the board from the robot to the edge of the board
+                for (int i = 1; i < (game.getProps().get("height", Integer.class) - y + 1) - 1; i++) {
+                    // See if this robot has already searched this round.
+                    if(!this.hasSearched){
+                        // See if any of the cells have a robot on it.
+                        if (game.cellIsOccupied(x, y + i)) {
+                            // See which player/robot is occupying that cell and cause damage on it, plus set hasFired to true on the robot doing the shooting.
+                            Robot robot = game.getRobot(x, y + i);
+                            robot.handleDamage(power);
+                            this.hasFired = true;
+                            System.out.println("The " + this.toString() + " robot, at pos: " + this.getPosition() + ", shot the " + robot.toString() + " robot, at pos: " + robot.getPosition() + ", while facing " + this.getDirection() + ".");
                         }
                     }
-                case SOUTH:
-                    for (int i = 1; i < game.getProps().get("height", Integer.class) - (game.getProps().get("height", Integer.class) - this.getPositionY()); i++){
-                        if (!game.moveIsValid(dir,(int) this.getPositionX(), (int) this.getPositionY() - i)){
-                            if (this.getPositionX() == robot.getPositionX() && this.getPositionY() -i == robot.getPositionY()) {
-                                robot.damageMarkers--;
-                                System.out.println("The " + this.toString() + " robot shot the " + robot.toString() + " robot, while facing " + dir);
-                            }
+                }
+                // After searching set hasSearched to true.
+                this.setHasSearched(true);
+            }
+            else if (this.getDirection() == Direction.SOUTH) {
+                for (int i = 1; i < game.getProps().get("height", Integer.class) - (game.getProps().get("height", Integer.class) - y); i++){
+                    if(!this.hasSearched){
+                        if (game.cellIsOccupied(x, y - i)){
+                            Robot robot = game.getRobot(x, y - i);
+                            robot.handleDamage(power);
+                            this.hasFired = true;
+                            System.out.println("The " + this.toString() + " robot, at pos: " + this.getPosition() + ", shot the " + robot.toString() + " robot, at pos: " + robot.getPosition() + ", while facing " + this.getDirection() + ".");
                         }
                     }
-                case EAST:
-                    for (int i = 1; i < game.getProps().get("width", Integer.class) - this.getPositionX() + 1 ; i++){
-                        if (!game.moveIsValid(dir,(int) this.getPositionX() + i, (int) this.getPositionY())){
-                            if (this.getPositionX() + i == robot.getPositionX() && this.getPositionY() == robot.getPositionY()) {
-                                robot.damageMarkers--;
-                                System.out.println("The " + this.toString() + " robot shot the " + robot.toString() + " robot, while facing " + dir);
-                            }
+                }
+                this.setHasSearched(true);
+            }
+            else if (this.getDirection() == Direction.EAST) {
+                for (int i = 1; i < (game.getProps().get("width", Integer.class) - x + 1) - 1; i++) {
+                    if(!this.hasSearched){
+                        if (game.cellIsOccupied(x + i, y)) {
+                            Robot robot = game.getRobot(x + i, y);
+                            robot.handleDamage(power);
+                            this.hasFired = true;
+                            System.out.println("The " + this.toString() + " robot, at pos: " + this.getPosition() + ", shot the " + robot.toString() + " robot, at pos: " + robot.getPosition() + ", while facing " + this.getDirection() + ".");
                         }
                     }
-                case WEST:
-                    for (int i = 1; i < game.getProps().get("width", Integer.class) - (game.getProps().get("width", Integer.class) - this.getPositionX()); i++){
-                        if (!game.moveIsValid(dir,(int) this.getPositionX() - i, (int) this.getPositionY())){
-                            if (this.getPositionX() - i == robot.getPositionX() && this.getPositionY() == robot.getPositionY()) {
-                                robot.damageMarkers--;
-                                System.out.println("The " + this.toString() + " robot shot the " + robot.toString() + " robot, while facing " + dir);
-                            }
+                }
+                this.setHasSearched(true);
+            }
+            else if (this.getDirection() == Direction.WEST) {
+                for (int i = 1; i < game.getProps().get("width", Integer.class) - (game.getProps().get("width", Integer.class) - x); i++){
+                    if(!this.hasSearched){
+                        if (game.cellIsOccupied(x - i, y)){
+                            Robot robot = game.getRobot(x - i, y);
+                            robot.handleDamage(power);
+                            this.hasFired = true;
+                            System.out.println("The " + this.toString() + " robot, at pos: " + this.getPosition() + ", shot the " + robot.toString() + " robot, at pos: " + robot.getPosition() + ", while facing " + this.getDirection() + ".");
                         }
                     }
+                }
+                this.setHasSearched(true);
             }
         }
     }

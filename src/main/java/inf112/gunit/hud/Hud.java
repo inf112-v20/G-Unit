@@ -9,10 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -28,8 +25,9 @@ import inf112.gunit.player.card.RotationCard;
 import inf112.gunit.screens.Game;
 
 import javax.smartcardio.Card;
+import java.util.ArrayList;
 
-public class Hud extends ClickListener implements Disposable {
+public class Hud implements Disposable {
 
     private final Game game;
     private final Texture bg = new Texture("assets/program_sheet_bg.png");
@@ -57,13 +55,11 @@ public class Hud extends ClickListener implements Disposable {
 
     private Viewport viewport;
 
-    public Hud(SpriteBatch batch, Game game) {
+    public Hud(SpriteBatch batch, final Game game) {
         this.game = game;
 
         viewport = new FitViewport(Main.WIDTH, Main.HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, batch);
-
-        Gdx.input.setInputProcessor(stage);
 
         damageTokenTable = new Table();
         damageTokenTable.top();
@@ -79,6 +75,7 @@ public class Hud extends ClickListener implements Disposable {
         cardTable.top();
         cardTable.setFillParent(true);
         cardTable.setPosition(500, 0);
+        updateCards();
 
         ImageButton.ImageButtonStyle powerDownStyle = new ImageButton.ImageButtonStyle();
         powerDownStyle.imageUp = new TextureRegionDrawable(new TextureRegion(POWER_DOWN_GREY));
@@ -110,7 +107,7 @@ public class Hud extends ClickListener implements Disposable {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                System.out.println("submit");
+                game.getPlayerRobot().isDonePicking = true;
             }
         });
 
@@ -122,10 +119,11 @@ public class Hud extends ClickListener implements Disposable {
 
         updateDamageTokens();
         updateLifeTokens();
-        updateCards();
+
+        Gdx.input.setInputProcessor(stage);
     }
 
-    private ClickListener addButtonListener(final ImageButton button) {
+    private ClickListener addButtonListener(final Button button) {
         return new ClickListener() {
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -166,7 +164,7 @@ public class Hud extends ClickListener implements Disposable {
     public void updateCards() {
         cardTable.reset();
 
-        for (ProgramCard card : game.getPlayerRobot().getCardDeck()) {
+        for (final ProgramCard card : game.getPlayerRobot().getCardDeck()) {
             CardType type = card.getType();
             int x;
             int y;
@@ -184,9 +182,31 @@ public class Hud extends ClickListener implements Disposable {
             }
             ImageTextButton.ImageTextButtonStyle style = new ImageTextButton.ImageTextButtonStyle();
             style.imageUp = new TextureRegionDrawable(CARD_TEXTURES[y][x]);
+            style.imageChecked = new TextureRegionDrawable(CARD_TEXTURES[y][x]);
+            style.imageChecked.setMinHeight(style.imageChecked.getMinHeight() * 0.9f);
+            style.imageChecked.setMinWidth(style.imageChecked.getMinWidth() * 0.9f);
+
             style.font = Main.font;
-            ImageTextButton button = new ImageTextButton(String.valueOf(card.getPriority()), style);
-            button.getLabel().setPosition(-100, 0);
+            final ProgramCardButton button = new ProgramCardButton(card, String.valueOf(card.getPriority()), style);
+            button.addListener(new ClickListener() {
+                @Override
+                public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                    super.enter(event, x, y, pointer, fromActor);
+                    button.setChecked(true);
+                }
+
+                @Override
+                public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                    super.exit(event, x, y, pointer, toActor);
+                    button.setChecked(false);
+                }
+
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    super.clicked(event, x, y);
+                    game.getPlayerRobot().addProgCard(card);
+                }
+            });
 
             cardTable.add(button).pad(10);
             if (cardTable.getCells().size % 3 == 0) cardTable.row();
@@ -204,8 +224,12 @@ public class Hud extends ClickListener implements Disposable {
 
         updateDamageTokens();
         updateLifeTokens();
+        //updateCards();
+        /*
         if (game.getState() == GameState.ROBOT_PROGRAMMING) updateCards();
         else cardTable.reset();
+
+         */
 
         stage.draw();
     }

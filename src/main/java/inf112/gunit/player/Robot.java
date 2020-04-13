@@ -36,6 +36,8 @@ public class Robot {
     private ProgramCard[] program;
 
     private ArrayList<ProgramCard> cardDeck = new ArrayList<>();
+    private ArrayList<ProgramCard> prog = new ArrayList<>();
+    public boolean isDonePicking = false;
 
     private Game game;
     private MapProperties props;
@@ -237,25 +239,34 @@ public class Robot {
         this.program = Arrays.copyOf(program, 5);
     }
 
+    public void addProgCard(ProgramCard card) {
+        prog.add(card);
+    }
+
+    public ArrayList<ProgramCard> getProg() {
+        return prog;
+    }
+
     /**
      * At the start of each phase, deal random program cards to each player
      */
     public void dealCards() {
         Random r = new Random();
         cardDeck = new ArrayList<>();
+        prog = new ArrayList<>();
 
         //compute number of cards to be dealt based on damage tokens
         int numOfCards = (damageMarkers >= 4) ? 5 : 9 - damageMarkers;
         for (int i = 0; i < numOfCards; i++) {
-            boolean isMoveCard = r.nextBoolean();
+            int isMoveCard = r.nextInt(3); // 67% chance of getting a movement card per card
             int priority = (r.nextInt(70) + 10) * 10;
 
-            if (isMoveCard) {
+            if (isMoveCard > 0) {
                 int distance = r.nextInt(3) + 1;
                 cardDeck.add(new MovementCard(priority, distance));
             } else {
                 boolean clockwise = r.nextBoolean();
-                int rotations = r.nextInt(1) + 1;
+                int rotations = r.nextInt(2) + 1;
                 cardDeck.add(new RotationCard(priority, rotations, clockwise));
             }
         }

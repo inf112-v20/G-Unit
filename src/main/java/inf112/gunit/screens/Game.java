@@ -21,6 +21,7 @@ import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.TestPrograms;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -76,13 +77,8 @@ public class Game extends InputAdapter implements Screen {
         this.robots = new Robot[numOfPlayers];
         board = new Board(this);
 
-        // currently initialising the game in this state for testing purposes
-        // this should actually be initialised to GameState.SETUP
-        state = GameState.ROBOT_PROGRAMMING;
-
         phase = 0;
         cardIdx = 0;
-
         tick = 0;
 
         props = map.getProperties();
@@ -102,6 +98,7 @@ public class Game extends InputAdapter implements Screen {
         // set the controllable robot (for testing)
         mainRobot = robots[0];
         playerRobot = mainRobot;
+        hud = new Hud(Main.batch, this);
 
         //set the camera accordingly
         camera = new OrthographicCamera();
@@ -112,10 +109,7 @@ public class Game extends InputAdapter implements Screen {
         tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / (tileWidth) * (tileHeight));
         tileRenderer.setView(camera);
 
-        hud = new Hud(main.batch, this);
-
-        // add this class as the input processor
-        //Gdx.input.setInputProcessor(this);
+        newRound();
     }
 
     /**
@@ -193,16 +187,24 @@ public class Game extends InputAdapter implements Screen {
             // TODO: Implement setup phase, where you place flags etc...
             // if flags already is placed on board in the tiledmap file, this is not needed
             case SETUP:
+                playerRobot.dealCards();
+                hud.updateCards();
+                state = GameState.ROBOT_PROGRAMMING;
                 break;
             // TODO: Implement programming phase, where each player programs their robot
             // TODO: Need to implement HUD first
             case ROBOT_PROGRAMMING:
-                for (Robot robot : robots) robot.dealCards();
-                state = GameState.PROGRAM_CARD_EXECUTION;
-                System.out.println("programming");
+                if (playerRobot.isDonePicking) {
+                    ProgramCard[] program = playerRobot.getProg().toArray(new ProgramCard[5]);
+                    System.out.println(Arrays.toString(program));
+                    playerRobot.setProgram(program);
+                    playerRobot.isDonePicking = false;
+                    state = GameState.PROGRAM_CARD_EXECUTION;
+                }
                 break;
             case PROGRAM_CARD_EXECUTION:
                 // check if all cards this phase have been performed
+                System.out.println(phase);
                 if (cardIdx >= roundCards.size()) {
                     state = GameState.CELL_MECHANIC_EXECUTION;
                 } else if (tick % INTERVAL == 0) {
@@ -265,9 +267,7 @@ public class Game extends InputAdapter implements Screen {
     private void newRound() {
         System.out.println("New round!");
         phase = 0;
-        //state = GameState.PROGRAM_CARD_EXECUTION; // here for testing
-        //newPhase(); // testing
-        state = GameState.ROBOT_PROGRAMMING;
+        state = GameState.SETUP;
     }
 
     /**

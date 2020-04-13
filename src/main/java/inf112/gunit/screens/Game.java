@@ -287,8 +287,8 @@ public class Game extends InputAdapter implements Screen {
         for (Robot robot : robots) {
             roundCards.add(robot.getProgram()[phase]);
             // When new phase starts, robots will be able to search and shoot again.
-            robot.setHasFired(false);
-            robot.setHasSearched(false);
+            robot.isHasFired(false);
+            robot.isHasSearched(false);
         }
 
         //sort cards by priority
@@ -467,14 +467,27 @@ public class Game extends InputAdapter implements Screen {
         return false;
     }
 
-    public boolean cellIsOccupied(int x, int y){
-        for (int i = 0; i < robots.length; i++) {
-            if (((TiledMapTileLayer) map.getLayers().get("player_" + i)).getCell(x, y) != null) {
-                System.out.println( "occupied by: " + robots[i]);
-                return true;
+    /**
+     * Searches for robots in the direction the Robot shooter is facing.
+     * Calls handleDamage() on Robot target if there is a target, with shooter.getPower() as the amount of damage.
+     * After that it sets hasFired and hasSearched to true on Robot shooter.
+     * @param x is the targets x position.
+     * @param y is the targets y position.
+     * @param shooter is the robot that is doing the shooting.
+     */
+    public void searchAndDestroy(int x, int y, Robot shooter){
+        for (Robot target : robots) {
+            if ((int) target.getPositionX() == x && (int) target.getPositionY() == y) {
+                target.handleDamage(shooter.getPower());
+                shooter.isHasFired(true);
+                shooter.isHasSearched(true);
+
+                System.out.println("The " + shooter.toString() + " robot" +
+                        shooter.getPosition() + " shot the " +
+                        target.toString() + " robot" + target.getPosition()
+                        + " from " + shooter.getDirection() + ".");
             }
         }
-        return false;
     }
 
     /**
@@ -504,18 +517,6 @@ public class Game extends InputAdapter implements Screen {
     public MapProperties getProps() {
         return props;
     }
-
-    public Robot getEnemyRobot(int x, int y){
-        for (Robot robot : robots){
-            // TODO: celloccupied må ikke calles i det hele tatt, da haveSearched, så det under må inn i Robot. Også i stedet bare begynne å søke fra x+1+ i, y
-            if ((int) robot.getPositionX() == x && (int) robot.getPositionY() == y){
-                System.out.println("getRobot: " + robot + " x: " + x + " y: " + y);
-                return robot;
-            }
-        }
-        return null;
-    }
-
 
     @Override
     public void resize(int i, int i1) {

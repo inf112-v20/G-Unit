@@ -134,7 +134,7 @@ public class Board {
 
     public void robotsFire(){
         for (Robot robot : game.getRobots()) {
-            robot.shootLaser();
+            robot.fire();
         }
     }
 

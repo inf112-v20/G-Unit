@@ -3,7 +3,6 @@ package inf112.gunit.hud;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -12,20 +11,15 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import inf112.gunit.GameState;
 import inf112.gunit.main.Main;
 import inf112.gunit.player.card.CardType;
 import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
 import inf112.gunit.screens.Game;
-
-import javax.smartcardio.Card;
-import java.util.ArrayList;
 
 public class Hud implements Disposable {
 
@@ -107,7 +101,7 @@ public class Hud implements Disposable {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                if (game.getPlayerRobot().getProg().size() == 5)
+                if (game.getPlayerRobot().getProgramBuffer().size() == 5)
                     game.getPlayerRobot().isDonePicking = true;
             }
         });
@@ -205,8 +199,8 @@ public class Hud implements Disposable {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     super.clicked(event, x, y);
-                    if (game.getPlayerRobot().getProg().size() < 5) {
-                        game.getPlayerRobot().addProgCard(card);
+                    if (game.getPlayerRobot().getProgramBuffer().size() < 5) {
+                        game.getPlayerRobot().addBufferCard(card);
                         cardTable.removeActor(button);
                     }
                 }

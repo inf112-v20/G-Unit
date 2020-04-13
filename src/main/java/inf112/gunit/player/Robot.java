@@ -9,13 +9,11 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.board.Direction;
-import inf112.gunit.player.card.CardType;
 import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
 import inf112.gunit.screens.Game;
 
-import javax.xml.soap.Text;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -36,7 +34,7 @@ public class Robot {
     private ProgramCard[] program;
 
     private ArrayList<ProgramCard> cardDeck = new ArrayList<>();
-    private ArrayList<ProgramCard> prog = new ArrayList<>();
+    private ArrayList<ProgramCard> programBuffer = new ArrayList<>();
     public boolean isDonePicking = false;
 
     private Game game;
@@ -239,12 +237,20 @@ public class Robot {
         this.program = Arrays.copyOf(program, 5);
     }
 
-    public void addProgCard(ProgramCard card) {
-        prog.add(card);
+    /**
+     * Add a card to the program buffer
+     * @param card the card to add
+     */
+    public void addBufferCard(ProgramCard card) {
+        programBuffer.add(card);
     }
 
-    public ArrayList<ProgramCard> getProg() {
-        return prog;
+    /**
+     * Get the program buffer
+     * @return the program buffer
+     */
+    public ArrayList<ProgramCard> getProgramBuffer() {
+        return programBuffer;
     }
 
     /**
@@ -253,7 +259,7 @@ public class Robot {
     public void dealCards() {
         Random r = new Random();
         cardDeck = new ArrayList<>();
-        prog = new ArrayList<>();
+        programBuffer = new ArrayList<>();
 
         //compute number of cards to be dealt based on damage tokens
         int numOfCards = (damageMarkers >= 4) ? 5 : 9 - damageMarkers;

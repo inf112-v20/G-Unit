@@ -21,7 +21,6 @@ import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.TestPrograms;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -203,7 +202,7 @@ public class Game extends InputAdapter implements Screen {
             // TODO: Need to implement HUD first
             case ROBOT_PROGRAMMING:
                 if (playerRobot.isDonePicking) {
-                    ProgramCard[] program = playerRobot.getProg().toArray(new ProgramCard[5]);
+                    ProgramCard[] program = playerRobot.getProgramBuffer().toArray(new ProgramCard[5]);
                     playerRobot.setProgram(program);
                     playerRobot.isDonePicking = false;
                     newPhase();

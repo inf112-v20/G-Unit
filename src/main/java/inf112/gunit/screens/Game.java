@@ -91,7 +91,6 @@ public class Game extends InputAdapter implements Screen {
         // gives each robot a program
         for (int i = 0; i < numOfPlayers; i++) {
             Robot p = new Robot(this, i, board.getStartPosition(i));
-            p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
             robots[i] = p;
         }
 
@@ -187,7 +186,16 @@ public class Game extends InputAdapter implements Screen {
             // TODO: Implement setup phase, where you place flags etc...
             // if flags already is placed on board in the tiledmap file, this is not needed
             case SETUP:
-                playerRobot.dealCards();
+                for (Robot r : robots) {
+                    r.dealCards();
+                    if (r != playerRobot) {
+                        ProgramCard[] p = new ProgramCard[5];
+                        for (int i = 0; i < p.length; i++) {
+                            p[i] = r.getCardDeck().get(i);
+                        }
+                        r.setProgram(p);
+                    }
+                }
                 hud.updateCards();
                 state = GameState.ROBOT_PROGRAMMING;
                 break;
@@ -196,7 +204,6 @@ public class Game extends InputAdapter implements Screen {
             case ROBOT_PROGRAMMING:
                 if (playerRobot.isDonePicking) {
                     ProgramCard[] program = playerRobot.getProg().toArray(new ProgramCard[5]);
-                    System.out.println(Arrays.toString(program));
                     playerRobot.setProgram(program);
                     playerRobot.isDonePicking = false;
                     newPhase();

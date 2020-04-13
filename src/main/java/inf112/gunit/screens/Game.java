@@ -470,6 +470,7 @@ public class Game extends InputAdapter implements Screen {
     public boolean cellIsOccupied(int x, int y){
         for (int i = 0; i < robots.length; i++) {
             if (((TiledMapTileLayer) map.getLayers().get("player_" + i)).getCell(x, y) != null) {
+                System.out.println( "occupied by: " + robots[i]);
                 return true;
             }
         }
@@ -504,13 +505,17 @@ public class Game extends InputAdapter implements Screen {
         return props;
     }
 
-    public Robot getRobot(int x, int y){
+    public Robot getEnemyRobot(int x, int y){
         for (Robot robot : robots){
-            if (robot.getPositionX() == x && robot.getPositionY() == y)
+            // TODO: celloccupied må ikke calles i det hele tatt, da haveSearched, så det under må inn i Robot. Også i stedet bare begynne å søke fra x+1+ i, y
+            if ((int) robot.getPositionX() == x && (int) robot.getPositionY() == y){
+                System.out.println("getRobot: " + robot + " x: " + x + " y: " + y);
                 return robot;
+            }
         }
         return null;
     }
+
 
     @Override
     public void resize(int i, int i1) {

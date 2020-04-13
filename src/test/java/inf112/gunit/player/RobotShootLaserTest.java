@@ -18,59 +18,156 @@ public class RobotShootLaserTest {
     private Board board;
 
     private Robot robotShooter;
-    private Robot robotGettingShot;
+    private Robot robotBeingShot;
     private Robot robotHidingBehind;
 
-    private Vector2 shooterPos = new Vector2(0,0);
-    private Vector2 beingShotPos = new Vector2(1,0);
-    private Vector2 hidingBehindPos = new Vector2(2,0);
+    // EW East West Positions and Directions
+    private Vector2 shooterPosEW = new Vector2(0,0);
+    private Vector2 beingShotPosEW = new Vector2(1,0);
+    private Vector2 hidingBehindPosEW = new Vector2(2,0);
 
-    private int before;
+    private Direction shooterDirEW = Direction.EAST;
+    private Direction beingShotDirEW = Direction.NORTH;
+    private Direction hidingBehindDirEW = Direction.WEST;
+
+    // NS North South Positions and Directions
+    private Vector2 shooterPosNS = new Vector2(0,0);
+    private Vector2 beingShotPosNS = new Vector2(0,1);
+    private Vector2 hidingBehindPosNS = new Vector2(0,2);
+
+    private Direction shooterDirNS = Direction.SOUTH;
+    private Direction beingShotDirNS = Direction.EAST;
+    private Direction hidingBehindDirNS = Direction.NORTH;
 
     @Before
     public void initialise(){
+
         Game game = new Game(3, new TmxMapLoader().load("assets/board_new.tmx"));
         this.board = new Board(game);
 
         this.robotShooter = game.getRobots()[0];
-        this.robotGettingShot = game.getRobots()[1];
+        this.robotBeingShot = game.getRobots()[1];
         this.robotHidingBehind = game.getRobots()[2];
 
-
         robotShooter.setPosition(new Vector2(0,0));
-        robotGettingShot.setPosition(new Vector2(0,0));
+        robotBeingShot.setPosition(new Vector2(0,0));
         robotHidingBehind.setPosition(new Vector2(0,0));
-
-        robotShooter.setDirection(Direction.EAST);
-        robotGettingShot.setDirection(Direction.NORTH);
-        robotHidingBehind.setDirection(Direction.WEST);
-
-        before = robotGettingShot.getDamageMarkers();
     }
 
     @Test
-    public void testToSeeIfRobotsAreTakingDamage(){
-        robotShooter.setPosition(shooterPos.cpy());
-        robotGettingShot.setPosition(beingShotPos.cpy());
-        robotHidingBehind.setPosition(hidingBehindPos.cpy());
+    public void testToSeeIfRobotsAreTakingDamageEastWest(){
+        robotShooter.setPosition(shooterPosEW.cpy());
+        robotBeingShot.setPosition(beingShotPosEW.cpy());
+        robotHidingBehind.setPosition(hidingBehindPosEW.cpy());
 
-        System.out.println("before: " + before);
+        robotShooter.setDirection(shooterDirEW);
+        robotBeingShot.setDirection(beingShotDirEW);
+        robotHidingBehind.setDirection(hidingBehindDirEW);
+
+        System.out.println(robotShooter.toString() + " robot pos: " + robotShooter.getPosition());
+        System.out.println(robotBeingShot.toString() + " robot pos: " + robotBeingShot.getPosition());
+        System.out.println(robotHidingBehind.toString() + " robot pos: " + robotHidingBehind.getPosition());
+
+        System.out.println(robotShooter.toString() + " robot dir: " + robotShooter.getDirection());
+        System.out.println(robotBeingShot.toString() + " robot dir: " + robotBeingShot.getDirection());
+        System.out.println(robotHidingBehind.toString() + " robot dir: " + robotHidingBehind.getDirection());
+
+        int before = robotBeingShot.getDamageMarkers();
         board.robotsFire();
-        int after = robotGettingShot.getDamageMarkers();
-        System.out.println("after: " + robotGettingShot.getDamageMarkers());
+        int after = robotBeingShot.getDamageMarkers();
 
         assertEquals(before - 2, after);
     }
 
     @Test
-    public void testToCheckThatLasersDoNotGoThroughRobots(){
-        robotShooter.setPosition(shooterPos.cpy());
-        robotGettingShot.setPosition(beingShotPos.cpy());
-        robotHidingBehind.setPosition(hidingBehindPos.cpy());
+    public void testToSeeIfRobotsAreTakingDamageNorthSouth(){
+        robotShooter.setPosition(shooterPosNS.cpy());
+        robotBeingShot.setPosition(beingShotPosNS.cpy());
+        robotHidingBehind.setPosition(hidingBehindPosNS.cpy());
+
+        robotShooter.setDirection(shooterDirNS);
+        robotBeingShot.setDirection(beingShotDirNS);
+        robotHidingBehind.setDirection(hidingBehindDirNS);
+
+        System.out.println(robotShooter.toString() + " robot pos: " + robotShooter.getPosition());
+        System.out.println(robotBeingShot.toString() + " robot pos: " + robotBeingShot.getPosition());
+        System.out.println(robotHidingBehind.toString() + " robot pos: " + robotHidingBehind.getPosition());
+
+        System.out.println(robotShooter.toString() + " robot dir: " + robotShooter.getDirection());
+        System.out.println(robotBeingShot.toString() + " robot dir: " + robotBeingShot.getDirection());
+        System.out.println(robotHidingBehind.toString() + " robot dir: " + robotHidingBehind.getDirection());
+
+        int before = robotBeingShot.getDamageMarkers();
+        board.robotsFire();
+        int after = robotBeingShot.getDamageMarkers();
+
+        assertEquals(before - 2, after);
+    }
+
+    @Test
+    public void testToCheckThatLasersDoNotGoThroughRobotsFromWest(){
+        robotShooter.setPosition(shooterPosEW.cpy());
+        robotBeingShot.setPosition(beingShotPosEW.cpy());
+        robotHidingBehind.setPosition(hidingBehindPosEW.cpy());
+
+        robotShooter.setDirection(shooterDirEW);
+        robotBeingShot.setDirection(beingShotDirEW);
+        robotHidingBehind.setDirection(hidingBehindDirEW);
 
         int before = robotHidingBehind.getDamageMarkers();
         board.robotsFire();
         int after = robotHidingBehind.getDamageMarkers();
+
+        assertEquals(before, after);
+    }
+
+    @Test
+    public void testToCheckThatLasersDoNotGoThroughRobotsFromEast(){
+        robotShooter.setPosition(shooterPosEW.cpy());
+        robotBeingShot.setPosition(beingShotPosEW.cpy());
+        robotHidingBehind.setPosition(hidingBehindPosEW.cpy());
+
+        robotShooter.setDirection(shooterDirEW);
+        robotBeingShot.setDirection(beingShotDirEW);
+        robotHidingBehind.setDirection(hidingBehindDirEW);
+
+        int before = robotShooter.getDamageMarkers();
+        board.robotsFire();
+        int after = robotShooter.getDamageMarkers();
+
+        assertEquals(before, after);
+    }
+
+    @Test
+    public void testToCheckThatLasersDoNotGoThroughRobotsFromNorth(){
+        robotShooter.setPosition(shooterPosNS.cpy());
+        robotBeingShot.setPosition(beingShotPosNS.cpy());
+        robotHidingBehind.setPosition(hidingBehindPosNS.cpy());
+
+        robotShooter.setDirection(shooterDirNS);
+        robotBeingShot.setDirection(beingShotDirNS);
+        robotHidingBehind.setDirection(hidingBehindDirNS);
+
+        int before = robotHidingBehind.getDamageMarkers();
+        board.robotsFire();
+        int after = robotHidingBehind.getDamageMarkers();
+
+        assertEquals(before, after);
+    }
+
+    @Test
+    public void testToCheckThatLasersDoNotGoThroughRobotsFromSouth(){
+        robotShooter.setPosition(shooterPosNS.cpy());
+        robotBeingShot.setPosition(beingShotPosNS.cpy());
+        robotHidingBehind.setPosition(hidingBehindPosNS.cpy());
+
+        robotShooter.setDirection(shooterDirNS);
+        robotBeingShot.setDirection(beingShotDirNS);
+        robotHidingBehind.setDirection(hidingBehindDirNS);
+
+        int before = robotShooter.getDamageMarkers();
+        board.robotsFire();
+        int after = robotShooter.getDamageMarkers();
 
         assertEquals(before, after);
     }

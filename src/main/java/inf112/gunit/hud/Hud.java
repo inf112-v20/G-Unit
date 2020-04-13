@@ -205,8 +205,10 @@ public class Hud implements Disposable {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     super.clicked(event, x, y);
-                    if (game.getPlayerRobot().getProg().size() < 5)
+                    if (game.getPlayerRobot().getProg().size() < 5) {
                         game.getPlayerRobot().addProgCard(card);
+                        cardTable.removeActor(button);
+                    }
                 }
             });
 

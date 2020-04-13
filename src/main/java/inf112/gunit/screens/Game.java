@@ -199,7 +199,7 @@ public class Game extends InputAdapter implements Screen {
                     System.out.println(Arrays.toString(program));
                     playerRobot.setProgram(program);
                     playerRobot.isDonePicking = false;
-                    state = GameState.PROGRAM_CARD_EXECUTION;
+                    newPhase();
                 }
                 break;
             case PROGRAM_CARD_EXECUTION:

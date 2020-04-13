@@ -319,6 +319,8 @@ public class Robot {
      */
     public void die(){
         // Moves player/robot back to backupMemory and restores damageMarkers.
+        layer.setCell((int) this.getPositionX(), (int) this.getPositionY(), null);
+
         this.lifeTokens--;
         this.position = backupMemory;
         this.damageMarkers = 0;

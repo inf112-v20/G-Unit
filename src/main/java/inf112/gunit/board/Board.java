@@ -109,10 +109,7 @@ public class Board {
     public void holes() {
         TiledMapTileLayer holes = (TiledMapTileLayer) game.getMap().getLayers().get("holes");
 
-        for (Robot robot : game.getRobots()) {
-            TiledMapTileLayer robotLayer = (TiledMapTileLayer) game.getMap().getLayers().get("player_" + robot.getId());
-            if(holes.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) robot.die();
-        }
+        for (Robot robot : game.getRobots()) if(holes.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) robot.die();
     }
 
     /**

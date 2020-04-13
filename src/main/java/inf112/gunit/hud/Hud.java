@@ -177,7 +177,7 @@ public class Hud implements Disposable {
                 if (((RotationCard) card).getRotations() == 2) {
                     x = 2;
                 } else {
-                    x = (((RotationCard) card).isClockwise()) ? 1 : 0;
+                    x = (((RotationCard) card).isClockwise()) ? 0 : 1;
                 }
             }
             ImageTextButton.ImageTextButtonStyle style = new ImageTextButton.ImageTextButtonStyle();
@@ -224,12 +224,6 @@ public class Hud implements Disposable {
 
         updateDamageTokens();
         updateLifeTokens();
-        //updateCards();
-        /*
-        if (game.getState() == GameState.ROBOT_PROGRAMMING) updateCards();
-        else cardTable.reset();
-
-         */
 
         stage.draw();
     }

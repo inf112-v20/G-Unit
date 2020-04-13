@@ -211,10 +211,6 @@ public class Game extends InputAdapter implements Screen {
                     board.conveyRegular();
                     board.rotateGears();
                     board.robotsFire();
-                    System.out.println("damageMarkers AFTER SHOOTING: RED: " + robots[0].getDamageMarkers());
-                    System.out.println("damageMarkers AFTER SHOOTING: GREEN: " + robots[1].getDamageMarkers());
-                    System.out.println("damageMarkers AFTER SHOOTING: YELLOW: " + robots[2].getDamageMarkers());
-                    System.out.println("damageMarkers AFTER SHOOTING: CYAN: " + robots[3].getDamageMarkers());
 
                     for (Robot robot : robots){
                         if (robot.getDamageMarkers() <= 0)

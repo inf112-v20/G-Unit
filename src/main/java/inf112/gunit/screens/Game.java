@@ -225,6 +225,13 @@ public class Game extends InputAdapter implements Screen {
                     board.conveyRegular();
                     board.rotateGears();
                     board.holes();
+                    board.robotsFire();
+
+                    for (Robot robot : robots){
+                        if (robot.getDamageMarkers() <= 0)
+                            robot.die();
+                    }
+
                     board.flags();
 
                     // initialise a new phase
@@ -255,6 +262,7 @@ public class Game extends InputAdapter implements Screen {
 
         // update the robot rendering
         for (Robot robot : robots) robot.update();
+
         tileRenderer.getBatch().end();
         // render the tile-map
         tileRenderer.setView(camera);
@@ -288,6 +296,9 @@ public class Game extends InputAdapter implements Screen {
 
         for (Robot robot : robots) {
             roundCards.add(robot.getProgram()[phase]);
+            // When new phase starts, robots will be able to search and shoot again.
+            robot.setHasFired(false);
+            robot.setHasSearched(false);
         }
 
         //sort cards by priority
@@ -386,6 +397,7 @@ public class Game extends InputAdapter implements Screen {
                 return false;
         }
 
+
         // wallCell is the cell you are trying to move to
         // prevCell is the cell you are currently standing on, aka the cell you are moving from
         // Also checks for lasers, since they are also walls
@@ -463,6 +475,29 @@ public class Game extends InputAdapter implements Screen {
         }
         //System.out.println("Move is not valid!");
         return false;
+    }
+
+    /**
+     * Searches for robots in the direction the Robot shooter is facing.
+     * Calls handleDamage() on Robot target if there is a target, with shooter.getPower() as the amount of damage.
+     * After that it sets hasFired and hasSearched to true on Robot shooter.
+     * @param x is the targets x position.
+     * @param y is the targets y position.
+     * @param shooter is the robot that is doing the shooting.
+     */
+    public void searchAndDestroy(int x, int y, Robot shooter){
+        for (Robot target : robots) {
+            if ((int) target.getPositionX() == x && (int) target.getPositionY() == y) {
+                target.handleDamage(shooter.getPower());
+                shooter.setHasFired(true);
+                shooter.setHasSearched(true);
+
+                System.out.println("The " + shooter.toString() + " robot" +
+                        shooter.getPosition() + " shot the " +
+                        target.toString() + " robot" + target.getPosition()
+                        + " from " + shooter.getDirection() + ".");
+            }
+        }
     }
 
     /**

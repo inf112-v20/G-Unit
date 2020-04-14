@@ -26,7 +26,7 @@ public class Robot {
 
     public int flagsCollected = 0;
 
-    private int id;
+    private final int id;
 
     // these to are for testing, and (probably) wont be used in the actual game
     // program stores a program to execute
@@ -59,6 +59,15 @@ public class Robot {
 
     // Each player/robot starts with 0 damageMarkers, which represents health points.
     private int damageMarkers = 0;
+
+    // Each player has one shot each "round"/phase.
+    private boolean hasFired = false;
+
+    // Each robot can search only once each "round"/phase.
+    private boolean hasSearched = false;
+
+    // The amount of damage a robots weapon takes.
+    private int power = 1;
 
     /**
      * The Robot constructor
@@ -330,6 +339,9 @@ public class Robot {
         this.lifeTokens--;
         this.position = backupMemory;
         this.damageMarkers = 0;
+        if (this.lifeTokens <= 0){
+            // TODO : Remove/dispose robots, that have zero lifeTokens and zero damageMarkers, from the game.
+        }
     }
 
     /**
@@ -410,10 +422,94 @@ public class Robot {
 
     /**
      * Get the TiledMapTileLayer of the robot
-     * @return
+     * @return the layer of the robot
      */
     public TiledMapTileLayer getLayer() {
         return layer;
+    }
+
+    /**
+     * Set hasFired to true or false.
+     * @param hasFired boolean
+     */
+    public void setHasFired(boolean hasFired) {
+        this.hasFired = hasFired;
+    }
+
+    /**
+     * Set hasSearched to true or false.
+     * @param hasSearched boolean
+     */
+    public void setHasSearched(boolean hasSearched) {
+        this.hasSearched = hasSearched;
+    }
+
+    /**
+     * This is called on a robot that is taking damage.
+     * @param power is the amount of damage taken.
+     */
+    public void handleDamage(int power){
+        this.damageMarkers -= power;
+    }
+
+    /**
+     * Get a robots power.
+     * @return power
+     */
+    public int getPower() {
+        return power;
+    }
+
+    /**
+     * This method is called when it's time for the robots to shoot.
+     */
+    public void fire() {
+        int x = (int) this.getPositionX();
+        int y = (int) this.getPositionY();
+        Direction direction = this.getDirection();
+
+        // Check which direction this robot is facing.
+        switch (direction){
+            case NORTH:
+                //Checks how many cells are left on the board from the robot to the edge of the board
+                for (int i = 0; i < (game.getMap().getProperties().get("height", Integer.class) - (y - 1)); i++) {
+                    // See if this robot has already searched or shot this round.
+                    if (!this.hasSearched && !this.hasFired) {
+                        // Call searchAndDestroy which deals with damage.
+                        game.searchAndDestroy(x, y + i + 1, this);
+                    }
+                }
+                // After searching set hasSearched to true.
+                this.setHasSearched(true);
+                break;
+            case SOUTH:
+                for (int i = 0; i < game.getMap().getProperties().get("height", Integer.class) - (game.getMap().getProperties().get("height", Integer.class) - (y + 1)); i++) {
+                    if (!this.hasSearched && !this.hasFired) {
+                        game.searchAndDestroy(x, y - i - 1, this);
+                    }
+                }
+                this.setHasSearched(true);
+                break;
+            case EAST:
+                for (int i = 0; i < (game.getMap().getProperties().get("width", Integer.class) - (x + 1)); i++) {
+                    if (!this.hasSearched && !this.hasFired) {
+                        game.searchAndDestroy(x + i + 1, y, this);
+                    }
+                }
+                this.setHasSearched(true);
+                break;
+            case WEST:
+                for (int i = 0; i < game.getMap().getProperties().get("width", Integer.class) - (game.getMap().getProperties().get("width", Integer.class) - (x + 1)); i++) {
+                    if (!this.hasSearched && !this.hasFired) {
+                        game.searchAndDestroy(x - i - 1, y, this);
+                    }
+                }
+                this.setHasSearched(true);
+                break;
+            default:
+                System.err.println(this + " is facing an invalid direction. Can't fire!");
+                break;
+        }
     }
 
     @Override

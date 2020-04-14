@@ -21,8 +21,8 @@ public class Main extends Game {
 
     @Override
     public void create() {
-        this.batch = new SpriteBatch();
-        this.font = new BitmapFont();
+        batch = new SpriteBatch();
+        font = new BitmapFont();
         font.setColor(Color.WHITE);
 
         Gdx.gl.glClearColor(0,0,0,1);

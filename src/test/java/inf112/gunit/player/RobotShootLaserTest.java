@@ -104,7 +104,7 @@ public class RobotShootLaserTest {
         board.robotsFire();
         int after = robotBeingShot.getDamageMarkers();
 
-        assertEquals(before - 2, after);
+        assertEquals(before + 2, after);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class RobotShootLaserTest {
         board.robotsFire();
         int after = robotBeingShot.getDamageMarkers();
 
-        assertEquals(before - 2, after);
+        assertEquals(before + 2, after);
     }
 
     @Test
@@ -206,7 +206,7 @@ public class RobotShootLaserTest {
         board.robotsFire();
         int after = robotFarAway.getDamageMarkers();
 
-        assertEquals(before - 1, after);
+        assertEquals(before + 1, after);
     }
 
     @Test
@@ -221,7 +221,7 @@ public class RobotShootLaserTest {
         board.robotsFire();
         int after = robotFarAway.getDamageMarkers();
 
-        assertEquals(before - 1, after);
+        assertEquals(before + 1, after);
     }
 
     @Test
@@ -236,7 +236,7 @@ public class RobotShootLaserTest {
         board.robotsFire();
         int after = robotFarAway.getDamageMarkers();
 
-        assertEquals(before - 1, after);
+        assertEquals(before + 1, after);
     }
 
     @Test
@@ -251,6 +251,6 @@ public class RobotShootLaserTest {
         board.robotsFire();
         int after = robotFarAway.getDamageMarkers();
 
-        assertEquals(before - 1, after);
+        assertEquals(before + 1, after);
     }
 }

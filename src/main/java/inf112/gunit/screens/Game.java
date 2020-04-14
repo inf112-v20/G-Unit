@@ -213,7 +213,7 @@ public class Game extends InputAdapter implements Screen {
                     board.robotsFire();
 
                     for (Robot robot : robots){
-                        if (robot.getDamageMarkers() <= 0)
+                        if (robot.getDamageMarkers() >= 10)
                             robot.die();
                     }
 

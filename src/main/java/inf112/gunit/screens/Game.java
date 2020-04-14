@@ -374,7 +374,7 @@ public class Game extends InputAdapter implements Screen {
      * @param y the desired y coordinate
      * @return true if position has pla
      */
-    public boolean positionIsFree(Direction dir, int x, int y) {
+    private boolean positionIsFree(Direction dir, int x, int y) {
         // TODO: dont use for-loop here, find a more efficient way
         // perhaps storing player-layer id's in a global variable?
 

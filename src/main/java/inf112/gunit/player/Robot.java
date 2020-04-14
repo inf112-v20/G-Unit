@@ -445,6 +445,9 @@ public class Robot {
                 }
                 this.setHasSearched(true);
                 break;
+            default:
+                System.err.println(this + " is facing an invalid direction. Can't fire!");
+                break;
         }
     }
 

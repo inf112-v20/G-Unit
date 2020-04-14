@@ -51,7 +51,7 @@ public class Robot {
     private int lifeTokens = 3;
 
     // Each player/robot starts with 10 damageMarkers, which represents health points.
-    private int damageMarkers = 10;
+    private int damageMarkers = 0;
 
     // Each player has one shot each "round"/phase.
     private boolean hasFired = false;

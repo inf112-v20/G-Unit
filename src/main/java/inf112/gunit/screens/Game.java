@@ -205,6 +205,7 @@ public class Game extends InputAdapter implements Screen {
                     ProgramCard[] program = playerRobot.getProgramBuffer().toArray(new ProgramCard[5]);
                     playerRobot.setProgram(program);
                     playerRobot.isDonePicking = false;
+                    hud.clearCards();
                     newPhase();
                 }
                 break;

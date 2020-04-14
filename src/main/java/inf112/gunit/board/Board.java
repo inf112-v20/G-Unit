@@ -124,6 +124,7 @@ public class Board {
                 int flagNum = (int) cell.getTile().getProperties().get("num");
                 if (flagNum == robot.flagsCollected + 1) {
                     robot.setFlagsCollected(robot.getFlagsCollected() + 1);
+                    System.out.println(robot + " picked up flag number " + flagNum);
                 }
             }
 

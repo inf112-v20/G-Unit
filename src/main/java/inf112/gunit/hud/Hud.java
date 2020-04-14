@@ -10,10 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import inf112.gunit.GameState;
 import inf112.gunit.main.Main;
 import inf112.gunit.player.card.CardType;
 import inf112.gunit.player.card.MovementCard;
@@ -35,12 +37,15 @@ public class Hud implements Disposable {
     private final Texture SUBMIT_GREY = new Texture("assets/submit_grey.png");
 
     private final TextureRegion[][] CARD_TEXTURES = TextureRegion.split(new Texture("assets/card_sprites.png"), 75, 100);
+    private final TextureRegion[][] FLAG_TEXTURES = TextureRegion.split(new Texture("assets/flag_sprites.png"), 300, 300);
 
     private final int TEXTURE_PADDING = 30;
+    private final float FLAG_SCALE = 0.3f;
 
     private Table damageTokenTable;
     private Table lifeTokenTable;
     private Table cardTable;
+    private Table flagTable;
 
     private ImageButton powerDownButton;
     private ImageButton submitButton;
@@ -54,6 +59,11 @@ public class Hud implements Disposable {
 
         viewport = new FitViewport(Main.WIDTH, Main.HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, batch);
+
+        flagTable = new Table();
+        flagTable.top();
+        flagTable.setFillParent(true);
+        flagTable.setPosition(510, 230);
 
         damageTokenTable = new Table();
         damageTokenTable.top();
@@ -69,7 +79,6 @@ public class Hud implements Disposable {
         cardTable.top();
         cardTable.setFillParent(true);
         cardTable.setPosition(500, 0);
-        updateCards();
 
         ImageButton.ImageButtonStyle powerDownStyle = new ImageButton.ImageButtonStyle();
         powerDownStyle.imageUp = new TextureRegionDrawable(new TextureRegion(POWER_DOWN_GREY));
@@ -106,12 +115,14 @@ public class Hud implements Disposable {
             }
         });
 
+        stage.addActor(flagTable);
         stage.addActor(damageTokenTable);
         stage.addActor(lifeTokenTable);
         stage.addActor(cardTable);
         stage.addActor(powerDownButton);
         stage.addActor(submitButton);
 
+        updateFlags();
         updateDamageTokens();
         updateLifeTokens();
 
@@ -132,6 +143,17 @@ public class Hud implements Disposable {
                 button.setChecked(false);
             }
         };
+    }
+
+    private void updateFlags() {
+        flagTable.reset();
+
+        for (int i = 0; i < game.getPlayerRobot().getFlagsCollected(); i++) {
+            Drawable d = new TextureRegionDrawable(FLAG_TEXTURES[0][i]);
+            d.setMinWidth(d.getMinWidth() * FLAG_SCALE);
+            d.setMinHeight(d.getMinHeight() * FLAG_SCALE);
+            flagTable.add(new Image(d));
+        }
     }
 
     private void updateDamageTokens() {
@@ -212,6 +234,10 @@ public class Hud implements Disposable {
 
     }
 
+    public void clearCards() {
+        cardTable.reset();
+    }
+
     public void draw() {
         stage.act(Gdx.graphics.getDeltaTime());
 
@@ -222,6 +248,7 @@ public class Hud implements Disposable {
 
         updateDamageTokens();
         updateLifeTokens();
+        updateFlags();
 
         stage.draw();
     }

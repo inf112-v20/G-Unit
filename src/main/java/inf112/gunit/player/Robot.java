@@ -449,7 +449,7 @@ public class Robot {
      * @param power is the amount of damage taken.
      */
     public void handleDamage(int power){
-        this.damageMarkers -= power;
+        this.damageMarkers += power;
     }
 
     /**

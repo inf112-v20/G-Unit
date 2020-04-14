@@ -25,18 +25,18 @@ import inf112.gunit.screens.Game;
 public class Hud implements Disposable {
 
     private final Game game;
-    private final Texture bg = new Texture("assets/program_sheet_bg.png");
-    private final Texture DAMAGE_TOKEN_FILLED = new Texture("assets/damage_token.png");
-    private final Texture DAMAGE_TOKEN = new Texture("assets/damage_token_grey.png");
-    private final Texture LIFE_TOKEN_FILLED = new Texture("assets/life_token.png");
-    private final Texture LIFE_TOKEN = new Texture("assets/life_token_grey.png");
-    private final Texture POWER_DOWN = new Texture("assets/power_down.png");
-    private final Texture POWER_DOWN_GREY = new Texture("assets/power_down_grey.png");
-    private final Texture SUBMIT_GREEN = new Texture("assets/submit_green.png");
-    private final Texture SUBMIT_GREY = new Texture("assets/submit_grey.png");
+    private final Texture bg = new Texture("assets/hud/program_sheet_bg.png");
+    private final Texture DAMAGE_TOKEN_FILLED = new Texture("assets/hud/damage_token.png");
+    private final Texture DAMAGE_TOKEN = new Texture("assets/hud/damage_token_grey.png");
+    private final Texture LIFE_TOKEN_FILLED = new Texture("assets/hud/life_token.png");
+    private final Texture LIFE_TOKEN = new Texture("assets/hud/life_token_grey.png");
+    private final Texture POWER_DOWN = new Texture("assets/hud/power_down.png");
+    private final Texture POWER_DOWN_GREY = new Texture("assets/hud/power_down_grey.png");
+    private final Texture SUBMIT_GREEN = new Texture("assets/hud/submit_green.png");
+    private final Texture SUBMIT_GREY = new Texture("assets/hud/submit_grey.png");
 
-    private final TextureRegion[][] CARD_TEXTURES = TextureRegion.split(new Texture("assets/card_sprites.png"), 75, 100);
-    private final TextureRegion[][] FLAG_TEXTURES = TextureRegion.split(new Texture("assets/flag_sprites.png"), 300, 300);
+    private final TextureRegion[][] CARD_TEXTURES = TextureRegion.split(new Texture("assets/hud/card_sprites.png"), 75, 100);
+    private final TextureRegion[][] FLAG_TEXTURES = TextureRegion.split(new Texture("assets/hud/flag_sprites.png"), 300, 300);
 
     private final int TEXTURE_PADDING = 30;
     private final float FLAG_SCALE = 0.3f;

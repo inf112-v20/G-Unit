@@ -210,7 +210,6 @@ public class Game extends InputAdapter implements Screen {
                 break;
             case PROGRAM_CARD_EXECUTION:
                 // check if all cards this phase have been performed
-                System.out.println(phase);
                 if (cardIdx >= roundCards.size()) {
                     state = GameState.CELL_MECHANIC_EXECUTION;
                 } else if (tick % INTERVAL == 0) {
@@ -228,7 +227,7 @@ public class Game extends InputAdapter implements Screen {
                     board.robotsFire();
 
                     for (Robot robot : robots){
-                        if (robot.getDamageMarkers() <= 0)
+                        if (robot.getDamageMarkers() >= 10)
                             robot.die();
                     }
 

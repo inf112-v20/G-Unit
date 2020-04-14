@@ -17,6 +17,7 @@ import inf112.gunit.board.Direction;
 import inf112.gunit.hud.Hud;
 import inf112.gunit.main.Main;
 import inf112.gunit.player.Robot;
+import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.TestPrograms;
 
@@ -195,16 +196,23 @@ public class Game extends InputAdapter implements Screen {
                         r.setProgram(p);
                     }
                 }
-                hud.updateCards();
+                if (!mainRobot.isPoweredDown()) {
+                    hud.updateCards();
+                } else System.out.println("not updating cards");
                 state = GameState.ROBOT_PROGRAMMING;
                 break;
             // TODO: Implement programming phase, where each player programs their robot
             // TODO: Need to implement HUD first
             case ROBOT_PROGRAMMING:
-                if (playerRobot.isDonePicking) {
-                    ProgramCard[] program = playerRobot.getProgramBuffer().toArray(new ProgramCard[5]);
-                    playerRobot.setProgram(program);
-                    playerRobot.isDonePicking = false;
+                if (!playerRobot.isPoweredDown()) {
+                    if (playerRobot.isDonePicking) {
+                        ProgramCard[] program = playerRobot.getProgramBuffer().toArray(new ProgramCard[5]);
+                        playerRobot.setProgram(program);
+                        playerRobot.isDonePicking = false;
+                        hud.clearCards();
+                        newPhase();
+                    }
+                } else {
                     hud.clearCards();
                     newPhase();
                 }
@@ -280,6 +288,16 @@ public class Game extends InputAdapter implements Screen {
      */
     private void newRound() {
         System.out.println("New round!");
+
+        for (Robot robot : robots) {
+            if (robot.isPoweredDown()) {
+                robot.setPoweredDown(false);
+                if (robot.getPowerDownDesire()) robot.updatePowerDownDesire();
+                hud.resetPowerDownButton();
+            }
+            if (robot.getPowerDownDesire()) robot.setPoweredDown(true);
+        }
+
         phase = 0;
         state = GameState.SETUP;
     }
@@ -295,7 +313,9 @@ public class Game extends InputAdapter implements Screen {
         cardIdx = 0;
 
         for (Robot robot : robots) {
-            roundCards.add(robot.getProgram()[phase]);
+            if (!robot.isPoweredDown())
+                roundCards.add(robot.getProgram()[phase]);
+            else roundCards.add(new MovementCard(-1, 1));
             // When new phase starts, robots will be able to search and shoot again.
             robot.setHasFired(false);
             robot.setHasSearched(false);
@@ -312,6 +332,12 @@ public class Game extends InputAdapter implements Screen {
     private void doTurn() {
         // TODO: Get rid of the for-loop here by storing a 'currentRobot' as a field variable?
         ProgramCard card = roundCards.get(cardIdx);
+
+        if (card.getPriority() == -1) {
+            cardIdx++;
+            return;
+        }
+
         for (Robot robot : robots) {
             if (card.equals(robot.getProgram()[phase])) {
                 System.out.println("Attempting to perform '" + card + "' on : '" + robot + "'");

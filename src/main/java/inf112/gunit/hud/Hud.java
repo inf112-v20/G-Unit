@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import inf112.gunit.GameState;
 import inf112.gunit.main.Main;
 import inf112.gunit.player.card.CardType;
 import inf112.gunit.player.card.MovementCard;
@@ -49,6 +48,12 @@ public class Hud implements Disposable {
 
     private ImageButton powerDownButton;
     private ImageButton submitButton;
+    
+    private ImageButton.ImageButtonStyle powerDownUncheckedStyle;
+    private ImageButton.ImageButtonStyle powerDownCheckedStyle;
+    
+    private ImageButton.ImageButtonStyle submitReadyStyle;
+    private ImageButton.ImageButtonStyle submitUnreadyStyle;
 
     public Stage stage;
 
@@ -80,38 +85,43 @@ public class Hud implements Disposable {
         cardTable.setFillParent(true);
         cardTable.setPosition(500, 0);
 
-        ImageButton.ImageButtonStyle powerDownStyle = new ImageButton.ImageButtonStyle();
-        powerDownStyle.imageUp = new TextureRegionDrawable(new TextureRegion(POWER_DOWN_GREY));
-        powerDownStyle.imageChecked = new TextureRegionDrawable(new TextureRegion(POWER_DOWN));
-        // TODO: make own texture for this
-        powerDownStyle.imageDown = new TextureRegionDrawable(new TextureRegion(POWER_DOWN));
-        powerDownStyle.imageOver = new TextureRegionDrawable(new TextureRegion(POWER_DOWN));
-        powerDownButton = new ImageButton(powerDownStyle);
+        powerDownUncheckedStyle = new ImageButton.ImageButtonStyle();
+        powerDownUncheckedStyle.imageUp = new TextureRegionDrawable(new TextureRegion(POWER_DOWN_GREY));
+        powerDownUncheckedStyle.imageDown = new TextureRegionDrawable(new TextureRegion(POWER_DOWN));
+
+        powerDownCheckedStyle = new ImageButton.ImageButtonStyle();
+        powerDownCheckedStyle.imageUp = new TextureRegionDrawable(new TextureRegion(POWER_DOWN));
+        powerDownCheckedStyle.imageDown = new TextureRegionDrawable(new TextureRegion(POWER_DOWN_GREY));
+
+        submitUnreadyStyle = new ImageButton.ImageButtonStyle();
+        submitUnreadyStyle.imageUp = new TextureRegionDrawable(new TextureRegion(SUBMIT_GREY));
+
+        submitReadyStyle = new ImageButton.ImageButtonStyle();
+        submitReadyStyle.imageUp = new TextureRegionDrawable(new TextureRegion(SUBMIT_GREEN));
+
+        powerDownButton = new ImageButton(powerDownUncheckedStyle);
         powerDownButton.setPosition(Main.WIDTH - 500 + TEXTURE_PADDING, Main.HEIGHT - POWER_DOWN.getHeight() - TEXTURE_PADDING);
         powerDownButton.addListener(addButtonListener(powerDownButton));
         powerDownButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                System.out.println("powerdown");
+                game.getPlayerRobot().updatePowerDownDesire();
+                powerDownButton.setStyle((game.getPlayerRobot().getPowerDownDesire()) ? powerDownCheckedStyle : powerDownUncheckedStyle);
             }
         });
 
-        ImageButton.ImageButtonStyle submitStyle = new ImageButton.ImageButtonStyle();
-        submitStyle.imageUp = new TextureRegionDrawable(new TextureRegion(SUBMIT_GREY));
-        submitStyle.imageChecked = new TextureRegionDrawable(new TextureRegion(SUBMIT_GREEN));
-        // TODO: make own texture for this
-        submitStyle.imageDown = new TextureRegionDrawable(new TextureRegion(SUBMIT_GREEN));
-        submitStyle.imageOver = new TextureRegionDrawable(new TextureRegion(SUBMIT_GREEN));
-        submitButton = new ImageButton(submitStyle);
+        submitButton = new ImageButton(submitUnreadyStyle);
         submitButton.setPosition(Main.WIDTH - 200, 200);
         submitButton.addListener(addButtonListener(submitButton));
         submitButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                if (game.getPlayerRobot().getProgramBuffer().size() == 5)
+                if (game.getPlayerRobot().getProgramBuffer().size() == 5) {
+                    submitButton.setStyle(submitUnreadyStyle);
                     game.getPlayerRobot().isDonePicking = true;
+                }
             }
         });
 
@@ -129,22 +139,35 @@ public class Hud implements Disposable {
         Gdx.input.setInputProcessor(stage);
     }
 
+    /**
+     * Common ethod for adding mouse listeners for the buttons
+     * @param button the button to add the listener to
+     * @return a new ClickListener
+     */
     private ClickListener addButtonListener(final Button button) {
         return new ClickListener() {
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 super.enter(event, x, y, pointer, fromActor);
                 button.setChecked(true);
+                if(button == submitButton && submitButton.getStyle() == submitUnreadyStyle)
+                    Gdx.graphics.setCursor(Main.arrow);
+                else
+                    Gdx.graphics.setCursor(Main.pointer);
             }
 
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 super.exit(event, x, y, pointer, toActor);
                 button.setChecked(false);
+                Gdx.graphics.setCursor(Main.arrow);
             }
         };
     }
 
+    /**
+     * Update the flag-table, which draws all flags picked up by the players robot
+     */
     private void updateFlags() {
         flagTable.reset();
 
@@ -156,6 +179,9 @@ public class Hud implements Disposable {
         }
     }
 
+    /**
+     * Update the damage token-table, which draws all damage tokens according to the players robot
+     */
     private void updateDamageTokens() {
         damageTokenTable.reset();
         int damageTokens = game.getPlayerRobot().getDamageMarkers();
@@ -167,6 +193,9 @@ public class Hud implements Disposable {
         }
     }
 
+    /**
+     * Update the life token-table, which draws all life tokens according to the players robot
+     */
     private void updateLifeTokens() {
         lifeTokenTable.reset();
         int lifeTokens = game.getPlayerRobot().getLifeTokens();
@@ -178,6 +207,9 @@ public class Hud implements Disposable {
 
     }
 
+    /**
+     * Update the card-table, which is used for picking program cards to program the robot
+     */
     public void updateCards() {
         cardTable.reset();
 
@@ -210,12 +242,14 @@ public class Hud implements Disposable {
                 public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                     super.enter(event, x, y, pointer, fromActor);
                     button.setChecked(true);
+                    Gdx.graphics.setCursor(Main.pointer);
                 }
 
                 @Override
                 public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                     super.exit(event, x, y, pointer, toActor);
                     button.setChecked(false);
+                    Gdx.graphics.setCursor(Main.arrow);
                 }
 
                 @Override
@@ -224,6 +258,8 @@ public class Hud implements Disposable {
                     if (game.getPlayerRobot().getProgramBuffer().size() < 5) {
                         game.getPlayerRobot().addBufferCard(card);
                         cardTable.removeActor(button);
+                        if (game.getPlayerRobot().getProgramBuffer().size() >= 5)
+                            submitButton.setStyle(submitReadyStyle);
                     }
                 }
             });
@@ -234,10 +270,23 @@ public class Hud implements Disposable {
 
     }
 
+    /**
+     * Clear card-buttons from the hud
+     */
     public void clearCards() {
         cardTable.reset();
     }
 
+    /**
+     * Reset the powerdown-button style
+     */
+    public void resetPowerDownButton() {
+        powerDownButton.setStyle(powerDownUncheckedStyle);
+    }
+
+    /**
+     * Draw the hud
+     */
     public void draw() {
         stage.act(Gdx.graphics.getDeltaTime());
 

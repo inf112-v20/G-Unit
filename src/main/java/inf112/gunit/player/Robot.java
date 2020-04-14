@@ -69,6 +69,9 @@ public class Robot {
     // The amount of damage a robots weapon takes.
     private int power = 1;
 
+    private boolean wantsToPowerDown = false;
+    private boolean poweredDown = false;
+
     /**
      * The Robot constructor
      * @param game takes the Game object the robot is instantiated from
@@ -342,6 +345,36 @@ public class Robot {
         if (this.lifeTokens <= 0){
             // TODO : Remove/dispose robots, that have zero lifeTokens and zero damageMarkers, from the game.
         }
+    }
+
+    /**
+     * Update the powerdown status. Called by the HUD
+     */
+    public void updatePowerDownDesire() {
+        wantsToPowerDown = !wantsToPowerDown;
+        if (wantsToPowerDown) System.out.println(this + " wants to powerdown");
+        else System.out.println(this + " doesn't want to powerdown anymore");
+    }
+
+    /**
+     * Get the powerdown status.
+     */
+    public boolean getPowerDownDesire() {
+        return wantsToPowerDown;
+    }
+
+    /**
+     * Get the power status of the robot.
+     */
+    public boolean isPoweredDown() {
+        return poweredDown;
+    }
+
+    /**
+     * Set the power status of the robot
+     */
+    public void setPoweredDown(boolean onOff) {
+        poweredDown = onOff;
     }
 
     /**

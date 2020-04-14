@@ -283,8 +283,8 @@ public class Game extends InputAdapter implements Screen {
         for (Robot robot : robots) {
             roundCards.add(robot.getProgram()[phase]);
             // When new phase starts, robots will be able to search and shoot again.
-            robot.isHasFired(false);
-            robot.isHasSearched(false);
+            robot.setHasFired(false);
+            robot.setHasSearched(false);
         }
 
         //sort cards by priority
@@ -475,8 +475,8 @@ public class Game extends InputAdapter implements Screen {
         for (Robot target : robots) {
             if ((int) target.getPositionX() == x && (int) target.getPositionY() == y) {
                 target.handleDamage(shooter.getPower());
-                shooter.isHasFired(true);
-                shooter.isHasSearched(true);
+                shooter.setHasFired(true);
+                shooter.setHasSearched(true);
 
                 System.out.println("The " + shooter.toString() + " robot" +
                         shooter.getPosition() + " shot the " +
@@ -508,10 +508,6 @@ public class Game extends InputAdapter implements Screen {
      */
     public boolean getGameOver() {
         return gameIsOver;
-    }
-
-    public MapProperties getProps() {
-        return props;
     }
 
     @Override

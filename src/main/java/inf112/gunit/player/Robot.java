@@ -371,7 +371,7 @@ public class Robot {
      * Set hasFired to true or false.
      * @param hasFired
      */
-    public void isHasFired(boolean hasFired) {
+    public void setHasFired(boolean hasFired) {
         this.hasFired = hasFired;
     }
 
@@ -379,7 +379,7 @@ public class Robot {
      * Set hasSearched to true or false.
      * @param hasSearched
      */
-    public void isHasSearched(boolean hasSearched) {
+    public void setHasSearched(boolean hasSearched) {
         this.hasSearched = hasSearched;
     }
 
@@ -411,7 +411,7 @@ public class Robot {
         switch (direction){
             case NORTH:
                 //Checks how many cells are left on the board from the robot to the edge of the board
-                for (int i = 0; i < (game.getProps().get("height", Integer.class) - (y - 1)); i++) {
+                for (int i = 0; i < (game.getMap().getProperties().get("height", Integer.class) - (y - 1)); i++) {
                     // See if this robot has already searched or shot this round.
                     if (!this.hasSearched && !this.hasFired) {
                         // Call searchAndDestroy which deals with damage.
@@ -419,31 +419,31 @@ public class Robot {
                     }
                 }
                 // After searching set hasSearched to true.
-                this.isHasSearched(true);
+                this.setHasSearched(true);
                 break;
             case SOUTH:
-                for (int i = 0; i < game.getProps().get("height", Integer.class) - (game.getProps().get("height", Integer.class) - (y + 1)); i++) {
+                for (int i = 0; i < game.getMap().getProperties().get("height", Integer.class) - (game.getMap().getProperties().get("height", Integer.class) - (y + 1)); i++) {
                     if (!this.hasSearched && !this.hasFired) {
                         game.searchAndDestroy(x, y - i - 1, this);
                     }
                 }
-                this.isHasSearched(true);
+                this.setHasSearched(true);
                 break;
             case EAST:
-                for (int i = 0; i < (game.getProps().get("width", Integer.class) - (x + 1)); i++) {
+                for (int i = 0; i < (game.getMap().getProperties().get("width", Integer.class) - (x + 1)); i++) {
                     if (!this.hasSearched && !this.hasFired) {
                         game.searchAndDestroy(x + i + 1, y, this);
                     }
                 }
-                this.isHasSearched(true);
+                this.setHasSearched(true);
                 break;
             case WEST:
-                for (int i = 0; i < game.getProps().get("width", Integer.class) - (game.getProps().get("width", Integer.class) - (x + 1)); i++) {
+                for (int i = 0; i < game.getMap().getProperties().get("width", Integer.class) - (game.getMap().getProperties().get("width", Integer.class) - (x + 1)); i++) {
                     if (!this.hasSearched && !this.hasFired) {
                         game.searchAndDestroy(x - i - 1, y, this);
                     }
                 }
-                this.isHasSearched(true);
+                this.setHasSearched(true);
                 break;
         }
     }

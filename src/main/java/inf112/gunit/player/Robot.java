@@ -378,6 +378,7 @@ public class Robot {
     public void setPoweredDown(boolean onOff) {
         poweredDown = onOff;
         if (onOff) {
+            this.damageMarkers = 0;
             program = new ProgramCard[]{
                     new MovementCard(-1, 1),
                     new MovementCard(-1, 1),

@@ -193,10 +193,7 @@ public class Game extends InputAdapter implements Screen {
                         hud.clearCards();
                         newPhase();
                     }
-                } else {
-                    hud.clearCards();
-                    newPhase();
-                }
+                } else newPhase();
                 break;
             case PROGRAM_CARD_EXECUTION:
                 // check if all cards this phase have been performed
@@ -288,15 +285,11 @@ public class Game extends InputAdapter implements Screen {
      * Resets some variables, and retrieves cards from the robots
      */
     private void newPhase() {
-        state = GameState.PROGRAM_CARD_EXECUTION;
-
         roundCards = new ArrayList<>();
         cardIdx = 0;
 
         for (Robot robot : robots) {
-            if (!robot.isPoweredDown())
-                roundCards.add(robot.getProgram()[phase]);
-            else roundCards.add(new MovementCard(-1, 1));
+            roundCards.add(robot.getProgram()[phase]);
             // When new phase starts, robots will be able to search and shoot again.
             robot.setHasFired(false);
             robot.setHasSearched(false);
@@ -305,6 +298,8 @@ public class Game extends InputAdapter implements Screen {
         //sort cards by priority
         Collections.sort(roundCards);
         Collections.reverse(roundCards);
+
+        state = GameState.PROGRAM_CARD_EXECUTION;
     }
 
     /**
@@ -313,11 +308,6 @@ public class Game extends InputAdapter implements Screen {
     private void doTurn() {
         // TODO: Get rid of the for-loop here by storing a 'currentRobot' as a field variable?
         ProgramCard card = roundCards.get(cardIdx);
-
-        if (card.getPriority() == -1) {
-            cardIdx++;
-            return;
-        }
 
         for (Robot robot : robots) {
             if (card.equals(robot.getProgram()[phase])) {

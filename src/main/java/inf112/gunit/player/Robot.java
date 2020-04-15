@@ -230,13 +230,15 @@ public class Robot {
      * @param programCard the program card to execute
      */
     public void doTurn(ProgramCard programCard) {
-        switch (programCard.getType()) {
-            case MOVEMENT:
-                this.move(((MovementCard) programCard).getDistance());
-                break;
-            case ROTATION:
-                this.rotate(((RotationCard) programCard).isClockwise(), ((RotationCard) programCard).getRotations());
-                break;
+        if (!poweredDown) {
+            switch (programCard.getType()) {
+                case MOVEMENT:
+                    this.move(((MovementCard) programCard).getDistance());
+                    break;
+                case ROTATION:
+                    this.rotate(((RotationCard) programCard).isClockwise(), ((RotationCard) programCard).getRotations());
+                    break;
+            }
         }
     }
 
@@ -375,6 +377,15 @@ public class Robot {
      */
     public void setPoweredDown(boolean onOff) {
         poweredDown = onOff;
+        if (onOff) {
+            program = new ProgramCard[]{
+                    new MovementCard(-1, 1),
+                    new MovementCard(-1, 1),
+                    new MovementCard(-1, 1),
+                    new MovementCard(-1, 1),
+                    new MovementCard(-1, 1)
+            };
+        }
     }
 
     /**

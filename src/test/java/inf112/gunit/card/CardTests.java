@@ -1,4 +1,4 @@
-package inf112.gunit.cardTests;
+package inf112.gunit.card;
 
 import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;

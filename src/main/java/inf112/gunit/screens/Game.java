@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -46,7 +47,6 @@ public class Game extends InputAdapter implements Screen {
     private Board board;
 
     private Robot[] robots;
-    private Robot mainRobot;
     private Robot playerRobot;
 
     private OrthographicCamera camera;
@@ -75,29 +75,26 @@ public class Game extends InputAdapter implements Screen {
         this.main = main;
         this.map = new TmxMapLoader().load("assets/board_new.tmx");
         this.robots = new Robot[numOfPlayers];
+        props = map.getProperties();
         board = new Board(this);
-
         phase = 0;
         cardIdx = 0;
         tick = 0;
 
-        props = map.getProperties();
-        int mapWidth = map.getProperties().get("width", Integer.class);
-        int mapHeight = map.getProperties().get("height", Integer.class);
-        int tileWidth = map.getProperties().get("tilewidth", Integer.class);
-        int tileHeight = map.getProperties().get("tileheight", Integer.class);
-
-        // only used for testing
-        // gives each robot a program
+        //initialise robots
         for (int i = 0; i < numOfPlayers; i++) {
             Robot p = new Robot(this, i, board.getStartPosition(i));
             robots[i] = p;
         }
 
         // set the controllable robot (for testing)
-        mainRobot = robots[0];
-        playerRobot = mainRobot;
+        playerRobot = robots[0];
         hud = new Hud(Main.batch, this);
+
+        int mapWidth = props.get("width", Integer.class);
+        int mapHeight = props.get("height", Integer.class);
+        int tileWidth = props.get("tilewidth", Integer.class);
+        int tileHeight = props.get("tileheight", Integer.class);
 
         //set the camera accordingly
         camera = new OrthographicCamera();
@@ -128,32 +125,20 @@ public class Game extends InputAdapter implements Screen {
 
         this.map = map;
         this.robots = new Robot[numOfPlayers];
+        props = map.getProperties();
         board = new Board(this);
-
-        // currently initialising the game in this state for testing purposes
-        // this should actually be initialised to GameState.SETUP
-        state = GameState.PROGRAM_CARD_EXECUTION;
-
         phase = 0;
         cardIdx = 0;
-
         tick = 0;
 
-        props = map.getProperties();
-
-        // only used for testing
-        // gives each robot a program
         for (int i = 0; i < numOfPlayers; i++) {
             Robot p = new Robot(this, i, board.getStartPosition(i));
-            p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
             robots[i] = p;
         }
 
-        // set the controllable robot (for testing)
-        mainRobot = robots[0];
+        playerRobot = robots[0];
 
-        // start a new game-phase
-        newPhase();
+        newRound();
     }
 
     @Override
@@ -183,8 +168,6 @@ public class Game extends InputAdapter implements Screen {
     private void logic() {
 
         switch (this.state) {
-            // TODO: Implement setup phase, where you place flags etc...
-            // if flags already is placed on board in the tiledmap file, this is not needed
             case SETUP:
                 for (Robot r : robots) {
                     r.dealCards();
@@ -196,13 +179,11 @@ public class Game extends InputAdapter implements Screen {
                         r.setProgram(p);
                     }
                 }
-                if (!mainRobot.isPoweredDown()) {
+                if (!playerRobot.isPoweredDown()) {
                     hud.updateCards();
                 } else System.out.println("not updating cards");
                 state = GameState.ROBOT_PROGRAMMING;
                 break;
-            // TODO: Implement programming phase, where each player programs their robot
-            // TODO: Need to implement HUD first
             case ROBOT_PROGRAMMING:
                 if (!playerRobot.isPoweredDown()) {
                     if (playerRobot.isDonePicking) {
@@ -225,7 +206,6 @@ public class Game extends InputAdapter implements Screen {
                     doTurn();
                 }
                 break;
-            // TODO: finish this part (i.e. implement all mechanics)
             case CELL_MECHANIC_EXECUTION:
 
                 if (tick % INTERVAL == 0) {
@@ -254,8 +234,9 @@ public class Game extends InputAdapter implements Screen {
             default:
                 System.err.println("GAME STATE NOT SET - FATAL ERROR OCCURRED.");
                 System.err.println("ROBORALLY BRUH MOMENT");
-                //this.dispose();
-                //System.exit(1);
+                this.dispose();
+                Gdx.app.exit();
+                System.exit(69);
         }
 
     }
@@ -345,65 +326,6 @@ public class Game extends InputAdapter implements Screen {
                 cardIdx++;
                 break;
             }
-        }
-    }
-
-    // key-listener currently used for testing
-    @Override
-    public boolean keyUp(int keyCode) {
-        Vector2 position = mainRobot.getPosition();
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get("player_0");
-
-        int x = (int) position.x;
-        int y = (int) position.y;
-
-        switch (keyCode) {
-            case Input.Keys.LEFT:
-                if (x - 1 < 0 || x - 1 >= props.get("width", Integer.class))
-                    return false;
-                else if (moveIsValid(Direction.WEST, x - 1, y)) {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    mainRobot.setDirection(Direction.WEST);
-                    mainRobot.move(1);
-                    return true;
-                }
-
-            case Input.Keys.RIGHT:
-                if (x + 1 < 0 || x + 1 >= props.get("width", Integer.class))
-                    return false;
-                else if (moveIsValid(Direction.EAST, x + 1, y)) {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    mainRobot.setDirection(Direction.EAST);
-                    mainRobot.move(1);
-                    return true;
-                }
-
-            case Input.Keys.UP:
-                if (y + 1 < 0 || y + 1 >= props.get("height", Integer.class))
-                    return false;
-                else if (moveIsValid(Direction.NORTH, x, y + 1)) {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    mainRobot.setDirection(Direction.NORTH);
-                    mainRobot.move(1);
-                    return true;
-                }
-
-            case Input.Keys.DOWN:
-                if (y - 1 < 0 || y - 1 >= props.get("height", Integer.class))
-                    return false;
-                else if (moveIsValid(Direction.SOUTH, x, y - 1)) {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    mainRobot.setDirection(Direction.SOUTH);
-                    mainRobot.move(1);
-                    return true;
-                }
-
-            case Input.Keys.SPACE:
-                this.doTurn();
-                return true;
-
-            default:
-                return false;
         }
     }
 

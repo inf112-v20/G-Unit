@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -14,8 +15,10 @@ import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.GameState;
 import inf112.gunit.board.Board;
 import inf112.gunit.board.Direction;
+import inf112.gunit.hud.Hud;
 import inf112.gunit.main.Main;
 import inf112.gunit.player.Robot;
+import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.TestPrograms;
 
@@ -27,6 +30,8 @@ import java.util.Collections;
  * when the Play-button is pressed in menu
  */
 public class Game extends InputAdapter implements Screen {
+
+    private Hud hud;
 
     private static final int INTERVAL = 30;
 
@@ -42,14 +47,14 @@ public class Game extends InputAdapter implements Screen {
     private Board board;
 
     private Robot[] robots;
-    private Robot mainRobot;
+    private Robot playerRobot;
 
     private OrthographicCamera camera;
     private OrthogonalTiledMapRenderer tileRenderer;
 
     private int phase;
     private int cardIdx;
-    private ArrayList<ProgramCard> roundCards;
+    private ArrayList<ProgramCard> roundCards = new ArrayList<>();
 
     /**
      * The Game constructor
@@ -70,48 +75,37 @@ public class Game extends InputAdapter implements Screen {
         this.main = main;
         this.map = new TmxMapLoader().load("assets/board_new.tmx");
         this.robots = new Robot[numOfPlayers];
+        props = map.getProperties();
         board = new Board(this);
-
-        // currently initialising the game in this state for testing purposes
-        // this should actually be initialised to GameState.SETUP
-        state = GameState.PROGRAM_CARD_EXECUTION;
-
         phase = 0;
         cardIdx = 0;
-
         tick = 0;
 
-        props = map.getProperties();
-        int mapWidth = map.getProperties().get("width", Integer.class);
-        int mapHeight = map.getProperties().get("height", Integer.class);
-        int tileWidth = map.getProperties().get("tilewidth", Integer.class);
-        int tileHeight = map.getProperties().get("tileheight", Integer.class);
-
-        // only used for testing
-        // gives each robot a program
+        //initialise robots
         for (int i = 0; i < numOfPlayers; i++) {
             Robot p = new Robot(this, i, board.getStartPosition(i));
-            p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
             robots[i] = p;
         }
 
         // set the controllable robot (for testing)
-        mainRobot = robots[0];
+        playerRobot = robots[0];
+        hud = new Hud(Main.batch, this);
+
+        int mapWidth = props.get("width", Integer.class);
+        int mapHeight = props.get("height", Integer.class);
+        int tileWidth = props.get("tilewidth", Integer.class);
+        int tileHeight = props.get("tileheight", Integer.class);
 
         //set the camera accordingly
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, mapWidth * tileWidth, mapHeight * tileHeight);
+        camera.setToOrtho(false, (mapWidth * tileWidth) * ((float) Main.WIDTH / (float) Main.HEIGHT), mapHeight * tileHeight);
         camera.update();
 
         // set the tile renderer and add the camera view to it
-        tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / tileWidth * tileHeight);
+        tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / (tileWidth) * (tileHeight));
         tileRenderer.setView(camera);
 
-        // add this class as the input processor
-        Gdx.input.setInputProcessor(this);
-
-        // start a new game-phase
-        newPhase();
+        newRound();
     }
 
     /**
@@ -131,32 +125,20 @@ public class Game extends InputAdapter implements Screen {
 
         this.map = map;
         this.robots = new Robot[numOfPlayers];
+        props = map.getProperties();
         board = new Board(this);
-
-        // currently initialising the game in this state for testing purposes
-        // this should actually be initialised to GameState.SETUP
-        state = GameState.PROGRAM_CARD_EXECUTION;
-
         phase = 0;
         cardIdx = 0;
-
         tick = 0;
 
-        props = map.getProperties();
-
-        // only used for testing
-        // gives each robot a program
         for (int i = 0; i < numOfPlayers; i++) {
             Robot p = new Robot(this, i, board.getStartPosition(i));
-            p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
             robots[i] = p;
         }
 
-        // set the controllable robot (for testing)
-        mainRobot = robots[0];
+        playerRobot = robots[0];
 
-        // start a new game-phase
-        newPhase();
+        newRound();
     }
 
     @Override
@@ -186,14 +168,32 @@ public class Game extends InputAdapter implements Screen {
     private void logic() {
 
         switch (this.state) {
-            // TODO: Implement setup phase, where you place flags etc...
-            // if flags already is placed on board in the tiledmap file, this is not needed
             case SETUP:
+                for (Robot r : robots) {
+                    r.dealCards();
+                    if (r != playerRobot) {
+                        ProgramCard[] p = new ProgramCard[5];
+                        for (int i = 0; i < p.length; i++) {
+                            p[i] = r.getCardDeck().get(i);
+                        }
+                        r.setProgram(p);
+                    }
+                }
+                if (!playerRobot.isPoweredDown()) {
+                    hud.updateCards();
+                } else System.out.println("not updating cards");
+                state = GameState.ROBOT_PROGRAMMING;
                 break;
-            // TODO: Implement programming phase, where each player programs their robot
-            // TODO: Need to implement HUD first
             case ROBOT_PROGRAMMING:
-                System.out.println("programming");
+                if (!playerRobot.isPoweredDown()) {
+                    if (playerRobot.isDonePicking) {
+                        ProgramCard[] program = playerRobot.getProgramBuffer().toArray(new ProgramCard[5]);
+                        playerRobot.setProgram(program);
+                        playerRobot.isDonePicking = false;
+                        hud.clearCards();
+                        newPhase();
+                    }
+                } else newPhase();
                 break;
             case PROGRAM_CARD_EXECUTION:
                 // check if all cards this phase have been performed
@@ -203,19 +203,21 @@ public class Game extends InputAdapter implements Screen {
                     doTurn();
                 }
                 break;
-            // TODO: finish this part (i.e. implement all mechanics)
             case CELL_MECHANIC_EXECUTION:
 
                 if (tick % INTERVAL == 0) {
                     board.conveyExpress();
                     board.conveyRegular();
                     board.rotateGears();
+                    board.holes();
                     board.robotsFire();
 
                     for (Robot robot : robots){
                         if (robot.getDamageMarkers() >= 10)
                             robot.die();
                     }
+
+                    board.flags();
 
                     // initialise a new phase
                     if (phase >= 4) {
@@ -229,18 +231,16 @@ public class Game extends InputAdapter implements Screen {
             default:
                 System.err.println("GAME STATE NOT SET - FATAL ERROR OCCURRED.");
                 System.err.println("ROBORALLY BRUH MOMENT");
-                //this.dispose();
-                //System.exit(1);
+                this.dispose();
+                Gdx.app.exit();
+                System.exit(69);
         }
 
-        //handle rest of game mechanics
-        board.holes();
-        board.flags();
     }
 
     @Override
     public void render(float v) {
-        Gdx.gl.glClearColor(1,0,0,1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         tileRenderer.getBatch().begin();
 
         // handle the game-logic
@@ -254,6 +254,9 @@ public class Game extends InputAdapter implements Screen {
         tileRenderer.setView(camera);
         tileRenderer.render();
 
+        Main.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        hud.draw();
+
         // increase the game tick
         tick++;
     }
@@ -263,11 +266,18 @@ public class Game extends InputAdapter implements Screen {
      */
     private void newRound() {
         System.out.println("New round!");
-        phase = 0;
-        state = GameState.PROGRAM_CARD_EXECUTION; // here for testing
-        newPhase(); // testing
 
-        //state = GameState.ROBOT_PROGRAMMING;
+        for (Robot robot : robots) {
+            if (robot.isPoweredDown()) {
+                robot.setPoweredDown(false);
+                if (robot.getPowerDownDesire()) robot.updatePowerDownDesire();
+                hud.resetPowerDownButton();
+            }
+            if (robot.getPowerDownDesire()) robot.setPoweredDown(true);
+        }
+
+        phase = 0;
+        state = GameState.SETUP;
     }
 
     /**
@@ -275,8 +285,6 @@ public class Game extends InputAdapter implements Screen {
      * Resets some variables, and retrieves cards from the robots
      */
     private void newPhase() {
-        state = GameState.PROGRAM_CARD_EXECUTION;
-
         roundCards = new ArrayList<>();
         cardIdx = 0;
 
@@ -290,6 +298,8 @@ public class Game extends InputAdapter implements Screen {
         //sort cards by priority
         Collections.sort(roundCards);
         Collections.reverse(roundCards);
+
+        state = GameState.PROGRAM_CARD_EXECUTION;
     }
 
     /**
@@ -298,6 +308,7 @@ public class Game extends InputAdapter implements Screen {
     private void doTurn() {
         // TODO: Get rid of the for-loop here by storing a 'currentRobot' as a field variable?
         ProgramCard card = roundCards.get(cardIdx);
+
         for (Robot robot : robots) {
             if (card.equals(robot.getProgram()[phase])) {
                 System.out.println("Attempting to perform '" + card + "' on : '" + robot + "'");
@@ -305,65 +316,6 @@ public class Game extends InputAdapter implements Screen {
                 cardIdx++;
                 break;
             }
-        }
-    }
-
-    // key-listener currently used for testing
-    @Override
-    public boolean keyUp(int keyCode) {
-        Vector2 position = mainRobot.getPosition();
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get("player_0");
-
-        int x = (int) position.x;
-        int y = (int) position.y;
-
-        switch (keyCode) {
-            case Input.Keys.LEFT:
-                if (x - 1 < 0 || x - 1 >= props.get("width", Integer.class))
-                    return false;
-                else if (moveIsValid(Direction.WEST, x - 1, y)) {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    mainRobot.setDirection(Direction.WEST);
-                    mainRobot.move(1);
-                    return true;
-                }
-
-            case Input.Keys.RIGHT:
-                if (x + 1 < 0 || x + 1 >= props.get("width", Integer.class))
-                    return false;
-                else if (moveIsValid(Direction.EAST, x + 1, y)) {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    mainRobot.setDirection(Direction.EAST);
-                    mainRobot.move(1);
-                    return true;
-                }
-
-            case Input.Keys.UP:
-                if (y + 1 < 0 || y + 1 >= props.get("height", Integer.class))
-                    return false;
-                else if (moveIsValid(Direction.NORTH, x, y + 1)) {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    mainRobot.setDirection(Direction.NORTH);
-                    mainRobot.move(1);
-                    return true;
-                }
-
-            case Input.Keys.DOWN:
-                if (y - 1 < 0 || y - 1 >= props.get("height", Integer.class))
-                    return false;
-                else if (moveIsValid(Direction.SOUTH, x, y - 1)) {
-                    layer.setCell((int) position.x, (int) position.y, null);
-                    mainRobot.setDirection(Direction.SOUTH);
-                    mainRobot.move(1);
-                    return true;
-                }
-
-            case Input.Keys.SPACE:
-                this.doTurn();
-                return true;
-
-            default:
-                return false;
         }
     }
 
@@ -495,6 +447,14 @@ public class Game extends InputAdapter implements Screen {
     }
 
     /**
+     * Get the local players robot
+     * @return the local players robot
+     */
+    public Robot getPlayerRobot() {
+        return playerRobot;
+    }
+
+    /**
      * Get the TiledMap of the board
      * @return the TiledMap of the board
      */
@@ -508,6 +468,14 @@ public class Game extends InputAdapter implements Screen {
      */
     public boolean getGameOver() {
         return gameIsOver;
+    }
+
+    /**
+     * Get the current state of the game
+     * @return the current game state
+     */
+    public GameState getState() {
+        return state;
     }
 
     @Override

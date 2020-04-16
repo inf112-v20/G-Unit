@@ -14,7 +14,9 @@ import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
 import inf112.gunit.screens.Game;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * The Robot class is used to perform all kinds of
@@ -24,12 +26,16 @@ public class Robot {
 
     public int flagsCollected = 0;
 
-    private int id;
+    private final int id;
 
     // these to are for testing, and (probably) wont be used in the actual game
     // program stores a program to execute
     // while counter is a global variable to keep track of what card to execute
     private ProgramCard[] program;
+
+    private ArrayList<ProgramCard> cardDeck = new ArrayList<>();
+    private ArrayList<ProgramCard> programBuffer = new ArrayList<>();
+    public boolean isDonePicking = false;
 
     private Game game;
     private MapProperties props;
@@ -39,6 +45,7 @@ public class Robot {
 
     // the TiledMap layer of the robot, texture-spritesheet and position.
     private TiledMapTileLayer layer;
+    private TextureRegion[][] textureSplit;
     private Cell[] textures;
     private Vector2 position;
 
@@ -50,7 +57,7 @@ public class Robot {
     // each time a robot dies (is killed or falls down a hole/pit).
     private int lifeTokens = 3;
 
-    // Each player/robot starts with 10 damageMarkers, which represents health points.
+    // Each player/robot starts with 0 damageMarkers, which represents health points.
     private int damageMarkers = 0;
 
     // Each player has one shot each "round"/phase.
@@ -61,6 +68,9 @@ public class Robot {
 
     // The amount of damage a robots weapon takes.
     private int power = 1;
+
+    private boolean wantsToPowerDown = false;
+    private boolean poweredDown = false;
 
     /**
      * The Robot constructor
@@ -83,8 +93,7 @@ public class Robot {
         layer = (TiledMapTileLayer) game.getMap().getLayers().get("player_" + id);
 
         // load the textures
-        Texture texture = new Texture("assets/players_300x300.png");
-        TextureRegion[][] textureSplit = TextureRegion.split(texture, tileWidth, tileHeight);
+        textureSplit = TextureRegion.split(new Texture("assets/players_300x300.png"), tileWidth, tileHeight);
 
         // store the textures
         textures = new Cell[4];
@@ -221,13 +230,15 @@ public class Robot {
      * @param programCard the program card to execute
      */
     public void doTurn(ProgramCard programCard) {
-        switch (programCard.getType()) {
-            case MOVEMENT:
-                this.move(((MovementCard) programCard).getDistance());
-                break;
-            case ROTATION:
-                this.rotate(((RotationCard) programCard).isClockwise(), ((RotationCard) programCard).getRotations());
-                break;
+        if (!poweredDown) {
+            switch (programCard.getType()) {
+                case MOVEMENT:
+                    this.move(((MovementCard) programCard).getDistance());
+                    break;
+                case ROTATION:
+                    this.rotate(((RotationCard) programCard).isClockwise(), ((RotationCard) programCard).getRotations());
+                    break;
+            }
         }
     }
 
@@ -238,6 +249,55 @@ public class Robot {
     public void setProgram(ProgramCard[] program) {
         if (program.length != 5) throw new IllegalArgumentException("Program must be of length 5");
         this.program = Arrays.copyOf(program, 5);
+    }
+
+    /**
+     * Add a card to the program buffer
+     * @param card the card to add
+     */
+    public void addBufferCard(ProgramCard card) {
+        programBuffer.add(card);
+    }
+
+    /**
+     * Get the program buffer
+     * @return the program buffer
+     */
+    public ArrayList<ProgramCard> getProgramBuffer() {
+        return programBuffer;
+    }
+
+    /**
+     * At the start of each phase, deal random program cards to each player
+     */
+    public void dealCards() {
+        Random r = new Random();
+        cardDeck = new ArrayList<>();
+        programBuffer = new ArrayList<>();
+
+        //compute number of cards to be dealt based on damage tokens
+        int numOfCards = (damageMarkers >= 4) ? 5 : 9 - damageMarkers;
+        for (int i = 0; i < numOfCards; i++) {
+            int isMoveCard = r.nextInt(3); // 67% chance of getting a movement card per card
+            int priority = (r.nextInt(70) + 10) * 10;
+
+            if (isMoveCard > 0) {
+                int distance = r.nextInt(3) + 1;
+                cardDeck.add(new MovementCard(priority, distance));
+            } else {
+                boolean clockwise = r.nextBoolean();
+                int rotations = r.nextInt(2) + 1;
+                cardDeck.add(new RotationCard(priority, rotations, clockwise));
+            }
+        }
+    }
+
+    /**
+     * Get the robots card deck
+     * @return the card deck
+     */
+    public ArrayList<ProgramCard> getCardDeck() {
+        return cardDeck;
     }
 
     /**
@@ -279,11 +339,53 @@ public class Robot {
      */
     public void die(){
         // Moves player/robot back to backupMemory and restores damageMarkers.
+        layer.setCell((int) this.getPositionX(), (int) this.getPositionY(), null);
+
         this.lifeTokens--;
         this.position = backupMemory;
-        this.damageMarkers = 10;
+        this.damageMarkers = 0;
         if (this.lifeTokens <= 0){
             // TODO : Remove/dispose robots, that have zero lifeTokens and zero damageMarkers, from the game.
+        }
+    }
+
+    /**
+     * Update the powerdown status. Called by the HUD
+     */
+    public void updatePowerDownDesire() {
+        wantsToPowerDown = !wantsToPowerDown;
+        if (wantsToPowerDown) System.out.println(this + " wants to powerdown");
+        else System.out.println(this + " doesn't want to powerdown anymore");
+    }
+
+    /**
+     * Get the powerdown status.
+     */
+    public boolean getPowerDownDesire() {
+        return wantsToPowerDown;
+    }
+
+    /**
+     * Get the power status of the robot.
+     */
+    public boolean isPoweredDown() {
+        return poweredDown;
+    }
+
+    /**
+     * Set the power status of the robot
+     */
+    public void setPoweredDown(boolean onOff) {
+        poweredDown = onOff;
+        if (onOff) {
+            this.damageMarkers = 0;
+            program = new ProgramCard[]{
+                    new MovementCard(-1, 1),
+                    new MovementCard(-1, 1),
+                    new MovementCard(-1, 1),
+                    new MovementCard(-1, 1),
+                    new MovementCard(-1, 1)
+            };
         }
     }
 
@@ -359,9 +461,13 @@ public class Robot {
         return id;
     }
 
+    public TextureRegion getTexture() {
+        return textureSplit[0][id];
+    }
+
     /**
      * Get the TiledMapTileLayer of the robot
-     * @return
+     * @return the layer of the robot
      */
     public TiledMapTileLayer getLayer() {
         return layer;
@@ -369,7 +475,7 @@ public class Robot {
 
     /**
      * Set hasFired to true or false.
-     * @param hasFired
+     * @param hasFired boolean
      */
     public void setHasFired(boolean hasFired) {
         this.hasFired = hasFired;
@@ -377,7 +483,7 @@ public class Robot {
 
     /**
      * Set hasSearched to true or false.
-     * @param hasSearched
+     * @param hasSearched boolean
      */
     public void setHasSearched(boolean hasSearched) {
         this.hasSearched = hasSearched;

@@ -1,5 +1,6 @@
 package inf112.gunit.board;
 
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.player.Robot;
@@ -106,11 +107,9 @@ public class Board {
      * Perform hole mechanics
      */
     public void holes() {
-        TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("holes");
+        TiledMapTileLayer holes = (TiledMapTileLayer) game.getMap().getLayers().get("holes");
 
-        for (Robot robot : game.getRobots()) {
-            if(layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) robot.die();
-        }
+        for (Robot robot : game.getRobots()) if(holes.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) robot.die();
     }
 
     /**
@@ -125,6 +124,7 @@ public class Board {
                 int flagNum = (int) cell.getTile().getProperties().get("num");
                 if (flagNum == robot.flagsCollected + 1) {
                     robot.setFlagsCollected(robot.getFlagsCollected() + 1);
+                    System.out.println(robot + " picked up flag number " + flagNum);
                 }
             }
 

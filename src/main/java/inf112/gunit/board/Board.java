@@ -132,6 +132,71 @@ public class Board {
         }
     }
 
+    private boolean fireLaser(int x, int y, int damage) {
+        TiledMapTileLayer walls = (TiledMapTileLayer) game.getMap().getLayers().get("walls");
+
+        if (walls.getCell(x, y) != null) {
+            if (Direction.lookup(walls.getCell(x, y).getTile().getProperties().get("direction", String.class)) == Direction.WEST) {
+                return false;
+            }
+
+            for (Robot robot : game.getRobots()) {
+                if (robot.getPositionX() == x && robot.getPositionY() == y) {
+                    robot.handleDamage(damage);
+                    return false;
+                }
+            }
+
+            return Direction.lookup(walls.getCell(x, y).getTile().getProperties().get("direction", String.class)) != Direction.EAST;
+        } else {
+            for (Robot robot : game.getRobots()) {
+                if (robot.getPositionX() == x && robot.getPositionY() == y) {
+                    robot.handleDamage(damage);
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Fire lasers on board
+     */
+    public void lasersFire() {
+        TiledMapTileLayer lasers = (TiledMapTileLayer) game.getMap().getLayers().get("lasers");
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (lasers.getCell(x, y) != null) {
+                    Direction dir = Direction.lookup(lasers.getCell(x, y).getTile().getProperties().get("direction", String.class));
+                    int damage = lasers.getCell(x, y).getTile().getProperties().get("damage", Integer.class);
+
+                    if (dir == Direction.NORTH) {
+                        for (int i = y; i < height; i++) {
+                            if (!fireLaser(x, i, damage)) break;
+                        }
+                    } else if (dir == Direction.EAST) {
+                        for (int i = x; i < width; i++) {
+                            if (!fireLaser(i, y, damage)) break;
+                        }
+                    } else if (dir == Direction.SOUTH) {
+                        for (int i = y; i >= 0; i--) {
+                            if (!fireLaser(x, i, damage)) break;
+                        }
+                    } else if (dir == Direction.WEST) {
+                        for (int i = x; i >= 0; i--) {
+                            if (!fireLaser(i, y, damage)) break;
+                        }
+                    } else {
+                        System.err.println("fatal error oh shit");
+                    }
+                }
+            }
+        }
+
+    }
+
     public void robotsFire(){
         for (Robot robot : game.getRobots()) {
             robot.fire();

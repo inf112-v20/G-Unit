@@ -56,12 +56,15 @@ public class Game extends InputAdapter implements Screen {
     private int cardIdx;
     private ArrayList<ProgramCard> roundCards = new ArrayList<>();
 
+    private int numOfPlayers;
+
     /**
      * The Game constructor
      * @param main takes a main
      * @param numOfPlayers number of players
      */
     public Game(Main main, int numOfPlayers) {
+        this.numOfPlayers = numOfPlayers;
         if (numOfPlayers > 4) {
             System.err.println("Number of players cant be greater than 4!!");
             this.dispose();
@@ -148,16 +151,13 @@ public class Game extends InputAdapter implements Screen {
 
     /**
      * If a robot has collected all the flags, then the game is over
-     * @param winner the winning player/robot
+     * @param winnerRobot the winning player/robot
      */
-    public void gameOver(Robot winner) {
+    public void gameOver(Robot winnerRobot) {
         gameIsOver = true;
         state = GameState.SETUP;
-        System.out.println();
-        System.out.println("Game over!");
-        System.out.println("Player with the " + winner + " robot won!");
         this.dispose();
-        if (main != null) main.setScreen(new Menu(main));
+        if (main != null) main.setScreen(new GameOver(main, winnerRobot, numOfPlayers));
         //System.exit(0);
     }
 

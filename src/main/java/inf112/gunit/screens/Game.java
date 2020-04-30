@@ -210,6 +210,7 @@ public class Game extends InputAdapter implements Screen {
                     board.conveyRegular();
                     board.rotateGears();
                     board.holes();
+                    board.lasersFire();
                     board.robotsFire();
 
                     for (Robot robot : robots){

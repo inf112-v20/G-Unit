@@ -150,14 +150,15 @@ public class Game extends InputAdapter implements Screen {
     }
 
     /**
-     * If a robot has collected all the flags, then the game is over
-     * @param winnerRobot the winning player/robot
+     * If a robot has collected all the flags, or has no lifeTokens left,
+     * then the game is over.
+     * @param robot the winning/losing player/robot
      */
-    public void gameOver(Robot winnerRobot) {
+    public void gameOver(Robot robot) {
         gameIsOver = true;
         state = GameState.SETUP;
         this.dispose();
-        if (main != null) main.setScreen(new GameOver(main, winnerRobot, numOfPlayers));
+        if (main != null) main.setScreen(new GameOver(main, robot, numOfPlayers));
         //System.exit(0);
     }
 
@@ -213,10 +214,15 @@ public class Game extends InputAdapter implements Screen {
                     board.lasersFire();
                     board.robotsFire();
 
+                    // Calls die() on robot if it has 10 or more damageMarkers.
                     for (Robot robot : robots){
                         if (robot.getDamageMarkers() >= 10)
                             robot.die();
                     }
+
+                    // This will make the game quit once the player has no LifeTokens left.
+                    if (robots[0].isDead())
+                        gameOver(robots[0]);
 
                     board.flags();
 

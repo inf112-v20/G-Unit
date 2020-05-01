@@ -24,21 +24,24 @@ public class GameOver extends RRScreen {
     private Viewport viewport;
     private OrthographicCamera camera;
     private BitmapFont font;
-    private GlyphLayout layout;
-    private Robot winnerRobot;
+    private GlyphLayout layoutWinner;
+    private GlyphLayout layoutLoser;
+    private Robot robot;
     private int numOfPlayers;
     private String winnerString;
+    private String loserString;
     private Main main;
 
     /**
      * The Menu construcor
      * @param main takes a main (which is a game)
      */
-    public GameOver(final Main main, Robot winnerRobot, int numOfPlayers) {
+    public GameOver(final Main main, Robot robot, int numOfPlayers) {
         this.main = main;
-        this.winnerRobot = winnerRobot;
+        this.robot = robot;
         this.numOfPlayers = numOfPlayers;
-        winnerString = "Game Over! The " + winnerRobot.toString() + " robot won!";
+        winnerString = "Game Over! The " + robot.toString() + " robot won!";
+        loserString = "Game Over! You Lost!";
 
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
@@ -52,8 +55,10 @@ public class GameOver extends RRScreen {
         stage = new Stage(viewport, batch);
         font = new BitmapFont();
         font.getData().setScale(1.8f);
-        layout = new GlyphLayout();
-        layout.setText(font, winnerString);
+        layoutWinner = new GlyphLayout();
+        layoutWinner.setText(font, winnerString);
+        layoutLoser = new GlyphLayout();
+        layoutLoser.setText(font, loserString);
     }
 
     @Override
@@ -136,7 +141,11 @@ public class GameOver extends RRScreen {
 
         // Draw Game Over String
         batch.begin();
-        font.draw(batch, layout, (camera.viewportWidth - layout.width) / 2, 875);
+        // Display different messages whether the player loses, or if anyone wins.
+        if (robot.isDead())
+            font.draw(batch, layoutLoser, (camera.viewportWidth - layoutLoser.width) / 2, 875);
+        else
+            font.draw(batch, layoutWinner, (camera.viewportWidth - layoutWinner.width) / 2, 875);
         batch.end();
     }
 

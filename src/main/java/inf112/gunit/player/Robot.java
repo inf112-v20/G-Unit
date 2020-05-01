@@ -72,6 +72,9 @@ public class Robot {
     private boolean wantsToPowerDown = false;
     private boolean poweredDown = false;
 
+    // Boolean for if the robot is dead.
+    private boolean dead = false;
+
     /**
      * The Robot constructor
      * @param game takes the Game object the robot is instantiated from
@@ -345,7 +348,7 @@ public class Robot {
         this.position = backupMemory;
         this.damageMarkers = 0;
         if (this.lifeTokens <= 0){
-            // TODO : Remove/dispose robots, that have zero lifeTokens and zero damageMarkers, from the game.
+            this.dead = true;
         }
     }
 
@@ -503,6 +506,14 @@ public class Robot {
      */
     public int getPower() {
         return power;
+    }
+
+    /**
+     * Get a robots dead.
+     * @return dead
+     */
+    public boolean isDead() {
+        return dead;
     }
 
     /**

@@ -342,7 +342,7 @@ public class Robot {
         layer.setCell((int) this.getPositionX(), (int) this.getPositionY(), null);
 
         this.lifeTokens--;
-        this.position = backupMemory;
+        this.position = backupMemory.cpy();
         this.damageMarkers = 0;
         if (this.lifeTokens <= 0){
             // TODO : Remove/dispose robots, that have zero lifeTokens and zero damageMarkers, from the game.
@@ -503,6 +503,10 @@ public class Robot {
      */
     public int getPower() {
         return power;
+    }
+
+    public void setBackupMemory(Vector2 backupMemory) {
+        this.backupMemory = backupMemory;
     }
 
     /**

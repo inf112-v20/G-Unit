@@ -31,6 +31,8 @@ import java.util.Collections;
  */
 public class Game extends InputAdapter implements Screen {
 
+    public SpriteBatch batch = new SpriteBatch();
+
     private Hud hud;
 
     private static final int INTERVAL = 30;
@@ -259,6 +261,12 @@ public class Game extends InputAdapter implements Screen {
 
         Main.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.draw();
+
+        batch.begin();
+        for (Robot r : robots) {
+            r.draw(batch);
+        }
+        batch.end();
 
         // increase the game tick
         tick++;

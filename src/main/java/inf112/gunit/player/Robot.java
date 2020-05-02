@@ -1,6 +1,8 @@
 package inf112.gunit.player;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
@@ -9,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.board.Direction;
+import inf112.gunit.main.Main;
 import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
@@ -22,7 +25,7 @@ import java.util.Random;
  * The Robot class is used to perform all kinds of
  * robot mechanics.
  */
-public class Robot {
+public class Robot extends Sprite {
 
     public int flagsCollected = 0;
 
@@ -78,6 +81,10 @@ public class Robot {
      * @param id the desired identifier for the robot
      */
     public Robot(Game game, int id, Vector2 startPos) {
+        super(TextureRegion.split(new Texture("assets/players_300x300.png"), 300, 300)[0][id]);
+
+        setScale((float) 300/1200);
+
         this.game = game;
         this.props = game.getMap().getProperties();
         this.dir = Direction.NORTH;
@@ -94,38 +101,25 @@ public class Robot {
 
         // load the textures
         textureSplit = TextureRegion.split(new Texture("assets/players_300x300.png"), tileWidth, tileHeight);
-
-        // store the textures
-        textures = new Cell[4];
-        textures[0] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][0]));
-        textures[1] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][1]));
-        textures[2] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][2]));
-        textures[3] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][3]));
-
-        // initialise the robots texture given the id
-        layer.setCell((int) getPositionX(), (int) getPositionY(), textures[id]);
     }
 
     /**
      * Update the robots texture, rotation and position
      */
     public void update() {
-        // the NORMAL-texture is currently the only one being used
-        Cell cell = textures[id];
 
-        // set rotation according to direction
+        setX(this.getPositionX() * ((float) 1000/12) - 109);
+        setY(this.getPositionY() * ((float) 1000/12) - 109);
+
         if (dir == Direction.NORTH) {
-            cell.setRotation(0);
+            setRotation(0);
         } else if (dir == Direction.EAST) {
-            cell.setRotation(3);
+            setRotation(3 * 90);
         } else if (dir == Direction.SOUTH) {
-            cell.setRotation(2);
+            setRotation(2 * 90);
         } else {
-            cell.setRotation(1);
+            setRotation(90);
         }
-
-        // update the tiled-map
-        layer.setCell((int) getPositionX(), (int) getPositionY(), cell);
     }
 
     /**
@@ -461,7 +455,7 @@ public class Robot {
         return id;
     }
 
-    public TextureRegion getTexture() {
+    public TextureRegion getTextureRegion() {
         return textureSplit[0][id];
     }
 

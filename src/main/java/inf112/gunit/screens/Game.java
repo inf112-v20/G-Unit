@@ -204,6 +204,7 @@ public class Game extends InputAdapter implements Screen {
                 }
                 break;
             case CELL_MECHANIC_EXECUTION:
+                map.getLayers().get("laser_beams").setVisible(true);
 
                 if (tick % INTERVAL == 0) {
                     board.conveyExpress();
@@ -227,6 +228,7 @@ public class Game extends InputAdapter implements Screen {
                         phase++;
                         newPhase();
                     }
+                    map.getLayers().get("laser_beams").setVisible(false);
                 }
                 break;
             default:

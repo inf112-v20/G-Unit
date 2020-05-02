@@ -76,7 +76,7 @@ public class Game extends InputAdapter implements Screen {
         }
 
         this.main = main;
-        this.map = new TmxMapLoader().load("assets/board_new.tmx");
+        this.map = new TmxMapLoader().load("assets/robot_board.tmx");
         this.robots = new Robot[numOfPlayers];
         props = map.getProperties();
         board = new Board(this);

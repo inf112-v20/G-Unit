@@ -254,7 +254,10 @@ public class Game extends InputAdapter implements Screen {
         logic();
 
         // update the robot rendering
-        for (Robot robot : robots) robot.update();
+        for (Robot robot : robots) {
+            if (!robot.isDead())
+                robot.update();
+        }
 
         tileRenderer.getBatch().end();
         // render the tile-map

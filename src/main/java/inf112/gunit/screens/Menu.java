@@ -7,9 +7,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import inf112.gunit.main.Main;
@@ -25,6 +28,10 @@ public class Menu extends RRScreen {
     protected Stage stage;
     private Viewport viewport;
     private OrthographicCamera camera;
+
+    private TextField numplayerstext;
+    private Slider numplayers;
+
 
     private Main main;
 
@@ -54,71 +61,54 @@ public class Menu extends RRScreen {
         Table mainTable = new Table();
         mainTable.setFillParent(true);
         mainTable.top();
+        skin.getFont("font").getData().setScale(3);
 
-        final TextButton testplayButton = new TextButton("TESTPlay", skin);
-        testplayButton.getLabel().setFontScale(3);
-        TextButton hostButton = new TextButton("Host", skin);
-        hostButton.getLabel().setFontScale(3);
-        TextButton joinButton = new TextButton("Join", skin);
-        joinButton.getLabel().setFontScale(3);
-        TextButton exitButton = new TextButton("Exit", skin);
-        exitButton.getLabel().setFontScale(3);
+        final TextButton easyplayButton = new TextButton("Easy", skin);
+        easyplayButton.getLabel().setFontScale(3);
+        final TextButton hardplayButton = new TextButton("Hard", skin);
+        hardplayButton.getLabel().setFontScale(3);
+        numplayers = new Slider(2,4,1,false, skin);
+        numplayerstext = new TextField("Number of AI opponents: ", skin);
+        numplayerstext.setAlignment(Align.center);
+
 
         // Listeners
         // TODO The skin is supposed to change when hovering not clicking
-        testplayButton.addListener(new ClickListener(){
+        easyplayButton.addListener(new ClickListener(){
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 super.enter(event, x, y, pointer, fromActor);
-                testplayButton.setStyle(skin.get("toggle", TextButton.TextButtonStyle.class));
+                easyplayButton.setStyle(skin.get("toggle", TextButton.TextButtonStyle.class));
             }
 
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 super.enter(event, x, y, pointer, toActor);
-                testplayButton.setStyle(skin.get("default", TextButton.TextButtonStyle.class));
+                easyplayButton.setStyle(skin.get("default", TextButton.TextButtonStyle.class));
             }
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                main.setScreen(new Game(main, 4));
+                main.setScreen(new Game(main, (int) numplayers.getValue()));
             }
         });
-        exitButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.exit();
-            }
-        });
-
-        // TODO Implement join screen
-        joinButton.addListener(new ClickListener(){
+        hardplayButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.exit();
             }
         });
-
-        // TODO Implement host screen
-        hostButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.exit();
-            }
-        });
-
 
         int padding = 50;
         //Add buttons to table
         mainTable.row();
-        mainTable.add(testplayButton).width(400).height(100).pad(padding);
+        mainTable.add(easyplayButton).width(400).height(100).pad(padding);
         mainTable.row();
-        mainTable.add(joinButton).width(400).height(100).pad(padding);
+        mainTable.add(hardplayButton).width(400).height(100).pad(padding);
         mainTable.row();
-        mainTable.add(hostButton).width(400).height(100).pad(padding);
+        mainTable.add(numplayerstext).width(700).height(100).pad(padding);
         mainTable.row();
-        mainTable.add(exitButton).width(400).height(100).pad(padding);
-        mainTable.row();
+        mainTable.add(numplayers).width(400);
 
         mainTable.center();
 
@@ -130,6 +120,8 @@ public class Menu extends RRScreen {
     public void render(float v) {
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        numplayerstext.setText("Number of AI opponents: " + (int) numplayers.getValue());
 
         float delta = Gdx.graphics.getDeltaTime();
         stage.act(delta);

@@ -181,9 +181,12 @@ public class Game extends InputAdapter implements Screen {
                     r.dealCards();
                     if (r != playerRobot) {
                         ProgramCard[] p = new ProgramCard[5];
-                        for (int i = 0; i < p.length; i++) {
-                            p[i] = r.getCardDeck().get(i);
+                        ArrayList<ProgramCard> p_list = r.ai(board.getFlagPositions());
+                        
+                        for (int i = 0; i < p_list.size(); i++) {
+                            p[i] = p_list.get(i);
                         }
+                        
                         r.setProgram(p);
                     }
                 }

@@ -47,6 +47,32 @@ public enum Direction {
         }
     }
 
+    public static Direction getClockwiseDirection(Direction dir) {
+        if (dir == Direction.NORTH)
+            return Direction.EAST;
+        else if (dir == Direction.EAST)
+            return Direction.SOUTH;
+        else if (dir == Direction.SOUTH)
+            return Direction.WEST;
+        else if (dir == Direction.WEST)
+            return Direction.NORTH;
+        
+        return Direction.INVALID;
+    }
+    
+    public static Direction getAntiClockwiseDirection(Direction dir) {
+        if (dir == Direction.NORTH)
+            return Direction.WEST;
+        else if (dir == Direction.EAST)
+            return Direction.NORTH;
+        else if (dir == Direction.SOUTH)
+            return Direction.EAST;
+        else if (dir == Direction.WEST)
+            return Direction.SOUTH;
+
+        return Direction.INVALID;
+    }
+
     @Override
     public String toString() {
         switch (this) {

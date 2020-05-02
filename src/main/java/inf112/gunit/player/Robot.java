@@ -14,6 +14,7 @@ import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
 import inf112.gunit.screens.Game;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -290,6 +291,111 @@ public class Robot {
                 cardDeck.add(new RotationCard(priority, rotations, clockwise));
             }
         }
+    }
+    
+    public ArrayList<ProgramCard> ai(ArrayList<Vector2> flagPos) {
+        if (flagsCollected == 4)
+            return new ArrayList<ProgramCard>();
+        
+        Vector2 nextFlagPos = flagPos.get(flagsCollected);
+        
+        return pathTo(new ArrayList<ProgramCard>(), nextFlagPos, position);
+    }
+    
+    public ArrayList<ProgramCard> pathTo(ArrayList<ProgramCard> currentPath, Vector2 from, Vector2 to) {
+        if (currentPath.size() == 5)
+            return currentPath;
+        
+        float deltaX = from.x - to.x;
+        float deltaY = from.y - to.y;
+        
+        if (deltaX > 0) {
+            if (dir == Direction.WEST) {
+                if (deltaX >= 3) {
+                    currentPath.add(new MovementCard(1000, 3));
+                    pathTo(currentPath, new Vector2(from.x - 3, from.y), to);
+                }    
+                else if (deltaX >= 2) {
+                    currentPath.add(new MovementCard(1000, 2));
+                    pathTo(currentPath, new Vector2(from.x - 2, from.y), to);
+                }    
+                else if (deltaX >= 1) {
+                    currentPath.add(new MovementCard(1000, 1));
+                    pathTo(currentPath, new Vector2(from.x - 1, from.y), to);
+                }    
+            }
+            else if (dir == Direction.SOUTH) {
+                currentPath.add(new RotationCard(1000, 1, true));
+                pathTo(currentPath, from, to);
+            }
+            else if (dir == Direction.EAST) {
+                currentPath.add(new RotationCard(1000, 2, true));
+            }
+            else if (dir == Direction.NORTH) {
+                currentPath.add(new RotationCard(1000, 1, false));
+            }
+        }
+        else if (deltaX <= 0) {
+            if (dir == Direction.EAST) {
+                if (deltaX >= -3) {
+                    currentPath.add(new MovementCard(1000, 3));
+                    pathTo(currentPath, new Vector2(from.x + 3, from.y), to);
+                }
+                else if (deltaX >= -2) {
+                    currentPath.add(new MovementCard(1000, 2));
+                    pathTo(currentPath, new Vector2(from.x + 2, from.y), to);
+                }
+                else if (deltaX >= -1) {
+                    currentPath.add(new MovementCard(1000, 1));
+                    pathTo(currentPath, new Vector2(from.x + 1, from.y), to);
+                }
+            }
+            else if (dir == Direction.SOUTH) {
+                currentPath.add(new RotationCard(1000, 1, false));
+                pathTo(currentPath, from, to);
+            }
+            else if (dir == Direction.WEST) {
+                currentPath.add(new RotationCard(1000, 2, true));
+            }
+            else if (dir == Direction.NORTH) {
+                currentPath.add(new RotationCard(1000, 1, true));
+            }
+        }
+
+        return new ArrayList<ProgramCard>();
+    }
+
+
+    public float getScore(ArrayList<ProgramCard> cards, Vector2 robotPosition) {
+        Vector2 newPosition = robotPosition.cpy();
+        Direction newDir = dir;
+
+        for (ProgramCard card : cards) {
+            if (card instanceof MovementCard) {
+                if (newDir == Direction.NORTH) {
+                    newPosition.set(newPosition.x, newPosition.y + ((MovementCard) card).getDistance());
+                }
+                else if (newDir == Direction.EAST) {
+                    newPosition.set(newPosition.x + ((MovementCard) card).getDistance(), newPosition.y);
+                }
+                else if (newDir == Direction.SOUTH) {
+                    newPosition.set(newPosition.x, newPosition.y - ((MovementCard) card).getDistance());
+                }
+                else if (newDir == Direction.WEST) {
+                    newPosition.set(newPosition.x - ((MovementCard) card).getDistance(), newPosition.y);
+                }
+            }
+            else {
+                for (int i = 0; i < ((RotationCard) card).getRotations(); i++) {
+                    if (((RotationCard) card).isClockwise())
+                        newDir = Direction.getClockwiseDirection(newDir);
+                    else
+                        newDir = Direction.getAntiClockwiseDirection(newDir);
+                }
+            }
+        }
+        
+        return newPosition.dst(robotPosition);
     }
 
     /**

@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -63,9 +62,7 @@ public class Menu extends RRScreen {
         skin.getFont("font").getData().setScale(3);
 
         Texture logotexture = new Texture(Gdx.files.internal("logo.png"));
-        Sprite logosprite = new Sprite(logotexture);
-        logosprite.setColor(1, 0, 0, 0.2f);
-        Image logo = new Image(logosprite);
+        Image logo = new Image(logotexture);
 
         final TextButton easyplayButton = new TextButton("Easy", skin);
         final TextButton hardplayButton = new TextButton("Hard", skin);
@@ -104,7 +101,6 @@ public class Menu extends RRScreen {
 
         int padding = 50;
         //Add buttons to table
-        mainTable.row();
         mainTable.add(logo);
         mainTable.row();
         mainTable.add(easyplayButton).width(400).height(100).pad(padding);
@@ -119,7 +115,6 @@ public class Menu extends RRScreen {
 
         mainTable.center();
 
-        //Add table to stage
         stage.addActor(mainTable);
     }
 

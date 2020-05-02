@@ -293,76 +293,147 @@ public class Robot {
         }
     }
     
-    public ArrayList<ProgramCard> ai(ArrayList<Vector2> flagPos) {
+    public ArrayList<ProgramCard> hardAI(ArrayList<Vector2> flagPos) {
         if (flagsCollected == 4)
             return new ArrayList<ProgramCard>();
         
         Vector2 nextFlagPos = flagPos.get(flagsCollected);
         
-        return pathTo(new ArrayList<ProgramCard>(), nextFlagPos, position);
+        return pathTo(new ArrayList<ProgramCard>(), position, nextFlagPos, dir);
     }
     
-    public ArrayList<ProgramCard> pathTo(ArrayList<ProgramCard> currentPath, Vector2 from, Vector2 to) {
-        if (currentPath.size() == 5)
+    public ArrayList<ProgramCard> pathTo(ArrayList<ProgramCard> currentPath, Vector2 from, Vector2 to, Direction curDir) {
+        if (currentPath.size() == 5) {
+            System.out.println("Got path with five cards!");
             return currentPath;
+        }    
         
         float deltaX = from.x - to.x;
+        //System.out.println("deltaX: " + deltaX + ", from.x: " + from.x + ", to.x: " + to.x);
         float deltaY = from.y - to.y;
-        
+        System.out.println("deltaX: " + deltaY + ", from.y: " + from.y + ", to.y: " + to.y);
+
         if (deltaX > 0) {
-            if (dir == Direction.WEST) {
+            //System.out.println("deltaX > 0");
+            if (curDir == Direction.WEST) {
                 if (deltaX >= 3) {
                     currentPath.add(new MovementCard(1000, 3));
-                    pathTo(currentPath, new Vector2(from.x - 3, from.y), to);
+                    return pathTo(currentPath, new Vector2(from.x - 3, from.y), to, curDir);
                 }    
                 else if (deltaX >= 2) {
                     currentPath.add(new MovementCard(1000, 2));
-                    pathTo(currentPath, new Vector2(from.x - 2, from.y), to);
+                    return pathTo(currentPath, new Vector2(from.x - 2, from.y), to, curDir);
                 }    
                 else if (deltaX >= 1) {
                     currentPath.add(new MovementCard(1000, 1));
-                    pathTo(currentPath, new Vector2(from.x - 1, from.y), to);
+                    return pathTo(currentPath, new Vector2(from.x - 1, from.y), to, curDir);
                 }    
             }
-            else if (dir == Direction.SOUTH) {
+            else if (curDir == Direction.SOUTH) {
                 currentPath.add(new RotationCard(1000, 1, true));
-                pathTo(currentPath, from, to);
+                return pathTo(currentPath, from, to, Direction.getClockwiseDirection(curDir));
             }
-            else if (dir == Direction.EAST) {
+            else if (curDir == Direction.EAST) {
                 currentPath.add(new RotationCard(1000, 2, true));
+                return pathTo(currentPath, from, to, Direction.flip(curDir));
             }
-            else if (dir == Direction.NORTH) {
+            else if (curDir == Direction.NORTH) {
                 currentPath.add(new RotationCard(1000, 1, false));
+                return pathTo(currentPath, from, to, Direction.getAntiClockwiseDirection(curDir));
             }
         }
-        else if (deltaX <= 0) {
-            if (dir == Direction.EAST) {
-                if (deltaX >= -3) {
+        else if (deltaX < 0) {
+            if (curDir == Direction.EAST) {
+                if (deltaX <= -3) {
                     currentPath.add(new MovementCard(1000, 3));
-                    pathTo(currentPath, new Vector2(from.x + 3, from.y), to);
+                    return pathTo(currentPath, new Vector2(from.x + 3, from.y), to, curDir);
                 }
-                else if (deltaX >= -2) {
+                else if (deltaX <= -2) {
                     currentPath.add(new MovementCard(1000, 2));
-                    pathTo(currentPath, new Vector2(from.x + 2, from.y), to);
+                    return pathTo(currentPath, new Vector2(from.x + 2, from.y), to, curDir);
                 }
-                else if (deltaX >= -1) {
+                else if (deltaX <= -1) {
                     currentPath.add(new MovementCard(1000, 1));
-                    pathTo(currentPath, new Vector2(from.x + 1, from.y), to);
+                    return pathTo(currentPath, new Vector2(from.x + 1, from.y), to, curDir);
                 }
             }
-            else if (dir == Direction.SOUTH) {
+            else if (curDir == Direction.SOUTH) {
                 currentPath.add(new RotationCard(1000, 1, false));
-                pathTo(currentPath, from, to);
+                return pathTo(currentPath, from, to, Direction.getAntiClockwiseDirection(curDir));
             }
-            else if (dir == Direction.WEST) {
+            else if (curDir == Direction.WEST) {
                 currentPath.add(new RotationCard(1000, 2, true));
+                return pathTo(currentPath, from, to, Direction.flip(curDir));
             }
-            else if (dir == Direction.NORTH) {
+            else if (curDir == Direction.NORTH) {
                 currentPath.add(new RotationCard(1000, 1, true));
+                return pathTo(currentPath, from, to, Direction.getClockwiseDirection(curDir));
+            }
+        }
+        else if (deltaY > 0) {
+            if (curDir == Direction.SOUTH) {
+                if (deltaY >= 3) {
+                    currentPath.add(new MovementCard(1000, 3));
+                    return pathTo(currentPath, new Vector2(from.x, from.y - 3), to, curDir);
+                }
+                else if (deltaY <= 2) {
+                    currentPath.add(new MovementCard(1000, 2));
+                    return pathTo(currentPath, new Vector2(from.x, from.y - 2), to, curDir);
+                }
+                else if (deltaY >= 1) {
+                    currentPath.add(new MovementCard(1000, 1));
+                    return pathTo(currentPath, new Vector2(from.x, from.y - 1), to, curDir);
+                }
+            }
+            else if (curDir == Direction.WEST) {
+                currentPath.add(new RotationCard(1000, 1, false));
+                return pathTo(currentPath, from, to, Direction.getAntiClockwiseDirection(curDir));
+            }
+            else if (curDir == Direction.NORTH) {
+                currentPath.add(new RotationCard(1000, 2, true));
+                return pathTo(currentPath, from, to, Direction.flip(curDir));
+            }
+            else if (curDir == Direction.EAST) {
+                currentPath.add(new RotationCard(1000, 1, true));
+                return pathTo(currentPath, from, to, Direction.getClockwiseDirection(curDir));
+            }
+        }
+        else if (deltaY < 0) {
+            if (curDir == Direction.NORTH) {
+                if (deltaY <= -3) {
+                    currentPath.add(new MovementCard(1000, 3));
+                    return pathTo(currentPath, new Vector2(from.x, from.y + 3), to, curDir);
+                }
+                else if (deltaY <= -2) {
+                    currentPath.add(new MovementCard(1000, 2));
+                    return pathTo(currentPath, new Vector2(from.x, from.y + 2), to, curDir);
+                }
+                else if (deltaY <= -1) {
+                    currentPath.add(new MovementCard(1000, 1));
+                    return pathTo(currentPath, new Vector2(from.x, from.y + 1), to, curDir);
+                }
+            }
+            else if (curDir == Direction.EAST) {
+                currentPath.add(new RotationCard(1000, 1, false));
+                return pathTo(currentPath, from, to, Direction.getAntiClockwiseDirection(curDir));
+            }
+            else if (curDir == Direction.SOUTH) {
+                currentPath.add(new RotationCard(1000, 2, true));
+                return pathTo(currentPath, from, to, Direction.flip(curDir));
+            }
+            else if (curDir == Direction.WEST) {
+                currentPath.add(new RotationCard(1000, 1, true));
+                return pathTo(currentPath, from, to, Direction.getClockwiseDirection(curDir));
             }
         }
 
-        return new ArrayList<ProgramCard>();
+        System.out.println("adding random cards");
+        int rem = 5 - currentPath.size();
+        for (int i = 0; i < rem; i++) {
+            currentPath.add(cardDeck.get(i));
+        }
+        
+        return currentPath;
     }
 
 

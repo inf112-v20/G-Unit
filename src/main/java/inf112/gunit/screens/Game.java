@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapProperties;
@@ -53,6 +54,8 @@ public class Game extends InputAdapter implements Screen {
 
     private OrthographicCamera camera;
     private OrthogonalTiledMapRenderer tileRenderer;
+    
+    private Music background_music;
 
     private int phase;
     private int cardIdx;
@@ -105,6 +108,11 @@ public class Game extends InputAdapter implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, (mapWidth * tileWidth) * ((float) Main.WIDTH / (float) Main.HEIGHT), mapHeight * tileHeight);
         camera.update();
+
+        // loads the background music
+        background_music = Gdx.audio.newMusic(Gdx.files.internal("in_da_club.wav"));
+        background_music.setLooping(true);
+        background_music.play();
 
         // set the tile renderer and add the camera view to it
         tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / (tileWidth) * (tileHeight));

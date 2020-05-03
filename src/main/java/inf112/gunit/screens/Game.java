@@ -32,6 +32,10 @@ import java.util.Collections;
  */
 public class Game extends InputAdapter implements Screen {
 
+    public float tileScale;
+
+    public SpriteBatch batch;
+
     private Hud hud;
 
     private static final int INTERVAL = 30;
@@ -81,6 +85,7 @@ public class Game extends InputAdapter implements Screen {
         this.main = main;
         this.map = new TmxMapLoader().load("assets/robot_board.tmx");
         this.robots = new Robot[numOfPlayers];
+        this.batch = new SpriteBatch();
         props = map.getProperties();
         board = new Board(this);
         phase = 0;
@@ -101,6 +106,8 @@ public class Game extends InputAdapter implements Screen {
         int mapHeight = props.get("height", Integer.class);
         int tileWidth = props.get("tilewidth", Integer.class);
         int tileHeight = props.get("tileheight", Integer.class);
+
+        tileScale = Main.HEIGHT / mapHeight;
 
         //set the camera accordingly
         camera = new OrthographicCamera();
@@ -146,6 +153,8 @@ public class Game extends InputAdapter implements Screen {
             Robot p = new Robot(this, i, board.getStartPosition(i));
             robots[i] = p;
         }
+
+        tileScale = Main.HEIGHT / map.getProperties().get("height", Integer.class);
 
         playerRobot = robots[0];
 
@@ -271,6 +280,12 @@ public class Game extends InputAdapter implements Screen {
 
         Main.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.draw();
+
+        batch.begin();
+        for (Robot r : robots) {
+            r.draw(batch);
+        }
+        batch.end();
 
         // increase the game tick
         tick++;

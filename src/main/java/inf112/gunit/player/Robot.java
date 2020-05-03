@@ -1,6 +1,8 @@
 package inf112.gunit.player;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
@@ -9,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.board.Direction;
+import inf112.gunit.main.Main;
 import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
@@ -23,7 +26,7 @@ import java.util.Random;
  * The Robot class is used to perform all kinds of
  * robot mechanics.
  */
-public class Robot {
+public class Robot extends Sprite {
 
     public int flagsCollected = 0;
 
@@ -37,7 +40,7 @@ public class Robot {
     private ArrayList<ProgramCard> cardDeck = new ArrayList<>();
     private ArrayList<ProgramCard> programBuffer = new ArrayList<>();
     public boolean isDonePicking = false;
-
+  
     private Vector2 prevPrevPos;
     private Vector2 prevPos;
 
@@ -48,10 +51,16 @@ public class Robot {
     private Direction dir;
 
     // the TiledMap layer of the robot, texture-spritesheet and position.
-    private TiledMapTileLayer layer;
-    private TextureRegion[][] textureSplit;
-    private Cell[] textures;
+    private final TiledMapTileLayer layer;
+    private final TextureRegion[][] textureSplit;
     private Vector2 position;
+
+    private boolean isMoving = false;
+    private boolean isRotating = false;
+    private final int ANIMATION_DELTA = 30;
+    private int animationTick = 0;
+    private int animationTileNum;
+    private Direction animationDir;
 
     // backupMemory is the position where the robot starts, and if he gets a flag,
     // the flags position is now the new position of the robots backupMemory.
@@ -82,8 +91,14 @@ public class Robot {
      * @param id the desired identifier for the robot
      */
     public Robot(Game game, int id, Vector2 startPos) {
+        super(TextureRegion.split(new Texture("assets/players_300x300.png"), 300, 300)[0][id]);
+
+        int tileWidth = game.getMap().getProperties().get("tilewidth", Integer.class);
+        int tileHeight = game.getMap().getProperties().get("tileheight", Integer.class);
+
+        setScale((float) tileWidth/Main.HEIGHT);
+
         this.game = game;
-        this.props = game.getMap().getProperties();
         this.dir = Direction.NORTH;
         this.position = startPos;
         this.prevPos = new Vector2(100, 100);
@@ -91,46 +106,69 @@ public class Robot {
 
         this.backupMemory = startPos.cpy();
 
-        int tileWidth = props.get("tilewidth", Integer.class);
-        int tileHeight = props.get("tileheight", Integer.class);
-
         // retrieve the layer
         layer = (TiledMapTileLayer) game.getMap().getLayers().get("player_" + id);
 
         // load the textures
         textureSplit = TextureRegion.split(new Texture("assets/players_300x300.png"), tileWidth, tileHeight);
+    }
 
-        // store the textures
-        textures = new Cell[4];
-        textures[0] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][0]));
-        textures[1] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][1]));
-        textures[2] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][2]));
-        textures[3] = new Cell().setTile(new StaticTiledMapTile(textureSplit[0][3]));
+    private void setGridPos(float x, float y) {
+        this.setPosition(x, y);
+        this.setX(this.getPositionX() * game.tileScale - 109);
+        this.setY(this.getPositionY() * game.tileScale - 109);
+    }
 
-        // initialise the robots texture given the id
-        layer.setCell((int) getPositionX(), (int) getPositionY(), textures[id]);
+    private void moveAnimation(int numTiles, Direction moveDir) {
+        if (moveDir == Direction.NORTH) {
+            setY(getY() + animationTick * game.tileScale / (100 / numTiles));
+        } else if (moveDir == Direction.EAST) {
+            setX(getX() + animationTick * game.tileScale / (100 / numTiles));
+        } else if (moveDir == Direction.SOUTH) {
+            setY(getY() - animationTick * game.tileScale / (100 / numTiles));
+        } else if (moveDir == Direction.WEST) {
+            setX(getX() - animationTick * game.tileScale / (100 / numTiles));
+        } else {
+            System.err.println("UNKNOWN DIRECTION: " + dir);
+        }
+    }
+
+    private void rotationAnimation(Direction animationDir) {
+
+        if (animationDir == Direction.NORTH) {
+            setRotation(getRotation() - (Direction.calcDegDiff(Direction.NORTH, dir) / 15));
+        } else if (animationDir == Direction.EAST) {
+            setRotation(getRotation() - (Direction.calcDegDiff(Direction.EAST, dir) / 15));
+        } else if (animationDir == Direction.SOUTH) {
+            setRotation(getRotation() - (Direction.calcDegDiff(Direction.SOUTH, dir) / 15));
+        } else if (animationDir == Direction.WEST) {
+            setRotation(getRotation() - (Direction.calcDegDiff(Direction.WEST, dir) / 15));
+        } else {
+            System.err.println("UNKNOWN DIRECTION: " + animationDir);
+        }
+    }
+
+    private void animate() {
+        if (animationTick == 15) {
+            isMoving = false;
+            isRotating = false;
+            this.animationTick = 0;
+            return;
+        }
+
+        if (isRotating) rotationAnimation(animationDir);
+        if (isMoving) moveAnimation(animationTileNum, animationDir);
+
+        animationTick++;
     }
 
     /**
      * Update the robots texture, rotation and position
      */
     public void update() {
-        // the NORMAL-texture is currently the only one being used
-        Cell cell = textures[id];
-
-        // set rotation according to direction
-        if (dir == Direction.NORTH) {
-            cell.setRotation(0);
-        } else if (dir == Direction.EAST) {
-            cell.setRotation(3);
-        } else if (dir == Direction.SOUTH) {
-            cell.setRotation(2);
-        } else {
-            cell.setRotation(1);
-        }
-
-        // update the tiled-map
-        layer.setCell((int) getPositionX(), (int) getPositionY(), cell);
+        if (isRotating) this.animate();
+        if (isMoving) this.animate();
+        else this.setGridPos(this.getPositionX(), this.getPositionY());
     }
 
     /**
@@ -157,17 +195,18 @@ public class Robot {
         int x;
         int y;
 
+        animationDir = direction;
+
         if (direction == Direction.NORTH) {
             for (int i = 1; i <= distance; i++) {
                 x = (int) this.getPositionX();
                 y = (int) this.getPositionY();
 
                 if (game.moveIsValid(Direction.NORTH, x, y + 1)) {
-                    // TODO: not neeeded in newer commits
-                    layer.setCell(x, y, null);
-
                     position.set(x, y + 1);
                     setProperRotation();
+                    isMoving = true;
+                    animationTileNum = distance;
                 }
             }
         }
@@ -177,11 +216,10 @@ public class Robot {
                 y = (int) this.getPositionY();
 
                 if (game.moveIsValid(Direction.EAST, x + 1, y)) {
-                    // TODO: not neeeded in newer commits
-                    layer.setCell(x, y, null);
-
                     position.set(x + 1, y);
                     setProperRotation();
+                    isMoving = true;
+                    animationTileNum = distance;
                 }
             }
         }
@@ -191,11 +229,10 @@ public class Robot {
                 y = (int) this.getPositionY();
 
                 if (game.moveIsValid(Direction.SOUTH, x, y - 1)) {
-                    // TODO: not neeeded in newer commits
-                    layer.setCell(x, y, null);
-
                     position.set(x, y - 1);
                     setProperRotation();
+                    isMoving = true;
+                    animationTileNum = distance;
                 }
             }
         }
@@ -205,11 +242,10 @@ public class Robot {
                 y = (int) this.getPositionY();
 
                 if (game.moveIsValid(Direction.WEST, x - 1, y)) {
-                    // TODO: not neeeded in newer commits
-                    layer.setCell(x, y, null);
-
                     position.set(x - 1, y);
                     setProperRotation();
+                    isMoving = true;
+                    animationTileNum = distance;
                 }
             }
         }
@@ -240,19 +276,25 @@ public class Robot {
      * @param numOfRotations number of 90 degree turns
      */
     public void rotate(boolean clockwise, int numOfRotations) {
+        animationDir = dir;
+
         for (int i = 0; i < numOfRotations; i++) {
             switch (dir) {
                 case NORTH:
                     dir = (clockwise) ? Direction.EAST : Direction.WEST;
+                    isRotating = true;
                     break;
                 case EAST:
                     dir = (clockwise) ? Direction.SOUTH : Direction.NORTH;
+                    isRotating = true;
                     break;
                 case SOUTH:
                     dir = (clockwise) ? Direction.WEST : Direction.EAST;
+                    isRotating = true;
                     break;
                 case WEST:
                     dir = (clockwise) ? Direction.NORTH : Direction.SOUTH;
+                    isRotating = true;
                     break;
             }
         }
@@ -757,7 +799,7 @@ public class Robot {
         return id;
     }
 
-    public TextureRegion getTexture() {
+    public TextureRegion getTextureRegion() {
         return textureSplit[0][id];
     }
 

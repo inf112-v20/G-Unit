@@ -25,6 +25,36 @@ public enum Direction {
         }
     }
 
+    public static Direction getNextDir(Direction dir, boolean clockwise) {
+        if (dir == Direction.NORTH) {
+            if (clockwise) return Direction.EAST;
+            else return Direction.WEST;
+        } else if (dir == Direction.EAST) {
+            if (clockwise) return Direction.SOUTH;
+            else return Direction.NORTH;
+        } else if (dir == Direction.SOUTH) {
+            if (clockwise) return Direction.WEST;
+            else return Direction.EAST;
+        } else if (dir == Direction.WEST) {
+            if (clockwise) return Direction.NORTH;
+            else return Direction.SOUTH;
+        } else {
+            return Direction.INVALID;
+        }
+    }
+
+    public static int calcDegDiff(Direction from, Direction to) {
+        int degrees = 0;
+
+        while (from != to) {
+            from = getNextDir(from, true);
+            degrees += 90;
+        }
+
+        if (degrees == 270) return -90;
+        else return degrees;
+    }
+
     /**
      * Flips the direction. Ex: SOUTH returns NORTH, WEST returns EAST etc..
      *

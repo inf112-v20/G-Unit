@@ -292,7 +292,7 @@ public class Hud implements Disposable {
 
         stage.getBatch().begin();
         stage.getBatch().draw(bg, 1000, 0, 500, 1000);
-        stage.getBatch().draw(game.getPlayerRobot().getTexture(), Main.WIDTH - 200 - TEXTURE_PADDING, Main.HEIGHT - 200 - TEXTURE_PADDING, 200, 200);
+        stage.getBatch().draw(game.getPlayerRobot().getTextureRegion(), Main.WIDTH - 200 - TEXTURE_PADDING, Main.HEIGHT - 200 - TEXTURE_PADDING, 200, 200);
         stage.getBatch().end();
 
         updateDamageTokens();

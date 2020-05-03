@@ -682,6 +682,10 @@ public class Robot extends Sprite {
 
         this.lifeTokens--;
         this.position = backupMemory.cpy();
+
+        dir = Direction.NORTH;
+        setRotation(0);
+
         this.damageMarkers = 0;
         if (this.lifeTokens <= 0){
             // TODO : Remove/dispose robots, that have zero lifeTokens and zero damageMarkers, from the game.

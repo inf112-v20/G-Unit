@@ -40,17 +40,19 @@ public class Robot extends Sprite {
     private ArrayList<ProgramCard> programBuffer = new ArrayList<>();
     public boolean isDonePicking = false;
 
-    private Game game;
-    private MapProperties props;
+    private final Game game;
 
     // the direction the robot is facing
     private Direction dir;
 
     // the TiledMap layer of the robot, texture-spritesheet and position.
-    private TiledMapTileLayer layer;
-    private TextureRegion[][] textureSplit;
-    private Cell[] textures;
+    private final TiledMapTileLayer layer;
+    private final TextureRegion[][] textureSplit;
     private Vector2 position;
+
+    private boolean isMoving = false;
+    private final int ANIMATION_DELTA = 30;
+    private int animationTick = 0;
 
     // backupMemory is the position where the robot starts, and if he gets a flag,
     // the flags position is now the new position of the robots backupMemory.
@@ -83,18 +85,17 @@ public class Robot extends Sprite {
     public Robot(Game game, int id, Vector2 startPos) {
         super(TextureRegion.split(new Texture("assets/players_300x300.png"), 300, 300)[0][id]);
 
-        setScale((float) 300/1200);
+        int tileWidth = game.getMap().getProperties().get("tilewidth", Integer.class);
+        int tileHeight = game.getMap().getProperties().get("tileheight", Integer.class);
+
+        setScale((float) tileWidth/Main.HEIGHT);
 
         this.game = game;
-        this.props = game.getMap().getProperties();
         this.dir = Direction.NORTH;
         this.position = startPos;
         this.id = id;
 
         this.backupMemory = startPos.cpy();
-
-        int tileWidth = props.get("tilewidth", Integer.class);
-        int tileHeight = props.get("tileheight", Integer.class);
 
         // retrieve the layer
         layer = (TiledMapTileLayer) game.getMap().getLayers().get("player_" + id);
@@ -103,13 +104,41 @@ public class Robot extends Sprite {
         textureSplit = TextureRegion.split(new Texture("assets/players_300x300.png"), tileWidth, tileHeight);
     }
 
+    private void setGridPos(float x, float y) {
+        this.setPosition(x, y);
+        this.setX(this.getPositionX() * ((float) 1000/12) - 109);
+        this.setY(this.getPositionY() * ((float) 1000/12) - 109);
+    }
+
+    private void animate() {
+        if (animationTick == 30) {
+            isMoving = false;
+            this.animationTick = 0;
+            return;
+        }
+
+        if (dir == Direction.NORTH) {
+            setY(this.getPositionY() * (((float) 1000/12) - 109) + animationTick * ((float) 1000/300));
+        } else if (dir == Direction.EAST) {
+            setX(this.getPositionX() * (((float) 1000/12) - 109) + animationTick * ((float) 1000/300));
+        } else if (dir == Direction.SOUTH) {
+            setY(this.getPositionY() * (((float) 1000/12) - 109) - animationTick * ((float) 1000/300));
+        } else if (dir == Direction.WEST) {
+            setX(this.getPositionX() * (((float) 1000/12) - 109) - animationTick * ((float) 1000/300));
+        } else {
+            System.err.println("UNKNOWN DIRECTION: " + dir);
+        }
+
+        animationTick++;
+    }
+
     /**
      * Update the robots texture, rotation and position
      */
     public void update() {
 
-        setX(this.getPositionX() * ((float) 1000/12) - 109);
-        setY(this.getPositionY() * ((float) 1000/12) - 109);
+        if (isMoving) this.animate();
+        else this.setGridPos(this.getPositionX(), this.getPositionY());
 
         if (dir == Direction.NORTH) {
             setRotation(0);
@@ -137,6 +166,8 @@ public class Robot extends Sprite {
      */
     public void move(int distance, Direction dir) {
         Direction direction;
+
+        isMoving = true;
 
         if (dir != null) direction = dir;
         else direction = this.dir;

@@ -173,7 +173,7 @@ public class Game extends InputAdapter implements Screen {
     public void gameOver(Robot winnerRobot) {
         gameIsOver = true;
         state = GameState.SETUP;
-        background_music.stop();
+        if (background_music != null) background_music.stop();
         this.dispose();
         if (main != null) main.setScreen(new GameOver(main, winnerRobot, numOfPlayers));
         //System.exit(0);

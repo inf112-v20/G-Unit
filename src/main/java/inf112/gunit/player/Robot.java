@@ -195,6 +195,7 @@ public class Robot extends Sprite {
         int x;
         int y;
 
+        animationTileNum = 0;
         animationDir = direction;
 
         if (direction == Direction.NORTH) {
@@ -206,7 +207,7 @@ public class Robot extends Sprite {
                     position.set(x, y + 1);
                     setProperRotation();
                     isMoving = true;
-                    animationTileNum = distance;
+                    animationTileNum++;
                 }
             }
         }
@@ -219,7 +220,7 @@ public class Robot extends Sprite {
                     position.set(x + 1, y);
                     setProperRotation();
                     isMoving = true;
-                    animationTileNum = distance;
+                    animationTileNum++;
                 }
             }
         }
@@ -232,7 +233,7 @@ public class Robot extends Sprite {
                     position.set(x, y - 1);
                     setProperRotation();
                     isMoving = true;
-                    animationTileNum = distance;
+                    animationTileNum++;
                 }
             }
         }
@@ -245,7 +246,7 @@ public class Robot extends Sprite {
                     position.set(x - 1, y);
                     setProperRotation();
                     isMoving = true;
-                    animationTileNum = distance;
+                    animationTileNum++;
                 }
             }
         }

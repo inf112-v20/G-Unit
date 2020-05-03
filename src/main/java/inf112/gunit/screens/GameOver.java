@@ -65,36 +65,11 @@ public class GameOver extends RRScreen {
         mainTable.setFillParent(true);
         mainTable.top();
 
-        final TextButton testplayButton = new TextButton("Restart", skin);
-        testplayButton.getLabel().setFontScale(3);
         TextButton mainMenuButton = new TextButton("Main Menu", skin);
         mainMenuButton.getLabel().setFontScale(3);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.getLabel().setFontScale(3);
 
-        // Listeners
-        // TODO The skin is supposed to change when hovering not clicking
-        testplayButton.addListener(new ClickListener(){
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                super.enter(event, x, y, pointer, fromActor);
-                testplayButton.setStyle(skin.get("toggle", TextButton.TextButtonStyle.class));
-            }
-
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                super.enter(event, x, y, pointer, toActor);
-                testplayButton.setStyle(skin.get("default", TextButton.TextButtonStyle.class));
-                dispose();
-            }
-
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                main.setScreen(new Game(main, numOfPlayers));
-                dispose();
-            }
-
-        });
         mainMenuButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -111,8 +86,6 @@ public class GameOver extends RRScreen {
 
         int padding = 50;
         //Add buttons to table
-        mainTable.row();
-        mainTable.add(testplayButton).width(400).height(100).pad(padding);
         mainTable.row();
         mainTable.add(mainMenuButton).width(400).height(100).pad(padding);
         mainTable.row();

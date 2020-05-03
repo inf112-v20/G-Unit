@@ -32,6 +32,8 @@ import java.util.Collections;
  */
 public class Game extends InputAdapter implements Screen {
 
+    public float tileScale;
+
     public SpriteBatch batch = new SpriteBatch();
 
     private Hud hud;
@@ -103,6 +105,8 @@ public class Game extends InputAdapter implements Screen {
         int mapHeight = props.get("height", Integer.class);
         int tileWidth = props.get("tilewidth", Integer.class);
         int tileHeight = props.get("tileheight", Integer.class);
+
+        tileScale = Main.HEIGHT / mapHeight;
 
         //set the camera accordingly
         camera = new OrthographicCamera();

@@ -51,8 +51,11 @@ public class Robot extends Sprite {
     private Vector2 position;
 
     private boolean isMoving = false;
+    private boolean isRotating = false;
     private final int ANIMATION_DELTA = 30;
     private int animationTick = 0;
+    private int animationTileNum;
+    private Direction animationDir;
 
     // backupMemory is the position where the robot starts, and if he gets a flag,
     // the flags position is now the new position of the robots backupMemory.
@@ -106,28 +109,49 @@ public class Robot extends Sprite {
 
     private void setGridPos(float x, float y) {
         this.setPosition(x, y);
-        this.setX(this.getPositionX() * ((float) 1000/12) - 109);
-        this.setY(this.getPositionY() * ((float) 1000/12) - 109);
+        this.setX(this.getPositionX() * game.tileScale - 109);
+        this.setY(this.getPositionY() * game.tileScale - 109);
+    }
+
+    private void moveAnimation(int numTiles, Direction moveDir) {
+        if (moveDir == Direction.NORTH) {
+            setY(getY() + animationTick * game.tileScale / (100 / numTiles));
+        } else if (moveDir == Direction.EAST) {
+            setX(getX() + animationTick * game.tileScale / (100 / numTiles));
+        } else if (moveDir == Direction.SOUTH) {
+            setY(getY() - animationTick * game.tileScale / (100 / numTiles));
+        } else if (moveDir == Direction.WEST) {
+            setX(getX() - animationTick * game.tileScale / (100 / numTiles));
+        } else {
+            System.err.println("UNKNOWN DIRECTION: " + dir);
+        }
+    }
+
+    private void rotationAnimation(Direction animationDir) {
+
+        if (animationDir == Direction.NORTH) {
+            setRotation(getRotation() - (Direction.calcDegDiff(Direction.NORTH, dir) / 15));
+        } else if (animationDir == Direction.EAST) {
+            setRotation(getRotation() - (Direction.calcDegDiff(Direction.EAST, dir) / 15));
+        } else if (animationDir == Direction.SOUTH) {
+            setRotation(getRotation() - (Direction.calcDegDiff(Direction.SOUTH, dir) / 15));
+        } else if (animationDir == Direction.WEST) {
+            setRotation(getRotation() - (Direction.calcDegDiff(Direction.WEST, dir) / 15));
+        } else {
+            System.err.println("UNKNOWN DIRECTION: " + animationDir);
+        }
     }
 
     private void animate() {
-        if (animationTick == 30) {
+        if (animationTick == 15) {
             isMoving = false;
+            isRotating = false;
             this.animationTick = 0;
             return;
         }
 
-        if (dir == Direction.NORTH) {
-            setY(this.getPositionY() * (((float) 1000/12) - 109) + animationTick * ((float) 1000/300));
-        } else if (dir == Direction.EAST) {
-            setX(this.getPositionX() * (((float) 1000/12) - 109) + animationTick * ((float) 1000/300));
-        } else if (dir == Direction.SOUTH) {
-            setY(this.getPositionY() * (((float) 1000/12) - 109) - animationTick * ((float) 1000/300));
-        } else if (dir == Direction.WEST) {
-            setX(this.getPositionX() * (((float) 1000/12) - 109) - animationTick * ((float) 1000/300));
-        } else {
-            System.err.println("UNKNOWN DIRECTION: " + dir);
-        }
+        if (isRotating) rotationAnimation(animationDir);
+        if (isMoving) moveAnimation(animationTileNum, animationDir);
 
         animationTick++;
     }
@@ -136,19 +160,9 @@ public class Robot extends Sprite {
      * Update the robots texture, rotation and position
      */
     public void update() {
-
+        if (isRotating) this.animate();
         if (isMoving) this.animate();
         else this.setGridPos(this.getPositionX(), this.getPositionY());
-
-        if (dir == Direction.NORTH) {
-            setRotation(0);
-        } else if (dir == Direction.EAST) {
-            setRotation(3 * 90);
-        } else if (dir == Direction.SOUTH) {
-            setRotation(2 * 90);
-        } else {
-            setRotation(90);
-        }
     }
 
     /**
@@ -167,13 +181,13 @@ public class Robot extends Sprite {
     public void move(int distance, Direction dir) {
         Direction direction;
 
-        isMoving = true;
-
         if (dir != null) direction = dir;
         else direction = this.dir;
 
         int x = (int) this.getPositionX();
         int y = (int) this.getPositionY();
+
+        animationDir = direction;
 
         switch (direction) {
             case NORTH:
@@ -181,6 +195,8 @@ public class Robot extends Sprite {
                     layer.setCell(x, y, null);
                     position.set(x, y + distance);
                     setProperRotation();
+                    isMoving = true;
+                    animationTileNum = distance;
                 }
                 break;
             case EAST:
@@ -188,6 +204,8 @@ public class Robot extends Sprite {
                     layer.setCell(x, y, null);
                     position.set(x + distance, y);
                     setProperRotation();
+                    isMoving = true;
+                    animationTileNum = distance;
                 }
                 break;
             case SOUTH:
@@ -195,6 +213,8 @@ public class Robot extends Sprite {
                     layer.setCell(x, y, null);
                     position.set(x, y - distance);
                     setProperRotation();
+                    isMoving = true;
+                    animationTileNum = distance;
                 }
                 break;
             case WEST:
@@ -202,6 +222,8 @@ public class Robot extends Sprite {
                     layer.setCell(x, y, null);
                     position.set(x - distance, y);
                     setProperRotation();
+                    isMoving = true;
+                    animationTileNum = distance;
                 }
                 break;
             default:
@@ -232,19 +254,25 @@ public class Robot extends Sprite {
      * @param numOfRotations number of 90 degree turns
      */
     public void rotate(boolean clockwise, int numOfRotations) {
+        animationDir = dir;
+
         for (int i = 0; i < numOfRotations; i++) {
             switch (dir) {
                 case NORTH:
                     dir = (clockwise) ? Direction.EAST : Direction.WEST;
+                    isRotating = true;
                     break;
                 case EAST:
                     dir = (clockwise) ? Direction.SOUTH : Direction.NORTH;
+                    isRotating = true;
                     break;
                 case SOUTH:
                     dir = (clockwise) ? Direction.WEST : Direction.EAST;
+                    isRotating = true;
                     break;
                 case WEST:
                     dir = (clockwise) ? Direction.NORTH : Direction.SOUTH;
+                    isRotating = true;
                     break;
             }
         }

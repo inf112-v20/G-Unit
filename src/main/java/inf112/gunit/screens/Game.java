@@ -350,7 +350,6 @@ public class Game extends InputAdapter implements Screen {
                 return false;
         }
 
-
         // wallCell is the cell you are trying to move to
         // prevCell is the cell you are currently standing on, aka the cell you are moving from
         // Also checks for lasers, since they are also walls
@@ -365,15 +364,15 @@ public class Game extends InputAdapter implements Screen {
             prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y + 1);
             prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x, y + 1);
         }
-        if (Direction.flip(dir) == Direction.EAST) {
+        else if (Direction.flip(dir) == Direction.EAST) {
             prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x + 1, y);
             prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x + 1, y);
         }
-        if (Direction.flip(dir) == Direction.SOUTH) {
+        else if (Direction.flip(dir) == Direction.SOUTH) {
             prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y - 1);
             prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x, y - 1);
         }
-        if (Direction.flip(dir) == Direction.WEST) {
+        else if (Direction.flip(dir) == Direction.WEST) {
             prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x - 1, y);
             prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x - 1, y);
         }
@@ -420,13 +419,8 @@ public class Game extends InputAdapter implements Screen {
      */
     public boolean moveIsValid(Direction dir, int x, int y) {
         if (x >= 0 && x < props.get("width", Integer.class) && y >= 0 && y < props.get("height", Integer.class)) {
-            // TODO: revert back to only this line when not debugging
-            //return positionIsFree(x, y);
-
-            //System.out.println("Success! Moving...");
             return positionIsFree(dir, x, y);
         }
-        //System.out.println("Move is not valid!");
         return false;
     }
 

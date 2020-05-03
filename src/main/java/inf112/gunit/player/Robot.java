@@ -38,6 +38,9 @@ public class Robot {
     private ArrayList<ProgramCard> programBuffer = new ArrayList<>();
     public boolean isDonePicking = false;
 
+    private Vector2 prevPrevPos;
+    private Vector2 prevPos;
+
     private Game game;
     private MapProperties props;
 
@@ -83,6 +86,7 @@ public class Robot {
         this.props = game.getMap().getProperties();
         this.dir = Direction.NORTH;
         this.position = startPos;
+        this.prevPos = new Vector2(100, 100);
         this.id = id;
 
         this.backupMemory = startPos.cpy();
@@ -145,45 +149,73 @@ public class Robot {
     public void move(int distance, Direction dir) {
         Direction direction;
 
-        if (dir != null) direction = dir;
-        else direction = this.dir;
+        if (dir != null)
+            direction = dir;
+        else
+            direction = this.dir;
 
-        int x = (int) this.getPositionX();
-        int y = (int) this.getPositionY();
+        int x;
+        int y;
 
-        switch (direction) {
-            case NORTH:
-                if (game.moveIsValid(Direction.NORTH, x, y + distance)) {
+        if (direction == Direction.NORTH) {
+            for (int i = 1; i <= distance; i++) {
+                x = (int) this.getPositionX();
+                y = (int) this.getPositionY();
+
+                if (game.moveIsValid(Direction.NORTH, x, y + 1)) {
+                    // TODO: not neeeded in newer commits
                     layer.setCell(x, y, null);
-                    position.set(x, y + distance);
+
+                    position.set(x, y + 1);
                     setProperRotation();
                 }
-                break;
-            case EAST:
-                if (game.moveIsValid(Direction.EAST, x + distance, y)) {
+            }
+        }
+        else if (direction == Direction.EAST) {
+            for (int i = 1; i <= distance; i++) {
+                x = (int) this.getPositionX();
+                y = (int) this.getPositionY();
+
+                if (game.moveIsValid(Direction.EAST, x + 1, y)) {
+                    // TODO: not neeeded in newer commits
                     layer.setCell(x, y, null);
-                    position.set(x + distance, y);
+
+                    position.set(x + 1, y);
                     setProperRotation();
                 }
-                break;
-            case SOUTH:
-                if (game.moveIsValid(Direction.SOUTH, x, y - distance)) {
+            }
+        }
+        else if (direction == Direction.SOUTH) {
+            for (int i = 1; i <= distance; i++) {
+                x = (int) this.getPositionX();
+                y = (int) this.getPositionY();
+
+                if (game.moveIsValid(Direction.SOUTH, x, y - 1)) {
+                    // TODO: not neeeded in newer commits
                     layer.setCell(x, y, null);
-                    position.set(x, y - distance);
+
+                    position.set(x, y - 1);
                     setProperRotation();
                 }
-                break;
-            case WEST:
-                if (game.moveIsValid(Direction.WEST, x - distance, y)) {
+            }
+        }
+        else if (direction == Direction.WEST) {
+            for (int i = 1; i <= distance; i++) {
+                x = (int) this.getPositionX();
+                y = (int) this.getPositionY();
+
+                if (game.moveIsValid(Direction.WEST, x - 1, y)) {
+                    // TODO: not neeeded in newer commits
                     layer.setCell(x, y, null);
-                    position.set(x - distance, y);
+
+                    position.set(x - 1, y);
                     setProperRotation();
                 }
-                break;
-            default:
-                System.err.println("Invalid direction: " + direction + "!");
-                System.err.println("Not moving!");
-                break;
+            }
+        }
+        else {
+            System.err.println("Invalid direction: " + direction + "!");
+            System.err.println("Not moving!");
         }
     }
 
@@ -298,35 +330,71 @@ public class Robot {
             return new ArrayList<ProgramCard>();
         
         Vector2 nextFlagPos = flagPos.get(flagsCollected);
-        
-        return pathTo(new ArrayList<ProgramCard>(), position, nextFlagPos, dir);
+
+        ArrayList<ProgramCard> newCards = pathTo(new ArrayList<ProgramCard>(), position, nextFlagPos, dir);
+        if (position.equals(prevPos)) {
+            System.out.println("adding spice");
+
+            prevPos = position.cpy();
+
+            return addSomeSpice(newCards);
+        }
+
+        prevPos = position.cpy();
+
+        return newCards;
+    }
+    
+    public ArrayList<ProgramCard> addSomeSpice(ArrayList<ProgramCard> cards) {
+        Random rand = new Random();
+        cards.set(rand.nextInt(cards.size()), new MovementCard(1000, 2));
+        cards.set(rand.nextInt(cards.size()), new RotationCard(1000, rand.nextInt(3) + 1, rand.nextBoolean()));
+
+        return cards;
     }
     
     public ArrayList<ProgramCard> pathTo(ArrayList<ProgramCard> currentPath, Vector2 from, Vector2 to, Direction curDir) {
         if (currentPath.size() == 5) {
             System.out.println("Got path with five cards!");
             return currentPath;
-        }    
+        }
         
         float deltaX = from.x - to.x;
         //System.out.println("deltaX: " + deltaX + ", from.x: " + from.x + ", to.x: " + to.x);
         float deltaY = from.y - to.y;
-        System.out.println("deltaX: " + deltaY + ", from.y: " + from.y + ", to.y: " + to.y);
+        System.out.println("deltaY: " + deltaY + ", from.y: " + from.y + ", to.y: " + to.y);
 
         if (deltaX > 0) {
             //System.out.println("deltaX > 0");
             if (curDir == Direction.WEST) {
+                int extraDist = 0;
+                TiledMapTileLayer.Cell convCellOne = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x - 1, (int) from.y);
+                TiledMapTileLayer.Cell convCellTwo = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x - 2, (int) from.y);
+
+                if (convCellOne != null) {
+                    Direction cellOneDir = Direction.lookup(convCellOne.getTile().getProperties().get("direction").toString());
+                    if (Direction.flip(cellOneDir) == curDir)
+                        extraDist++;
+                    System.out.println(cellOneDir);
+                }
+                else if (convCellTwo != null) {
+                    Direction cellTwoDir = Direction.lookup(convCellTwo.getTile().getProperties().get("direction").toString());
+                    if (Direction.flip(cellTwoDir) == curDir)
+                        extraDist++;
+                    System.out.println(cellTwoDir);
+                }
+
                 if (deltaX >= 3) {
                     currentPath.add(new MovementCard(1000, 3));
                     return pathTo(currentPath, new Vector2(from.x - 3, from.y), to, curDir);
                 }    
                 else if (deltaX >= 2) {
-                    currentPath.add(new MovementCard(1000, 2));
-                    return pathTo(currentPath, new Vector2(from.x - 2, from.y), to, curDir);
+                    currentPath.add(new MovementCard(1000, 2 + extraDist));
+                    return pathTo(currentPath, new Vector2(from.x - 2 - extraDist, from.y), to, curDir);
                 }    
                 else if (deltaX >= 1) {
-                    currentPath.add(new MovementCard(1000, 1));
-                    return pathTo(currentPath, new Vector2(from.x - 1, from.y), to, curDir);
+                    currentPath.add(new MovementCard(1000, 1 + extraDist));
+                    return pathTo(currentPath, new Vector2(from.x - 1 - extraDist, from.y), to, curDir);
                 }    
             }
             else if (curDir == Direction.SOUTH) {
@@ -344,17 +412,34 @@ public class Robot {
         }
         else if (deltaX < 0) {
             if (curDir == Direction.EAST) {
+                int extraDist = 0;
+                TiledMapTileLayer.Cell convCellOne = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x + 1, (int) from.y);
+                TiledMapTileLayer.Cell convCellTwo = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x + 2, (int) from.y);
+
+                if (convCellOne != null) {
+                    Direction cellOneDir = Direction.lookup(convCellOne.getTile().getProperties().get("direction").toString());
+                    if (Direction.flip(cellOneDir) == curDir)
+                        extraDist++;
+                    System.out.println(cellOneDir);
+                }
+                else if (convCellTwo != null) {
+                    Direction cellTwoDir = Direction.lookup(convCellTwo.getTile().getProperties().get("direction").toString());
+                    if (Direction.flip(cellTwoDir) == curDir)
+                        extraDist++;
+                    System.out.println(cellTwoDir);
+                }
+
                 if (deltaX <= -3) {
                     currentPath.add(new MovementCard(1000, 3));
                     return pathTo(currentPath, new Vector2(from.x + 3, from.y), to, curDir);
                 }
                 else if (deltaX <= -2) {
-                    currentPath.add(new MovementCard(1000, 2));
-                    return pathTo(currentPath, new Vector2(from.x + 2, from.y), to, curDir);
+                    currentPath.add(new MovementCard(1000, 2 + extraDist));
+                    return pathTo(currentPath, new Vector2(from.x + 2 + extraDist, from.y), to, curDir);
                 }
                 else if (deltaX <= -1) {
-                    currentPath.add(new MovementCard(1000, 1));
-                    return pathTo(currentPath, new Vector2(from.x + 1, from.y), to, curDir);
+                    currentPath.add(new MovementCard(1000, 1 + extraDist));
+                    return pathTo(currentPath, new Vector2(from.x + 1 + extraDist, from.y), to, curDir);
                 }
             }
             else if (curDir == Direction.SOUTH) {
@@ -370,19 +455,36 @@ public class Robot {
                 return pathTo(currentPath, from, to, Direction.getClockwiseDirection(curDir));
             }
         }
-        else if (deltaY > 0) {
+         if (deltaY > 0) {
             if (curDir == Direction.SOUTH) {
+                int extraDist = 0;
+                TiledMapTileLayer.Cell convCellOne = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x, (int) from.y - 1);
+                TiledMapTileLayer.Cell convCellTwo = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x, (int) from.y - 2);
+
+                if (convCellOne != null) {
+                    Direction cellOneDir = Direction.lookup(convCellOne.getTile().getProperties().get("direction").toString());
+                    if (Direction.flip(cellOneDir) == curDir)
+                        extraDist++;
+                    System.out.println(cellOneDir);
+                }
+                else if (convCellTwo != null) {
+                    Direction cellTwoDir = Direction.lookup(convCellTwo.getTile().getProperties().get("direction").toString());
+                    if (Direction.flip(cellTwoDir) == curDir)
+                        extraDist++;
+                    System.out.println(cellTwoDir);
+                }
+
                 if (deltaY >= 3) {
                     currentPath.add(new MovementCard(1000, 3));
                     return pathTo(currentPath, new Vector2(from.x, from.y - 3), to, curDir);
                 }
                 else if (deltaY <= 2) {
-                    currentPath.add(new MovementCard(1000, 2));
-                    return pathTo(currentPath, new Vector2(from.x, from.y - 2), to, curDir);
+                    currentPath.add(new MovementCard(1000, 2 + extraDist));
+                    return pathTo(currentPath, new Vector2(from.x, from.y - 2 - extraDist), to, curDir);
                 }
                 else if (deltaY >= 1) {
-                    currentPath.add(new MovementCard(1000, 1));
-                    return pathTo(currentPath, new Vector2(from.x, from.y - 1), to, curDir);
+                    currentPath.add(new MovementCard(1000, 1 + extraDist));
+                    return pathTo(currentPath, new Vector2(from.x, from.y - 1 - extraDist), to, curDir);
                 }
             }
             else if (curDir == Direction.WEST) {
@@ -398,19 +500,36 @@ public class Robot {
                 return pathTo(currentPath, from, to, Direction.getClockwiseDirection(curDir));
             }
         }
-        else if (deltaY < 0) {
+        if (deltaY < 0) {
             if (curDir == Direction.NORTH) {
+                int extraDist = 0;
+                TiledMapTileLayer.Cell convCellOne = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x, (int) from.y + 1);
+                TiledMapTileLayer.Cell convCellTwo = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x, (int) from.y + 2);
+
+                if (convCellOne != null) {
+                    Direction cellOneDir = Direction.lookup(convCellOne.getTile().getProperties().get("direction").toString());
+                    if (Direction.flip(cellOneDir) == curDir)
+                        extraDist++;
+                    System.out.println(cellOneDir);
+                }
+                else if (convCellTwo != null) {
+                    Direction cellTwoDir = Direction.lookup(convCellTwo.getTile().getProperties().get("direction").toString());
+                    if (Direction.flip(cellTwoDir) == curDir)
+                        extraDist++;
+                    System.out.println(cellTwoDir);
+                }
+
                 if (deltaY <= -3) {
                     currentPath.add(new MovementCard(1000, 3));
                     return pathTo(currentPath, new Vector2(from.x, from.y + 3), to, curDir);
                 }
                 else if (deltaY <= -2) {
-                    currentPath.add(new MovementCard(1000, 2));
-                    return pathTo(currentPath, new Vector2(from.x, from.y + 2), to, curDir);
+                    currentPath.add(new MovementCard(1000, 2 + extraDist));
+                    return pathTo(currentPath, new Vector2(from.x, from.y + 2 + extraDist), to, curDir);
                 }
                 else if (deltaY <= -1) {
-                    currentPath.add(new MovementCard(1000, 1));
-                    return pathTo(currentPath, new Vector2(from.x, from.y + 1), to, curDir);
+                    currentPath.add(new MovementCard(1000, 1 + extraDist));
+                    return pathTo(currentPath, new Vector2(from.x, from.y + 1 + extraDist), to, curDir);
                 }
             }
             else if (curDir == Direction.EAST) {

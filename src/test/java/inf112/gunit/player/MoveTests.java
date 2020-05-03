@@ -45,10 +45,18 @@ public class MoveTests {
      */
     @Test
     public void moveDistTwo() {
-        robot.setPosition(new Vector2(0,0));
+        robot.setPosition(new Vector2(0,3));
         int y = (int) robot.getPositionY();
         robot.move(2);
         assertEquals(y+2, (int) robot.getPositionY());
+    }
+    
+    @Test
+    public void moveDistThree() {
+        robot.setPosition(new Vector2(0, 3));
+        int y = (int) robot.getPositionY();
+        robot.move(3);
+        assertEquals(y + 3, (int) robot.getPositionY());
     }
 
     /**
@@ -78,6 +86,18 @@ public class MoveTests {
         robot.rotate(true, 2);
         robot.move(1);
         assertEquals(y, (int) robot.getPositionY());
+        
+        robot.setPosition(new Vector2(1, 9));
+        y = (int) robot.getPositionY();
+        robot.rotate(true, 2);
+        robot.move(2);
+        assertEquals(y, (int) robot.getPositionY());
+
+        robot.setPosition(new Vector2(1, 9));
+        y = (int) robot.getPositionY();
+        robot.rotate(true, 2);
+        robot.move(3);
+        assertEquals(y, (int) robot.getPositionY());
     }
 
     @Test
@@ -104,5 +124,14 @@ public class MoveTests {
         robot.rotate(false, 1);
         robot.move(1);
         assertEquals(x, (int) robot.getPositionX());
+    }
+
+    @Test
+    public void moveLegalOrthogonalWallFromEast() {
+        robot.setPosition(new Vector2(0, 1));
+        int x = (int) robot.getPositionX();
+        robot.rotate(true, 1);
+        robot.move(1);
+        assertEquals(x + 1, (int) robot.getPositionX());
     }
 }

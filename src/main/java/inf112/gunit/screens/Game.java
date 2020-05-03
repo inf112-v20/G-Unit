@@ -34,7 +34,7 @@ public class Game extends InputAdapter implements Screen {
 
     public float tileScale;
 
-    public SpriteBatch batch = new SpriteBatch();
+    public SpriteBatch batch;
 
     private Hud hud;
 
@@ -85,6 +85,7 @@ public class Game extends InputAdapter implements Screen {
         this.main = main;
         this.map = new TmxMapLoader().load("assets/robot_board.tmx");
         this.robots = new Robot[numOfPlayers];
+        this.batch = new SpriteBatch();
         props = map.getProperties();
         board = new Board(this);
         phase = 0;
@@ -152,6 +153,8 @@ public class Game extends InputAdapter implements Screen {
             Robot p = new Robot(this, i, board.getStartPosition(i));
             robots[i] = p;
         }
+
+        tileScale = Main.HEIGHT / map.getProperties().get("height", Integer.class);
 
         playerRobot = robots[0];
 

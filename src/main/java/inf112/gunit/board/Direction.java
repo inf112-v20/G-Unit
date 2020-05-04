@@ -43,6 +43,19 @@ public enum Direction {
         }
     }
 
+    public static int toDegrees(Direction dir) {
+        if (dir == Direction.NORTH) {
+            return 0;
+        } else if (dir == Direction.EAST) {
+            return 270;
+        } else if (dir == Direction.SOUTH) {
+            return 180;
+        } else if (dir == Direction.WEST) {
+            return 90;
+        }
+        return 0;
+    }
+
     public static int calcDegDiff(Direction from, Direction to) {
         int degrees = 0;
 

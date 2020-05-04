@@ -33,10 +33,6 @@ public class Board {
     private void convey(Robot robot, TiledMapTileLayer.Cell cell) {
         String tileDir = cell.getTile().getProperties().get("direction").toString();
         robot.move(1, Direction.lookup(tileDir));
-
-        TiledMapTileLayer.Cell newCell = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) robot.getPositionX(), (int) robot.getPositionY());
-        if (newCell != null && Boolean.parseBoolean(newCell.getTile().getProperties().get("rotation").toString()))
-            robot.setDirection(Direction.lookup(newCell.getTile().getProperties().get("direction").toString()));
     }
 
     /**

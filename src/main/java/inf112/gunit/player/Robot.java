@@ -265,8 +265,13 @@ public class Robot extends Sprite {
 
         TiledMapTile tile = cell.getTile();
 
-        if (Boolean.parseBoolean(tile.getProperties().get("rotation").toString()))
-            this.setDirection(Direction.lookup(tile.getProperties().get("direction").toString()));
+        if (Boolean.parseBoolean(tile.getProperties().get("rotation").toString())) {
+            animationDir = dir;
+
+            Direction d = Direction.lookup(tile.getProperties().get("direction").toString());
+            dir = d;
+            isRotating = true;
+        }
     }
 
     /**

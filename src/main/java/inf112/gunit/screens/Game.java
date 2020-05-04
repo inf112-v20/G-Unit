@@ -263,6 +263,16 @@ public class Game extends InputAdapter implements Screen {
 
     }
 
+    public boolean fallIntoHole(Robot robot) {
+        TiledMapTileLayer holes = (TiledMapTileLayer) map.getLayers().get("holes");
+
+        if (holes.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
+            board.holes();
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void render(float v) {
         Gdx.gl.glClearColor(0, 0, 0, 1);

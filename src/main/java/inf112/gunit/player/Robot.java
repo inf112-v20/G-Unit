@@ -208,6 +208,7 @@ public class Robot extends Sprite {
                     setProperRotation();
                     isMoving = true;
                     animationTileNum++;
+                    if (game.fallIntoHole(this)) break;
                 }
             }
         }
@@ -221,6 +222,7 @@ public class Robot extends Sprite {
                     setProperRotation();
                     isMoving = true;
                     animationTileNum++;
+                    if (game.fallIntoHole(this)) break;
                 }
             }
         }
@@ -234,6 +236,7 @@ public class Robot extends Sprite {
                     setProperRotation();
                     isMoving = true;
                     animationTileNum++;
+                    if (game.fallIntoHole(this)) break;
                 }
             }
         }
@@ -247,6 +250,7 @@ public class Robot extends Sprite {
                     setProperRotation();
                     isMoving = true;
                     animationTileNum++;
+                    if (game.fallIntoHole(this)) break;
                 }
             }
         }

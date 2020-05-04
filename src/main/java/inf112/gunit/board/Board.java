@@ -117,11 +117,12 @@ public class Board {
             TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
 
             if (cell != null) {
+                robot.setBackupMemory(robot.getPosition().cpy());
+
                 int flagNum = (int) cell.getTile().getProperties().get("num");
                 if (flagNum == robot.flagsCollected + 1) {
                     robot.setFlagsCollected(robot.getFlagsCollected() + 1);
-                    // Set backupMemoryTile to the position of the flag that has been captured.
-                    robot.setBackupMemory(robot.getPosition().cpy());
+                    robot.repair();
                     System.out.println(robot + " picked up flag number " + flagNum);
                 }
             }

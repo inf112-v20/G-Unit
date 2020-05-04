@@ -114,10 +114,13 @@ public class Game extends InputAdapter implements Screen {
         camera.setToOrtho(false, (mapWidth * tileWidth) * ((float) Main.WIDTH / (float) Main.HEIGHT), mapHeight * tileHeight);
         camera.update();
 
-        // loads the background music
+        // loads and plays background music
+        /*
         background_music = Gdx.audio.newMusic(Gdx.files.internal("in_da_club.wav"));
         background_music.setLooping(true);
+        background_music.setVolume(0.5f);
         background_music.play();
+         */
 
         // set the tile renderer and add the camera view to it
         tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / (tileWidth) * (tileHeight));

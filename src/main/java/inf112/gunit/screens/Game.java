@@ -117,6 +117,7 @@ public class Game extends InputAdapter implements Screen {
         // loads the background music
         background_music = Gdx.audio.newMusic(Gdx.files.internal("in_da_club.wav"));
         background_music.setLooping(true);
+        background_music.setVolume(0.5f);
         background_music.play();
 
         // set the tile renderer and add the camera view to it

@@ -347,8 +347,11 @@ public class Robot {
         this.lifeTokens--;
         this.position = backupMemory;
         this.damageMarkers = 0;
+        // If robot has zero life, set dead to true and remove it from the board.
         if (this.lifeTokens <= 0){
             this.dead = true;
+            this.position.x = -1;
+            this.position.y = -id;
         }
     }
 

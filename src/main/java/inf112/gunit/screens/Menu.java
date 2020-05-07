@@ -74,17 +74,19 @@ public class Menu extends RRScreen {
 
         // Listeners
         // TODO The skin is supposed to change when hovering not clicking
-        easyplayButton.addListener(new ClickListener(){
+
+
+        hardplayButton.addListener(new ClickListener(){
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 super.enter(event, x, y, pointer, fromActor);
-                easyplayButton.setStyle(skin.get("toggle", TextButton.TextButtonStyle.class));
+                hardplayButton.setStyle(skin.get("toggle", TextButton.TextButtonStyle.class));
             }
 
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 super.enter(event, x, y, pointer, toActor);
-                easyplayButton.setStyle(skin.get("default", TextButton.TextButtonStyle.class));
+                hardplayButton.setStyle(skin.get("default", TextButton.TextButtonStyle.class));
             }
 
             @Override
@@ -92,6 +94,7 @@ public class Menu extends RRScreen {
                 main.setScreen(new Game(main, (int) numplayers.getValue()));
             }
         });
+
         quitButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {

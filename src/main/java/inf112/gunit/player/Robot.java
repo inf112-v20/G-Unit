@@ -826,6 +826,10 @@ public class Robot extends Sprite {
         this.damageMarkers += power;
     }
 
+    public void repair() {
+        this.damageMarkers = 0;
+    }
+
     /**
      * Get a robots power.
      * @return power

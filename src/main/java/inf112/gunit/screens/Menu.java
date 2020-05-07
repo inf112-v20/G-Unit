@@ -91,9 +91,28 @@ public class Menu extends RRScreen {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                main.setScreen(new Game(main, (int) numplayers.getValue()));
+                main.setScreen(new Game(main, false, (int) numplayers.getValue()));
             }
         });
+        easyplayButton.addListener(new ClickListener(){
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                super.enter(event, x, y, pointer, fromActor);
+                hardplayButton.setStyle(skin.get("toggle", TextButton.TextButtonStyle.class));
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                super.enter(event, x, y, pointer, toActor);
+                hardplayButton.setStyle(skin.get("default", TextButton.TextButtonStyle.class));
+            }
+
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                main.setScreen(new Game(main, true, (int) numplayers.getValue()));
+            }
+        });
+
 
         quitButton.addListener(new ClickListener(){
             @Override

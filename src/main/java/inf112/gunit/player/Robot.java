@@ -20,6 +20,7 @@ import inf112.gunit.player.card.RotationCard;
 import inf112.gunit.screens.Game;
 
 import java.lang.reflect.Array;
+import java.net.PortUnreachableException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -397,6 +398,16 @@ public class Robot extends Sprite {
                 cardDeck.add(new RotationCard(rotations, clockwise));
             }
         }
+    }
+   
+    public ArrayList<ProgramCard> easyAI(ArrayList<Vector2> flagPosList) {
+        ArrayList<ProgramCard> cards = new ArrayList<>();
+        for (ProgramCard c : cardDeck) {
+            if (cards.size() < 5)
+                cards.add(c);
+        }
+        
+        return cards;
     }
     
     public ArrayList<ProgramCard> hardAI(ArrayList<Vector2> flagPosList) {

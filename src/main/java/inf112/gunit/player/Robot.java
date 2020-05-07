@@ -399,7 +399,14 @@ public class Robot extends Sprite {
             }
         }
     }
-   
+
+    /**
+     * The AI used when the player selects 'easy'.
+     * This function just returns random moves.
+     *
+     * @param flagPosList list of where all the flags are
+     * @return a list of moves the robot can execute
+     */
     public ArrayList<ProgramCard> easyAI(ArrayList<Vector2> flagPosList) {
         ArrayList<ProgramCard> cards = new ArrayList<>();
         for (ProgramCard c : cardDeck) {
@@ -409,7 +416,14 @@ public class Robot extends Sprite {
         
         return cards;
     }
-    
+
+    /**
+     * The AI used when the player selects 'hard'.
+     * Uses the 'pathTo()' method to recursively find the best path.
+     *
+     * @param flagPosList a list of where all the flags are
+     * @return a list of moves the robot should execute
+     */
     public ArrayList<ProgramCard> hardAI(ArrayList<Vector2> flagPosList) {
         if (flagsCollected == 4)
             return new ArrayList<ProgramCard>();
@@ -427,7 +441,14 @@ public class Robot extends Sprite {
 
         return newCards;
     }
-    
+
+    /**
+     * Takes a list of program cards and adds in some random program cards.
+     * This is used in the hard AI so it doesn't get stuck.
+     *
+     * @param cards list of cards to spice up
+     * @return a new list with some of the program cards replaced with random ones
+     */
     public ArrayList<ProgramCard> addSomeSpice(ArrayList<ProgramCard> cards) {
         Random rand = new Random();
         cards.set(rand.nextInt(cards.size()), new MovementCard(2));
@@ -435,7 +456,16 @@ public class Robot extends Sprite {
 
         return cards;
     }
-    
+
+    /**
+     *
+     * @param currentPath the current path the AI has found
+     * @param flagPosList list of all the flag positions
+     * @param from where the AI is trying to go from
+     * @param to where the AI is trying to go to
+     * @param curDir the direction the robot is currently facing in the current path
+     * @return a list of program cards the AI executes
+     */
     public ArrayList<ProgramCard> pathTo(ArrayList<ProgramCard> currentPath, ArrayList<Vector2> flagPosList, Vector2 from, Vector2 to, Direction curDir) {
         if (currentPath.size() == 5) {
             System.out.println("Got path with five cards!");
@@ -445,6 +475,7 @@ public class Robot extends Sprite {
         Random rand = new Random();
         float deltaX = from.x - to.x;
         float deltaY = from.y - to.y;
+        // If the AI should prioritize getting closest to the x-coordinate of the next flag, or the y-coordinate
         boolean xAxisFirst = rand.nextBoolean();
 
         if (xAxisFirst) {
@@ -615,13 +646,11 @@ public class Robot extends Sprite {
             }
         }
 
-        // If a flag has been collected in the middle of the path,
-        // find the next flag
+        // If a flag has been collected in the middle of the path, find the next flag
         if (flagPosList.get(flagsCollected) != to) {
             return pathTo(currentPath, flagPosList, from, flagPosList.get(flagsCollected), dir);
         }
         
-        System.out.println("adding random cards");
         int rem = 5 - currentPath.size();
         for (int i = 0; i < rem; i++) {
             currentPath.add(cardDeck.get(i));
@@ -919,6 +948,11 @@ public class Robot extends Sprite {
         }
     }
 
+    /**
+     * The color of the robot, used as the "name" of the player
+     *
+     * @return the name of the player
+     */
     @Override
     public String toString() {
         switch (id) {

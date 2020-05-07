@@ -25,24 +25,6 @@ public enum Direction {
         }
     }
 
-    public static Direction getNextDir(Direction dir, boolean clockwise) {
-        if (dir == Direction.NORTH) {
-            if (clockwise) return Direction.EAST;
-            else return Direction.WEST;
-        } else if (dir == Direction.EAST) {
-            if (clockwise) return Direction.SOUTH;
-            else return Direction.NORTH;
-        } else if (dir == Direction.SOUTH) {
-            if (clockwise) return Direction.WEST;
-            else return Direction.EAST;
-        } else if (dir == Direction.WEST) {
-            if (clockwise) return Direction.NORTH;
-            else return Direction.SOUTH;
-        } else {
-            return Direction.INVALID;
-        }
-    }
-
     public static int toDegrees(Direction dir) {
         if (dir == Direction.NORTH) {
             return 0;
@@ -56,11 +38,19 @@ public enum Direction {
         return 0;
     }
 
+    /**
+     * Calculates the difference in degrees between two directions.
+     * Used for animation purposes.
+     *
+     * @param from a direction
+     * @param to another direction
+     * @return the difference in degrees between the two directions
+     */
     public static int calcDegDiff(Direction from, Direction to) {
         int degrees = 0;
 
         while (from != to) {
-            from = getNextDir(from, true);
+            from = getClockwiseDirection(from);
             degrees += 90;
         }
 
@@ -90,6 +80,12 @@ public enum Direction {
         }
     }
 
+    /**
+     * Gets the direction which is clockwise to the direction given as the argument.
+     *
+     * @param dir a direction
+     * @return the clockwise direction of the given direction
+     */
     public static Direction getClockwiseDirection(Direction dir) {
         if (dir == Direction.NORTH)
             return Direction.EAST;
@@ -102,7 +98,13 @@ public enum Direction {
         
         return Direction.INVALID;
     }
-    
+
+    /**
+     * Gets the direction which is anti clockwise to the direction given as the argument.
+     *
+     * @param dir a direction
+     * @return the anti clockwise direction of the given direction
+     */
     public static Direction getAntiClockwiseDirection(Direction dir) {
         if (dir == Direction.NORTH)
             return Direction.WEST;
@@ -116,6 +118,11 @@ public enum Direction {
         return Direction.INVALID;
     }
 
+    /**
+     * Converts a Direction to a string.
+     *
+     * @return a string representation of the direction
+     */
     @Override
     public String toString() {
         switch (this) {
@@ -133,4 +140,3 @@ public enum Direction {
         }
     }
 }
-

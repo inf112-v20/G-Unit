@@ -275,6 +275,13 @@ public class Game extends InputAdapter implements Screen {
 
     }
 
+    /**
+     * Checks if a robot is standing on a hole.
+     * If the robot is standing on a hole, trigger the hole mechanism.
+     *
+     * @param robot the robot to check
+     * @return true if the robot is standing on a hole, false otherwise
+     */
     public boolean fallIntoHole(Robot robot) {
         TiledMapTileLayer holes = (TiledMapTileLayer) map.getLayers().get("holes");
 

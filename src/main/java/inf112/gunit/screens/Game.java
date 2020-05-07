@@ -227,6 +227,7 @@ public class Game extends InputAdapter implements Screen {
                 map.getLayers().get("laser_beams").setVisible(true);
 
                 if (tick % INTERVAL == 0) {
+                    board.outOfMapTrigger();
                     board.conveyExpress();
                     board.conveyRegular();
                     board.rotateGears();
@@ -447,10 +448,19 @@ public class Game extends InputAdapter implements Screen {
      * @param y the desired y-position to move to
      * @return true if move is possible, false otherwise
      */
-    public boolean moveIsValid(Direction dir, int x, int y) {
+    public boolean moveIsValid(Robot robot, Direction dir, int x, int y) {
         if (x >= 0 && x < props.get("width", Integer.class) && y >= 0 && y < props.get("height", Integer.class)) {
-            return positionIsFree(dir, x, y);
+            boolean isFree = positionIsFree(dir, x, y);
+            if (isFree)
+                return isFree;
         }
+        else {
+            return true;
+        }   
+        // Bumps into wall, receives one damage token
+        System.out.println("move is not valid, dmg one lol 100");
+        robot.handleDamage(1);
+
         return false;
     }
 

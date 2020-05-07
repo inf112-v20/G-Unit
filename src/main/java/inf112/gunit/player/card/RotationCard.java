@@ -10,8 +10,8 @@ import java.util.Random;
  */
 public class RotationCard extends ProgramCard {
 
-    private int rotations;
-    private boolean clockwise;
+    private final int rotations;
+    private final boolean clockwise;
 
     /**
      * The RotationCard constructor

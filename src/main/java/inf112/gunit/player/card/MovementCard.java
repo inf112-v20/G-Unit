@@ -8,7 +8,7 @@ import java.util.Random;
  */
 public class MovementCard extends ProgramCard {
 
-    private int distance;
+    private final int distance;
 
     /**
      * The MovementCard constructor

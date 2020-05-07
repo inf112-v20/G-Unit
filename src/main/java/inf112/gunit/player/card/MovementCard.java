@@ -42,8 +42,10 @@ public class MovementCard extends ProgramCard {
                 break;
             case 3:
                 this.priority = (r.nextInt(5) + 79) * 10;
+                break;
             default:
                 this.priority = 500;
+                break;
         }
     }
 

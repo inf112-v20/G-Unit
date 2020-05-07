@@ -15,7 +15,6 @@ public class RotationCard extends ProgramCard {
 
     /**
      * The RotationCard constructor
-     * @param priority the given priority
      * @param rotations number of rotations
      * @param clockwise true if rotations are clockwise, false if counter-clockwise
      */
@@ -24,6 +23,7 @@ public class RotationCard extends ProgramCard {
         this.rotations = rotations;
         this.cardName = "Rotation Card";
         this.clockwise = clockwise;
+        this.setPriority();
     }
 
     /**
@@ -46,12 +46,13 @@ public class RotationCard extends ProgramCard {
     void setPriority() {
         Random r = new Random();
 
+        if (rotations == 2) {
+            this.priority = (r.nextInt(5) + 1) * 10;
+            return;
+        }
+
         if (clockwise) {
-            if (rotations == 1) {
-                this.priority = (r.nextInt(34) + 8) * 10;
-            } else {
-                this.priority = (r.nextInt(5) + 1) * 10;
-            }
+            this.priority = (r.nextInt(34) + 8) * 10;
         } else {
             this.priority = (r.nextInt(34) + 7) * 10;
         }

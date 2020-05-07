@@ -3,6 +3,7 @@ package inf112.gunit.player;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
+import inf112.gunit.board.Direction;
 import inf112.gunit.main.GdxTestRunner;
 import inf112.gunit.main.Main;
 import inf112.gunit.screens.Game;
@@ -59,18 +60,6 @@ public class MoveTests {
         assertEquals(y + 3, (int) robot.getPositionY());
     }
 
-    /**
-     * Test that the robot cant move out of the map
-     */
-    @Test
-    public void moveIllegalY() {
-        robot.setPosition(new Vector2(0,0));
-        int y = (int) robot.getPositionY();
-        robot.rotate(true, 2); //rotate robot 180 degrees, to face south (position is 0,0)
-        robot.move(1);
-        assertEquals(y, (int) robot.getPositionY()); //check that distance is the same as when started
-    }
-
     @Test
     public void moveIllegalFarWallFromSouth() {
         robot.setPosition(new Vector2(1, 0));
@@ -82,20 +71,20 @@ public class MoveTests {
     @Test
     public void moveIllegalFarWallFromNorth() {
         robot.setPosition(new Vector2(1, 9));
+        robot.setDirection(Direction.SOUTH);
         int y = (int) robot.getPositionY();
-        robot.rotate(true, 2);
         robot.move(1);
         assertEquals(y, (int) robot.getPositionY());
         
         robot.setPosition(new Vector2(1, 9));
+        robot.setDirection(Direction.SOUTH);
         y = (int) robot.getPositionY();
-        robot.rotate(true, 2);
         robot.move(2);
         assertEquals(y, (int) robot.getPositionY());
 
         robot.setPosition(new Vector2(1, 9));
+        robot.setDirection(Direction.SOUTH);
         y = (int) robot.getPositionY();
-        robot.rotate(true, 2);
         robot.move(3);
         assertEquals(y, (int) robot.getPositionY());
     }

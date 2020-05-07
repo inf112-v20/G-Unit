@@ -59,7 +59,7 @@ public class Robot extends Sprite {
 
     private boolean isMoving = false;
     private boolean isRotating = false;
-    private final int ANIMATION_DELTA = 30;
+    private final int ANIMATION_DELTA = 15;
     private int animationTick = 0;
     private int animationTileNum;
     private Direction animationDir;
@@ -160,7 +160,7 @@ public class Robot extends Sprite {
     }
 
     private void animate() {
-        if (animationTick == 15) {
+        if (animationTick == ANIMATION_DELTA) {
             isMoving = false;
             isRotating = false;
             this.animationTick = 0;
@@ -379,15 +379,14 @@ public class Robot extends Sprite {
         int numOfCards = (damageMarkers >= 4) ? 5 : 9 - damageMarkers;
         for (int i = 0; i < numOfCards; i++) {
             int isMoveCard = r.nextInt(3); // 67% chance of getting a movement card per card
-            int priority = (r.nextInt(70) + 10) * 10;
 
             if (isMoveCard > 0) {
                 int distance = r.nextInt(3) + 1;
-                cardDeck.add(new MovementCard(priority, distance));
+                cardDeck.add(new MovementCard(distance));
             } else {
                 boolean clockwise = r.nextBoolean();
                 int rotations = r.nextInt(2) + 1;
-                cardDeck.add(new RotationCard(priority, rotations, clockwise));
+                cardDeck.add(new RotationCard(rotations, clockwise));
             }
         }
     }
@@ -412,8 +411,8 @@ public class Robot extends Sprite {
     
     public ArrayList<ProgramCard> addSomeSpice(ArrayList<ProgramCard> cards) {
         Random rand = new Random();
-        cards.set(rand.nextInt(cards.size()), new MovementCard(1000, 2));
-        cards.set(rand.nextInt(cards.size()), new RotationCard(1000, rand.nextInt(3) + 1, rand.nextBoolean()));
+        cards.set(rand.nextInt(cards.size()), new MovementCard(2));
+        cards.set(rand.nextInt(cards.size()), new RotationCard(rand.nextInt(3) + 1, rand.nextBoolean()));
 
         return cards;
     }
@@ -447,23 +446,23 @@ public class Robot extends Sprite {
                     }
 
                     if (deltaX >= 3) {
-                        currentPath.add(new MovementCard(1000, 3));
+                        currentPath.add(new MovementCard(3));
                         return pathTo(currentPath, flagPosList, new Vector2(from.x - 3, from.y), to, curDir);
                     } else if (deltaX >= 2) {
-                        currentPath.add(new MovementCard(1000, 2 + extraDist));
+                        currentPath.add(new MovementCard(2 + extraDist));
                         return pathTo(currentPath, flagPosList, new Vector2(from.x - 2 - extraDist, from.y), to, curDir);
                     } else if (deltaX >= 1) {
-                        currentPath.add(new MovementCard(1000, 1 + extraDist));
+                        currentPath.add(new MovementCard(1 + extraDist));
                         return pathTo(currentPath, flagPosList, new Vector2(from.x - 1 - extraDist, from.y), to, curDir);
                     }
                 } else if (curDir == Direction.SOUTH) {
-                    currentPath.add(new RotationCard(1000, 1, true));
+                    currentPath.add(new RotationCard(1, true));
                     return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
                 } else if (curDir == Direction.EAST) {
-                    currentPath.add(new RotationCard(1000, 2, true));
+                    currentPath.add(new RotationCard(2, true));
                     return pathTo(currentPath, flagPosList, from, to, Direction.flip(curDir));
                 } else if (curDir == Direction.NORTH) {
-                    currentPath.add(new RotationCard(1000, 1, false));
+                    currentPath.add(new RotationCard(1, false));
                     return pathTo(currentPath, flagPosList, from, to, Direction.getAntiClockwiseDirection(curDir));
                 }
             } else if (deltaX < 0) {
@@ -483,23 +482,23 @@ public class Robot extends Sprite {
                     }
 
                     if (deltaX <= -3) {
-                        currentPath.add(new MovementCard(1000, 3));
+                        currentPath.add(new MovementCard(3));
                         return pathTo(currentPath, flagPosList, new Vector2(from.x + 3, from.y), to, curDir);
                     } else if (deltaX <= -2) {
-                        currentPath.add(new MovementCard(1000, 2 + extraDist));
+                        currentPath.add(new MovementCard(2 + extraDist));
                         return pathTo(currentPath, flagPosList, new Vector2(from.x + 2 + extraDist, from.y), to, curDir);
                     } else if (deltaX <= -1) {
-                        currentPath.add(new MovementCard(1000, 1 + extraDist));
+                        currentPath.add(new MovementCard(1 + extraDist));
                         return pathTo(currentPath, flagPosList, new Vector2(from.x + 1 + extraDist, from.y), to, curDir);
                     }
                 } else if (curDir == Direction.SOUTH) {
-                    currentPath.add(new RotationCard(1000, 1, false));
+                    currentPath.add(new RotationCard(1, false));
                     return pathTo(currentPath, flagPosList, from, to, Direction.getAntiClockwiseDirection(curDir));
                 } else if (curDir == Direction.WEST) {
-                    currentPath.add(new RotationCard(1000, 2, true));
+                    currentPath.add(new RotationCard(2, true));
                     return pathTo(currentPath, flagPosList, from, to, Direction.flip(curDir));
                 } else if (curDir == Direction.NORTH) {
-                    currentPath.add(new RotationCard(1000, 1, true));
+                    currentPath.add(new RotationCard(1, true));
                     return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
                 }
             }
@@ -522,23 +521,23 @@ public class Robot extends Sprite {
                     }
 
                     if (deltaY >= 3) {
-                        currentPath.add(new MovementCard(1000, 3));
+                        currentPath.add(new MovementCard(3));
                         return pathTo(currentPath, flagPosList, new Vector2(from.x, from.y - 3), to, curDir);
                     } else if (deltaY <= 2) {
-                        currentPath.add(new MovementCard(1000, 2 + extraDist));
+                        currentPath.add(new MovementCard(2 + extraDist));
                         return pathTo(currentPath, flagPosList, new Vector2(from.x, from.y - 2 - extraDist), to, curDir);
                     } else if (deltaY >= 1) {
-                        currentPath.add(new MovementCard(1000, 1 + extraDist));
+                        currentPath.add(new MovementCard(1 + extraDist));
                         return pathTo(currentPath, flagPosList, new Vector2(from.x, from.y - 1 - extraDist), to, curDir);
                     }
                 } else if (curDir == Direction.WEST) {
-                    currentPath.add(new RotationCard(1000, 1, false));
+                    currentPath.add(new RotationCard(1, false));
                     return pathTo(currentPath, flagPosList, from, to, Direction.getAntiClockwiseDirection(curDir));
                 } else if (curDir == Direction.NORTH) {
-                    currentPath.add(new RotationCard(1000, 2, true));
+                    currentPath.add(new RotationCard(2, true));
                     return pathTo(currentPath, flagPosList, from, to, Direction.flip(curDir));
                 } else if (curDir == Direction.EAST) {
-                    currentPath.add(new RotationCard(1000, 1, true));
+                    currentPath.add(new RotationCard(1, true));
                     return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
                 }
             } else if (deltaY < 0) {
@@ -563,35 +562,35 @@ public class Robot extends Sprite {
                     if (wallCellOne != null) {
                         Direction cellDir = Direction.lookup(wallCellOne.getTile().getProperties().get("direction").toString());
                         if (cellDir == curDir || Direction.flip(cellDir) == curDir) {
-                            currentPath.add(new RotationCard(1000, 1, true));
+                            currentPath.add(new RotationCard(1, true));
                             return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
                         }
                     } else if (wallCellTwo != null) {
                         Direction cellDir = Direction.lookup(wallCellTwo.getTile().getProperties().get("direction").toString());
                         if (cellDir == curDir || Direction.flip(cellDir) == curDir) {
-                            currentPath.add(new RotationCard(1000, 1, true));
+                            currentPath.add(new RotationCard(1, true));
                             return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
                         }
                     }
 
                     if (deltaY <= -3) {
-                        currentPath.add(new MovementCard(1000, 3));
+                        currentPath.add(new MovementCard(3));
                         return pathTo(currentPath, flagPosList, new Vector2(from.x, from.y + 3), to, curDir);
                     } else if (deltaY <= -2) {
-                        currentPath.add(new MovementCard(1000, 2 + extraDist));
+                        currentPath.add(new MovementCard(2 + extraDist));
                         return pathTo(currentPath, flagPosList, new Vector2(from.x, from.y + 2 + extraDist), to, curDir);
                     } else if (deltaY <= -1) {
-                        currentPath.add(new MovementCard(1000, 1 + extraDist));
+                        currentPath.add(new MovementCard(1 + extraDist));
                         return pathTo(currentPath, flagPosList, new Vector2(from.x, from.y + 1 + extraDist), to, curDir);
                     }
                 } else if (curDir == Direction.EAST) {
-                    currentPath.add(new RotationCard(1000, 1, false));
+                    currentPath.add(new RotationCard(1, false));
                     return pathTo(currentPath, flagPosList, from, to, Direction.getAntiClockwiseDirection(curDir));
                 } else if (curDir == Direction.SOUTH) {
-                    currentPath.add(new RotationCard(1000, 2, true));
+                    currentPath.add(new RotationCard(2, true));
                     return pathTo(currentPath, flagPosList, from, to, Direction.flip(curDir));
                 } else if (curDir == Direction.WEST) {
-                    currentPath.add(new RotationCard(1000, 1, true));
+                    currentPath.add(new RotationCard(1, true));
                     return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
                 }
             }
@@ -709,11 +708,11 @@ public class Robot extends Sprite {
         if (onOff) {
             this.damageMarkers = 0;
             program = new ProgramCard[]{
-                    new MovementCard(-1, 1),
-                    new MovementCard(-1, 1),
-                    new MovementCard(-1, 1),
-                    new MovementCard(-1, 1),
-                    new MovementCard(-1, 1)
+                    new MovementCard(1),
+                    new MovementCard(1),
+                    new MovementCard(1),
+                    new MovementCard(1),
+                    new MovementCard(1)
             };
         }
     }

@@ -37,7 +37,7 @@ public class ExecuteProgramCardsTests {
     @Test
     public void testMovementCardMoveOne() {
         int y = (int) robot.getPositionY();
-        ProgramCard card = new MovementCard(100, 1);
+        ProgramCard card = new MovementCard(1);
         robot.doTurn(card);
         assertEquals(y+1, (int) robot.getPositionY());
     }
@@ -49,7 +49,7 @@ public class ExecuteProgramCardsTests {
     @Test
     public void testMovementCardMoveTwo() {
         int y = (int) robot.getPositionY();
-        ProgramCard card = new MovementCard(100, 2);
+        ProgramCard card = new MovementCard(2);
         robot.doTurn(card);
         assertEquals(y+2, (int) robot.getPositionY());
     }
@@ -62,7 +62,7 @@ public class ExecuteProgramCardsTests {
     @Test
     public void testMovementCardMoveFive() {
         int y = (int) robot.getPositionY();
-        ProgramCard card = new MovementCard(100, 5);
+        ProgramCard card = new MovementCard(5);
         robot.doTurn(card);
         assertEquals(y+5, (int) robot.getPositionY());
     }
@@ -74,7 +74,7 @@ public class ExecuteProgramCardsTests {
      */
     @Test
     public void testRotationCardClockwiseOne() {
-        ProgramCard card = new RotationCard(100, 1, true);
+        ProgramCard card = new RotationCard(1, true);
         robot.doTurn(card);
         assertEquals(Direction.EAST, robot.getDirection());
     }
@@ -86,7 +86,7 @@ public class ExecuteProgramCardsTests {
      */
     @Test
     public void testRotationCardCounterClockwiseOne() {
-        ProgramCard card = new RotationCard(100, 1, false);
+        ProgramCard card = new RotationCard(1, false);
         robot.doTurn(card);
         assertEquals(Direction.WEST, robot.getDirection());
     }
@@ -98,7 +98,7 @@ public class ExecuteProgramCardsTests {
      */
     @Test
     public void testRotationCardUTurn() {
-        ProgramCard card = new RotationCard(100, 2, true);
+        ProgramCard card = new RotationCard(2, true);
         robot.doTurn(card);
         assertEquals(Direction.SOUTH, robot.getDirection());
     }

@@ -218,13 +218,15 @@ public class Robot extends Sprite {
                 x = (int) this.getPositionX();
                 y = (int) this.getPositionY();
 
-                if (game.moveIsValid(Direction.NORTH, x, y + 1)) {
+                if (game.moveIsValid(this, Direction.NORTH, x, y + 1)) {
                     position.set(x, y + 1);
                     setProperRotation();
                     isMoving = true;
                     animationTileNum++;
                     if (game.fallIntoHole(this)) break;
                 }
+                else
+                    break;
             }
         }
         else if (direction == Direction.EAST) {
@@ -232,13 +234,15 @@ public class Robot extends Sprite {
                 x = (int) this.getPositionX();
                 y = (int) this.getPositionY();
 
-                if (game.moveIsValid(Direction.EAST, x + 1, y)) {
+                if (game.moveIsValid(this, Direction.EAST, x + 1, y)) {
                     position.set(x + 1, y);
                     setProperRotation();
                     isMoving = true;
                     animationTileNum++;
                     if (game.fallIntoHole(this)) break;
                 }
+                else
+                    break;
             }
         }
         else if (direction == Direction.SOUTH) {
@@ -246,13 +250,15 @@ public class Robot extends Sprite {
                 x = (int) this.getPositionX();
                 y = (int) this.getPositionY();
 
-                if (game.moveIsValid(Direction.SOUTH, x, y - 1)) {
+                if (game.moveIsValid(this, Direction.SOUTH, x, y - 1)) {
                     position.set(x, y - 1);
                     setProperRotation();
                     isMoving = true;
                     animationTileNum++;
                     if (game.fallIntoHole(this)) break;
                 }
+                else
+                    break;
             }
         }
         else if (direction == Direction.WEST) {
@@ -260,13 +266,15 @@ public class Robot extends Sprite {
                 x = (int) this.getPositionX();
                 y = (int) this.getPositionY();
 
-                if (game.moveIsValid(Direction.WEST, x - 1, y)) {
+                if (game.moveIsValid(this, Direction.WEST, x - 1, y)) {
                     position.set(x - 1, y);
                     setProperRotation();
                     isMoving = true;
                     animationTileNum++;
                     if (game.fallIntoHole(this)) break;
                 }
+                else
+                    break;
             }
         }
         else {
@@ -657,9 +665,6 @@ public class Robot extends Sprite {
      * If the player/robot has no lifeTokens left, he/she is removed from the board entirely.
      */
     public void die(){
-        // Moves player/robot back to backupMemory and restores damageMarkers.
-        layer.setCell((int) this.getPositionX(), (int) this.getPositionY(), null);
-        
         damageSound.play(1.0f);
 
         this.lifeTokens--;

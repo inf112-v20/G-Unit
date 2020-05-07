@@ -193,7 +193,14 @@ public class Board {
                 }
             }
         }
-
+    }
+    
+    public void outOfMapTrigger() {
+        for (Robot r : game.getRobots()) {
+            if (r.getPositionX() < 0 || r.getPositionX() >= width || r.getPositionY() < 0 || r.getPositionY() >= height) {
+                r.die();
+            }
+        }
     }
 
     public void robotsFire(){
@@ -251,5 +258,4 @@ public class Board {
     public ArrayList<Vector2> getFlagPositions() {
         return flagPositions;
     }
-
 }

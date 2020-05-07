@@ -1,7 +1,6 @@
 package inf112.gunit.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -12,16 +11,13 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.GameState;
 import inf112.gunit.board.Board;
 import inf112.gunit.board.Direction;
 import inf112.gunit.hud.Hud;
 import inf112.gunit.main.Main;
 import inf112.gunit.player.Robot;
-import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.ProgramCard;
-import inf112.gunit.player.card.TestPrograms;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -361,7 +357,7 @@ public class Game extends InputAdapter implements Screen {
         for (Robot robot : robots) {
             if (card.equals(robot.getProgram()[phase])) {
                 System.out.println("Attempting to perform '" + card + "' on : '" + robot + "'");
-                robot.doTurn(card);
+                if (!robot.isPoweredDown()) robot.doTurn(card);
                 cardIdx++;
                 break;
             }

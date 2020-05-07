@@ -19,6 +19,7 @@ import inf112.gunit.main.Main;
 import inf112.gunit.player.Robot;
 import inf112.gunit.player.card.ProgramCard;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -60,14 +61,17 @@ public class Game extends InputAdapter implements Screen {
     private ArrayList<ProgramCard> roundCards = new ArrayList<>();
 
     private int numOfPlayers;
+    
+    private boolean easyMode;
 
     /**
      * The Game constructor
      * @param main takes a main
      * @param numOfPlayers number of players
      */
-    public Game(Main main, int numOfPlayers) {
+    public Game(Main main, boolean easeyMode, int numOfPlayers) {
         this.numOfPlayers = numOfPlayers;
+        this.easyMode = easyMode;
         if (numOfPlayers > 4) {
             System.err.println("Number of players cant be greater than 4!!");
             this.dispose();
@@ -189,8 +193,12 @@ public class Game extends InputAdapter implements Screen {
                     r.dealCards();
                     if (r != playerRobot) {
                         ProgramCard[] p = new ProgramCard[5];
-                        ArrayList<ProgramCard> p_list = r.hardAI(board.getFlagPositions());
-                        
+                        ArrayList<ProgramCard> p_list;
+                        if (easyMode)
+                            p_list = r.hardAI(board.getFlagPositions());
+                        else
+                            p_list = r.hardAI(board.getFlagPositions());
+
                         for (int i = 0; i < p_list.size(); i++) {
                             p[i] = p_list.get(i);
                             System.out.println(p[i].toString());

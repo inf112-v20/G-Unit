@@ -193,9 +193,22 @@ public class Board {
                 }
             }
         }
-
     }
 
+    /**
+     * Kills a robot if it is outside of the map.
+     */
+    public void outOfMapTrigger() {
+        for (Robot r : game.getRobots()) {
+            if (r.getPositionX() < 0 || r.getPositionX() >= width || r.getPositionY() < 0 || r.getPositionY() >= height) {
+                r.die();
+            }
+        }
+    }
+
+    /**
+     * Fires the lasers of all the robots.
+     */
     public void robotsFire(){
         for (Robot robot : game.getRobots()) {
             robot.fire();
@@ -251,5 +264,4 @@ public class Board {
     public ArrayList<Vector2> getFlagPositions() {
         return flagPositions;
     }
-
 }

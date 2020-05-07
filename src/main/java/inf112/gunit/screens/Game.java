@@ -19,6 +19,7 @@ import inf112.gunit.main.Main;
 import inf112.gunit.player.Robot;
 import inf112.gunit.player.card.ProgramCard;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -60,14 +61,17 @@ public class Game extends InputAdapter implements Screen {
     private ArrayList<ProgramCard> roundCards = new ArrayList<>();
 
     private int numOfPlayers;
+    
+    private boolean easyMode;
 
     /**
      * The Game constructor
      * @param main takes a main
      * @param numOfPlayers number of players
      */
-    public Game(Main main, int numOfPlayers) {
+    public Game(Main main, boolean easeyMode, int numOfPlayers) {
         this.numOfPlayers = numOfPlayers;
+        this.easyMode = easyMode;
         if (numOfPlayers > 4) {
             System.err.println("Number of players cant be greater than 4!!");
             this.dispose();
@@ -189,8 +193,12 @@ public class Game extends InputAdapter implements Screen {
                     r.dealCards();
                     if (r != playerRobot) {
                         ProgramCard[] p = new ProgramCard[5];
-                        ArrayList<ProgramCard> p_list = r.hardAI(board.getFlagPositions());
-                        
+                        ArrayList<ProgramCard> p_list;
+                        if (easyMode)
+                            p_list = r.hardAI(board.getFlagPositions());
+                        else
+                            p_list = r.hardAI(board.getFlagPositions());
+
                         for (int i = 0; i < p_list.size(); i++) {
                             p[i] = p_list.get(i);
                             System.out.println(p[i].toString());
@@ -227,6 +235,7 @@ public class Game extends InputAdapter implements Screen {
                 map.getLayers().get("laser_beams").setVisible(true);
 
                 if (tick % INTERVAL == 0) {
+                    board.outOfMapTrigger();
                     board.conveyExpress();
                     board.conveyRegular();
                     board.rotateGears();
@@ -266,6 +275,13 @@ public class Game extends InputAdapter implements Screen {
 
     }
 
+    /**
+     * Checks if a robot is standing on a hole.
+     * If the robot is standing on a hole, trigger the hole mechanism.
+     *
+     * @param robot the robot to check
+     * @return true if the robot is standing on a hole, false otherwise
+     */
     public boolean fallIntoHole(Robot robot) {
         TiledMapTileLayer holes = (TiledMapTileLayer) map.getLayers().get("holes");
 
@@ -447,10 +463,19 @@ public class Game extends InputAdapter implements Screen {
      * @param y the desired y-position to move to
      * @return true if move is possible, false otherwise
      */
-    public boolean moveIsValid(Direction dir, int x, int y) {
+    public boolean moveIsValid(Robot robot, Direction dir, int x, int y) {
         if (x >= 0 && x < props.get("width", Integer.class) && y >= 0 && y < props.get("height", Integer.class)) {
-            return positionIsFree(dir, x, y);
+            boolean isFree = positionIsFree(dir, x, y);
+            if (isFree)
+                return isFree;
         }
+        else {
+            return true;
+        }   
+        // Bumps into wall, receives one damage token
+        System.out.println("move is not valid, dmg one lol 100");
+        robot.handleDamage(1);
+
         return false;
     }
 

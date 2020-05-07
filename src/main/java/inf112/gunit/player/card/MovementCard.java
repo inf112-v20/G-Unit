@@ -12,7 +12,7 @@ public class MovementCard extends ProgramCard {
 
     /**
      * The MovementCard constructor
-     * @param priority the given priority
+     *
      * @param distance the amount of distance
      */
     public MovementCard(int distance) {

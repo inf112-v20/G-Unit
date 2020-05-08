@@ -1,5 +1,6 @@
 package inf112.gunit.player;
 
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.board.Direction;
 import inf112.gunit.main.GdxTestRunner;
@@ -18,12 +19,12 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(GdxTestRunner.class)
 public class ExecuteProgramCardsTests {
-    Game game;
-    Robot robot;
+
+    private Robot robot;
 
     @Before
     public void initialise() {
-        this.game = new Game(1);
+        Game game = new Game(1, new TmxMapLoader().load("assets/conveyor_testboard.tmx"));
         this.robot = game.getRobots()[0];
         robot.setPosition(new Vector2(0,0));
         robot.setDirection(Direction.NORTH);
@@ -36,7 +37,7 @@ public class ExecuteProgramCardsTests {
     @Test
     public void testMovementCardMoveOne() {
         int y = (int) robot.getPositionY();
-        ProgramCard card = new MovementCard(100, 1);
+        ProgramCard card = new MovementCard(1);
         robot.doTurn(card);
         assertEquals(y+1, (int) robot.getPositionY());
     }
@@ -48,7 +49,7 @@ public class ExecuteProgramCardsTests {
     @Test
     public void testMovementCardMoveTwo() {
         int y = (int) robot.getPositionY();
-        ProgramCard card = new MovementCard(100, 2);
+        ProgramCard card = new MovementCard(2);
         robot.doTurn(card);
         assertEquals(y+2, (int) robot.getPositionY());
     }
@@ -61,7 +62,7 @@ public class ExecuteProgramCardsTests {
     @Test
     public void testMovementCardMoveFive() {
         int y = (int) robot.getPositionY();
-        ProgramCard card = new MovementCard(100, 5);
+        ProgramCard card = new MovementCard(5);
         robot.doTurn(card);
         assertEquals(y+5, (int) robot.getPositionY());
     }
@@ -73,7 +74,7 @@ public class ExecuteProgramCardsTests {
      */
     @Test
     public void testRotationCardClockwiseOne() {
-        ProgramCard card = new RotationCard(100, 1, true);
+        ProgramCard card = new RotationCard(1, true);
         robot.doTurn(card);
         assertEquals(Direction.EAST, robot.getDirection());
     }
@@ -85,7 +86,7 @@ public class ExecuteProgramCardsTests {
      */
     @Test
     public void testRotationCardCounterClockwiseOne() {
-        ProgramCard card = new RotationCard(100, 1, false);
+        ProgramCard card = new RotationCard(1, false);
         robot.doTurn(card);
         assertEquals(Direction.WEST, robot.getDirection());
     }
@@ -97,7 +98,7 @@ public class ExecuteProgramCardsTests {
      */
     @Test
     public void testRotationCardUTurn() {
-        ProgramCard card = new RotationCard(100, 2, true);
+        ProgramCard card = new RotationCard(2, true);
         robot.doTurn(card);
         assertEquals(Direction.SOUTH, robot.getDirection());
     }

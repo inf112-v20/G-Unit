@@ -1,5 +1,7 @@
 package inf112.gunit.player.card;
 
+import java.util.Random;
+
 /**
  * RotationCard is a ProgramCard that contains
  * the number of 90-degree rotations a player can
@@ -8,20 +10,20 @@ package inf112.gunit.player.card;
  */
 public class RotationCard extends ProgramCard {
 
-    private int rotations;
-    private boolean clockwise;
+    private final int rotations;
+    private final boolean clockwise;
 
     /**
      * The RotationCard constructor
-     * @param priority the given priority
      * @param rotations number of rotations
      * @param clockwise true if rotations are clockwise, false if counter-clockwise
      */
-    public RotationCard(int priority, int rotations, boolean clockwise) {
-        super(CardType.ROTATION, priority);
+    public RotationCard(int rotations, boolean clockwise) {
+        super(CardType.ROTATION);
         this.rotations = rotations;
         this.cardName = "Rotation Card";
         this.clockwise = clockwise;
+        this.setPriority();
     }
 
     /**
@@ -38,5 +40,21 @@ public class RotationCard extends ProgramCard {
      */
     public boolean isClockwise() {
         return clockwise;
+    }
+
+    @Override
+    void setPriority() {
+        Random r = new Random();
+
+        if (rotations == 2) {
+            this.priority = (r.nextInt(5) + 1) * 10;
+            return;
+        }
+
+        if (clockwise) {
+            this.priority = (r.nextInt(34) + 8) * 10;
+        } else {
+            this.priority = (r.nextInt(34) + 7) * 10;
+        }
     }
 }

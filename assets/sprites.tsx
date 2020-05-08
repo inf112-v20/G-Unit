@@ -133,6 +133,18 @@
    <property name="rotation" type="bool" value="true"/>
   </properties>
  </tile>
+ <tile id="36">
+  <properties>
+   <property name="damage" type="int" value="1"/>
+   <property name="direction" value="NORTH"/>
+  </properties>
+ </tile>
+ <tile id="37">
+  <properties>
+   <property name="damage" type="int" value="1"/>
+   <property name="direction" value="EAST"/>
+  </properties>
+ </tile>
  <tile id="40">
   <properties>
    <property name="direction" value="EAST"/>
@@ -159,6 +171,18 @@
    <property name="direction" value="WEST"/>
    <property name="express" type="bool" value="false"/>
    <property name="rotation" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="44">
+  <properties>
+   <property name="damage" type="int" value="1"/>
+   <property name="direction" value="SOUTH"/>
+  </properties>
+ </tile>
+ <tile id="45">
+  <properties>
+   <property name="damage" type="int" value="1"/>
+   <property name="direction" value="WEST"/>
   </properties>
  </tile>
  <tile id="48">
@@ -337,6 +361,30 @@
  <tile id="85">
   <properties>
    <property name="express" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="86">
+  <properties>
+   <property name="damage" type="int" value="2"/>
+   <property name="direction" value="NORTH"/>
+  </properties>
+ </tile>
+ <tile id="92">
+  <properties>
+   <property name="damage" type="int" value="2"/>
+   <property name="direction" value="EAST"/>
+  </properties>
+ </tile>
+ <tile id="93">
+  <properties>
+   <property name="damage" type="int" value="2"/>
+   <property name="direction" value="SOUTH"/>
+  </properties>
+ </tile>
+ <tile id="94">
+  <properties>
+   <property name="damage" type="int" value="2"/>
+   <property name="direction" value="WEST"/>
   </properties>
  </tile>
 </tileset>

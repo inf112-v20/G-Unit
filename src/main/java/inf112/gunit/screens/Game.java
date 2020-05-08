@@ -1,8 +1,11 @@
 package inf112.gunit.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -11,10 +14,10 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import inf112.gunit.GameState;
 import inf112.gunit.board.Board;
 import inf112.gunit.board.Direction;
+import inf112.gunit.hud.Hud;
 import inf112.gunit.main.Main;
 import inf112.gunit.player.Robot;
 import inf112.gunit.player.card.ProgramCard;
-import inf112.gunit.player.card.TestPrograms;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +26,13 @@ import java.util.Collections;
  * The Game class is a screen which is rendered
  * when the Play-button is pressed in menu
  */
-public class Game implements Screen {
+public class Game extends InputAdapter implements Screen {
+
+    public final float tileScale;
+
+    public SpriteBatch batch;
+
+    private Hud hud;
 
     private static final int INTERVAL = 30;
 
@@ -33,117 +42,120 @@ public class Game implements Screen {
     private int tick;
 
     private Main main;
-    private TiledMap map;
-    private MapProperties props;
+    private final TiledMap map;
+    private final MapProperties props;
 
-    private Board board;
+    private final Board board;
 
-    private Robot[] robots;
+    private final Robot[] robots;
+    private final Robot playerRobot;
 
     private OrthographicCamera camera;
     private OrthogonalTiledMapRenderer tileRenderer;
+    
+    private Music background_music;
 
     private int phase;
     private int cardIdx;
-    private ArrayList<ProgramCard> roundCards;
+    private ArrayList<ProgramCard> roundCards = new ArrayList<>();
+
+    private boolean easyMode;
 
     /**
      * The Game constructor
      * @param main takes a main
      * @param numOfPlayers number of players
      */
-    public Game(Main main, int numOfPlayers) {
+    public Game(Main main, boolean easyMode, int numOfPlayers) {
+        this.easyMode = easyMode;
         if (numOfPlayers > 4) {
             System.err.println("Number of players cant be greater than 4!!");
             this.dispose();
-            System.exit(1);
+            Gdx.app.exit();
         } else if (numOfPlayers <= 0) {
             System.err.println("Number of players cant be less than 1!!");
             this.dispose();
-            System.exit(1);
+            Gdx.app.exit();
         }
 
         this.main = main;
-        this.map = new TmxMapLoader().load("assets/board_new.tmx");
+        this.map = new TmxMapLoader().load("assets/robot_board.tmx");
         this.robots = new Robot[numOfPlayers];
+        this.batch = new SpriteBatch();
+        props = map.getProperties();
         board = new Board(this);
-
-        // currently initialising the game in this state for testing purposes
-        // this should actually be initialised to GameState.SETUP
-        state = GameState.PROGRAM_CARD_EXECUTION;
-
         phase = 0;
         cardIdx = 0;
-
         tick = 0;
 
-        props = map.getProperties();
-        int mapWidth = map.getProperties().get("width", Integer.class);
-        int mapHeight = map.getProperties().get("height", Integer.class);
-        int tileWidth = map.getProperties().get("tilewidth", Integer.class);
-        int tileHeight = map.getProperties().get("tileheight", Integer.class);
-
-        // only used for testing
-        // gives each robot a program
+        //initialise robots
         for (int i = 0; i < numOfPlayers; i++) {
             Robot p = new Robot(this, i, board.getStartPosition(i));
-            p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
             robots[i] = p;
         }
 
+        // set the controllable robot (for testing)
+        playerRobot = robots[0];
+        hud = new Hud(Main.batch, this);
+
+        int mapWidth = props.get("width", Integer.class);
+        int mapHeight = props.get("height", Integer.class);
+        int tileWidth = props.get("tilewidth", Integer.class);
+        int tileHeight = props.get("tileheight", Integer.class);
+
+        tileScale = Main.HEIGHT / (float) mapHeight;
+
         //set the camera accordingly
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, mapWidth * tileWidth, mapHeight * tileHeight);
+        camera.setToOrtho(false, (mapWidth * tileWidth) * ((float) Main.WIDTH / (float) Main.HEIGHT), mapHeight * tileHeight);
         camera.update();
 
+        // loads and plays background music
+        background_music = Gdx.audio.newMusic(Gdx.files.internal("in_da_club.wav"));
+        background_music.setLooping(true);
+        background_music.setVolume(0.05f);
+        background_music.play();
+
         // set the tile renderer and add the camera view to it
-        tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / tileWidth * tileHeight);
+        tileRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / (tileWidth) * (tileHeight));
         tileRenderer.setView(camera);
 
-        // start a new game-phase
-        newPhase();
+        newRound();
     }
 
     /**
      * Testing constructor used by the unit-tests
      * @param numOfPlayers number of players
      */
-    public Game(int numOfPlayers) {
+    public Game(int numOfPlayers, TiledMap map) {
         if (numOfPlayers > 4) {
             System.err.println("Number of players cant be greater than 4!!");
             this.dispose();
-            System.exit(1);
+            Gdx.app.exit();
         } else if (numOfPlayers <= 0) {
             System.err.println("Number of players cant be less than 1!!");
             this.dispose();
-            System.exit(1);
+            Gdx.app.exit();
         }
 
-        this.map = new TmxMapLoader().load("assets/board_new.tmx");
+        this.map = map;
         this.robots = new Robot[numOfPlayers];
+        props = map.getProperties();
         board = new Board(this);
-
-        // currently initialising the game in this state for testing purposes
-        // this should actually be initialised to GameState.SETUP
-        state = GameState.PROGRAM_CARD_EXECUTION;
-
         phase = 0;
         cardIdx = 0;
-
         tick = 0;
 
-        props = map.getProperties();
-
-        // only used for testing
-        // gives each robot a program
         for (int i = 0; i < numOfPlayers; i++) {
             Robot p = new Robot(this, i, board.getStartPosition(i));
-            p.setProgram(TestPrograms.getProgram(i)); // give the robots a program (for testing)
             robots[i] = p;
         }
 
-        // start a new game-phase
-        newPhase();
+        tileScale = Main.HEIGHT / (float) map.getProperties().get("height", Integer.class);
+
+        playerRobot = robots[0];
+
+        newRound();
     }
 
     @Override
@@ -152,18 +164,16 @@ public class Game implements Screen {
     }
 
     /**
-     * If a robot has collected all the flags, then the game is over
-     * @param winner the winning player/robot
+     * If a robot has collected all the flags, or has no lifeTokens left,
+     * then the game is over.
+     * @param robot the winning/losing player/robot
      */
-    public void gameOver(Robot winner) {
+    public void gameOver(Robot robot) {
         gameIsOver = true;
         state = GameState.SETUP;
-        System.out.println();
-        System.out.println("Game over!");
-        System.out.println("Player with the " + winner + " robot won!");
+        if (background_music != null) background_music.stop();
         this.dispose();
-        if (main != null) main.setScreen(new Menu(main));
-        //System.exit(0);
+        if (main != null) main.setScreen(new GameOver(main, robot));
     }
 
     /**
@@ -173,14 +183,36 @@ public class Game implements Screen {
     private void logic() {
 
         switch (this.state) {
-            // TODO: Implement setup phase, where you place flags etc...
-            // if flags already is placed on board in the tiledmap file, this is not needed
             case SETUP:
+                for (Robot r : robots) {
+                    r.dealCards();
+                    if (!r.equals(playerRobot)) {
+                        ProgramCard[] p = new ProgramCard[5];
+                        ArrayList<ProgramCard> p_list;
+                        if (easyMode) p_list = r.easyAI(board.getFlagPositions());
+                        else p_list = r.hardAI(board.getFlagPositions());
+
+                        for (int i = 0; i < p_list.size(); i++) {
+                            p[i] = p_list.get(i);
+                        }
+                        
+                        r.setProgram(p);
+                    }
+                }
+                if (!playerRobot.isPoweredDown())
+                    hud.updateCards();
+                state = GameState.ROBOT_PROGRAMMING;
                 break;
-            // TODO: Implement programming phase, where each player programs their robot
-            // TODO: Need to implement HUD first
             case ROBOT_PROGRAMMING:
-                System.out.println("programming");
+                if (!playerRobot.isPoweredDown()) {
+                    if (playerRobot.isDonePicking) {
+                        ProgramCard[] program = playerRobot.getProgramBuffer().toArray(new ProgramCard[5]);
+                        playerRobot.setProgram(program);
+                        playerRobot.isDonePicking = false;
+                        hud.clearCards();
+                        newPhase();
+                    }
+                } else newPhase();
                 break;
             case PROGRAM_CARD_EXECUTION:
                 // check if all cards this phase have been performed
@@ -190,13 +222,29 @@ public class Game implements Screen {
                     doTurn();
                 }
                 break;
-            // TODO: finish this part (i.e. implement all mechanics)
             case CELL_MECHANIC_EXECUTION:
+                map.getLayers().get("laser_beams").setVisible(true);
 
                 if (tick % INTERVAL == 0) {
+                    board.outOfMapTrigger();
                     board.conveyExpress();
-                    board.convey();
+                    board.conveyRegular();
                     board.rotateGears();
+                    board.holes();
+                    board.lasersFire();
+                    board.robotsFire();
+
+                    // Calls die() on robot if it has 10 or more damageMarkers.
+                    for (Robot robot : robots){
+                        if (robot.getDamageMarkers() >= 10)
+                            robot.die();
+                    }
+
+                    // This will make the game quit once the player has no LifeTokens left.
+                    if (robots[0].isDead())
+                        gameOver(robots[0]);
+
+                    board.flags();
 
                     // initialise a new phase
                     if (phase >= 4) {
@@ -205,35 +253,61 @@ public class Game implements Screen {
                         phase++;
                         newPhase();
                     }
+                    map.getLayers().get("laser_beams").setVisible(false);
                 }
                 break;
             default:
                 System.err.println("GAME STATE NOT SET - FATAL ERROR OCCURRED.");
                 System.err.println("ROBORALLY BRUH MOMENT");
-                //this.dispose();
-                //System.exit(1);
+                this.dispose();
+                Gdx.app.exit();
+                break;
         }
 
-        //handle rest of game mechanics
-        board.holes();
-        board.flags();
+    }
 
+    /**
+     * Checks if a robot is standing on a hole.
+     * If the robot is standing on a hole, trigger the hole mechanism.
+     *
+     * @param robot the robot to check
+     * @return true if the robot is standing on a hole, false otherwise
+     */
+    public boolean fallIntoHole(Robot robot) {
+        TiledMapTileLayer holes = (TiledMapTileLayer) map.getLayers().get("holes");
+
+        if (holes.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) {
+            board.holes();
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void render(float v) {
-        Gdx.gl.glClearColor(1,0,0,1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         tileRenderer.getBatch().begin();
 
         // handle the game-logic
         logic();
 
         // update the robot rendering
-        for (Robot robot : robots) robot.update();
+        for (Robot robot : robots)
+            robot.update();
+
         tileRenderer.getBatch().end();
         // render the tile-map
         tileRenderer.setView(camera);
         tileRenderer.render();
+
+        Main.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        hud.draw();
+
+        batch.begin();
+        for (Robot r : robots) {
+            r.draw(batch);
+        }
+        batch.end();
 
         // increase the game tick
         tick++;
@@ -243,11 +317,17 @@ public class Game implements Screen {
      * Initialise a new round
      */
     private void newRound() {
-        System.out.println("New round!");
+        for (Robot robot : robots) {
+            if (robot.isPoweredDown()) {
+                robot.setPoweredDown(false);
+                if (robot.getPowerDownDesire()) robot.updatePowerDownDesire();
+                hud.resetPowerDownButton();
+            }
+            if (robot.getPowerDownDesire()) robot.setPoweredDown(true);
+        }
+
         phase = 0;
-        state = GameState.PROGRAM_CARD_EXECUTION; // here for testing
-        newPhase(); // testing
-        //state = GameState.ROBOT_PROGRAMMING;
+        state = GameState.SETUP;
     }
 
     /**
@@ -255,18 +335,21 @@ public class Game implements Screen {
      * Resets some variables, and retrieves cards from the robots
      */
     private void newPhase() {
-        state = GameState.PROGRAM_CARD_EXECUTION;
-
         roundCards = new ArrayList<>();
         cardIdx = 0;
 
         for (Robot robot : robots) {
             roundCards.add(robot.getProgram()[phase]);
+            // When new phase starts, robots will be able to search and shoot again.
+            robot.setHasFired(false);
+            robot.setHasSearched(false);
         }
 
         //sort cards by priority
         Collections.sort(roundCards);
         Collections.reverse(roundCards);
+
+        state = GameState.PROGRAM_CARD_EXECUTION;
     }
 
     /**
@@ -275,10 +358,10 @@ public class Game implements Screen {
     private void doTurn() {
         // TODO: Get rid of the for-loop here by storing a 'currentRobot' as a field variable?
         ProgramCard card = roundCards.get(cardIdx);
+
         for (Robot robot : robots) {
             if (card.equals(robot.getProgram()[phase])) {
-                System.out.println("Attempting to perform '" + card + "' on : '" + robot + "'");
-                robot.doTurn(card);
+                if (!robot.isPoweredDown()) robot.doTurn(card);
                 cardIdx++;
                 break;
             }
@@ -302,40 +385,59 @@ public class Game implements Screen {
         }
 
         // wallCell is the cell you are trying to move to
-        // prevCell is the cell you are currently standing on,
-        // aka the cell you are moving from
+        // prevCell is the cell you are currently standing on, aka the cell you are moving from
+        // Also checks for lasers, since they are also walls
         TiledMapTileLayer.Cell wallCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y);
+        TiledMapTileLayer.Cell laserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x, y);
         TiledMapTileLayer.Cell prevCell = null;
+        TiledMapTileLayer.Cell prevLaserCell = null;
 
         // Gets the cell you are currently on (before moving) by flipping the direction you are
         // trying to move to, and getting the cell at those coordinates
-        switch (Direction.flip(dir)) {
-            case NORTH:
-                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y + 1);
-            case EAST:
-                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x + 1, y);
-            case SOUTH:
-                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y - 1);
-            case WEST:
-                prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x - 1, y);
+        if (Direction.flip(dir).equals(Direction.NORTH)) {
+            prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y + 1);
+            prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x, y + 1);
         }
-
+        else if (Direction.flip(dir).equals(Direction.EAST)) {
+            prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x + 1, y);
+            prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x + 1, y);
+        }
+        else if (Direction.flip(dir).equals(Direction.SOUTH)) {
+            prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y - 1);
+            prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x, y - 1);
+        }
+        else if (Direction.flip(dir).equals(Direction.WEST)) {
+            prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x - 1, y);
+            prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x - 1, y);
+        }
         // Gets the direction the wall is facing, if the cell you are trying to move to has a wall
         if (wallCell != null) {
            Direction wallDir = Direction.lookup(wallCell.getTile().getProperties().get("direction").toString());
-
            // If the wall on the cell you are trying to move to is not facing you,
             // return true. Else return false.
-           return dir != Direction.flip(wallDir);
+           return !dir.equals(Direction.flip(wallDir));
+        }
+
+        if (laserCell != null) {
+            // The direction of a laser is in the direction it shoots, so the actual wall is in the opposite direction
+            // of the direction property of the laser
+            Direction laserDir = Direction.lookup(laserCell.getTile().getProperties().get("direction").toString());
+
+            return !dir.equals(laserDir);
         }
 
         // Gets the direction the wall is facing, if the cell you are currently on has a wall
         if (prevCell != null) {
             Direction prevDir = Direction.lookup(prevCell.getTile().getProperties().get("direction").toString());
-
             // If the wall on the cell you are currently on is not facing you,
             // return true. Else return false.
-            return dir != Direction.flip(prevDir);
+            return !dir.equals(prevDir);
+        }
+
+        if (prevLaserCell != null) {
+            Direction prevLaserDir = Direction.lookup(prevLaserCell.getTile().getProperties().get("direction").toString());
+
+            return !dir.equals(Direction.flip(prevLaserDir));
         }
 
         // Return true if nothing is in the way
@@ -349,18 +451,37 @@ public class Game implements Screen {
      * @param y the desired y-position to move to
      * @return true if move is possible, false otherwise
      */
-    public boolean moveIsValid(Direction dir, int x, int y) {
+    public boolean moveIsValid(Robot robot, Direction dir, int x, int y) {
         if (x >= 0 && x < props.get("width", Integer.class) && y >= 0 && y < props.get("height", Integer.class)) {
-            // TODO: revert back to only this line when not debugging
-            //return positionIsFree(x, y);
+            boolean isFree = positionIsFree(dir, x, y);
+            if (isFree)
+                return isFree;
+        }
+        else {
+            return true;
+        }   
+        // Bumps into wall, receives one damage token
+        robot.handleDamage(1);
 
-            if (positionIsFree(dir, x, y)) {
-                System.out.println("Success! Moving...");
-                return true;
+        return false;
+    }
+
+    /**
+     * Searches for robots in the direction the Robot shooter is facing.
+     * Calls handleDamage() on Robot target if there is a target, with shooter.getPower() as the amount of damage.
+     * After that it sets hasFired and hasSearched to true on Robot shooter.
+     * @param x is the targets x position.
+     * @param y is the targets y position.
+     * @param shooter is the robot that is doing the shooting.
+     */
+    public void searchAndDestroy(int x, int y, Robot shooter){
+        for (Robot target : robots) {
+            if ((int) target.getPositionX() == x && (int) target.getPositionY() == y) {
+                target.handleDamage(shooter.getPower());
+                shooter.setHasFired(true);
+                shooter.setHasSearched(true);
             }
         }
-        System.out.println("Move is not valid!");
-        return false;
     }
 
     /**
@@ -369,6 +490,14 @@ public class Game implements Screen {
      */
     public Robot[] getRobots() {
         return robots;
+    }
+
+    /**
+     * Get the local players robot
+     * @return the local players robot
+     */
+    public Robot getPlayerRobot() {
+        return playerRobot;
     }
 
     /**
@@ -385,6 +514,14 @@ public class Game implements Screen {
      */
     public boolean getGameOver() {
         return gameIsOver;
+    }
+
+    /**
+     * Get the current state of the game
+     * @return the current game state
+     */
+    public GameState getState() {
+        return state;
     }
 
     @Override

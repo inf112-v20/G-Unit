@@ -6,18 +6,16 @@ package inf112.gunit.player.card;
 public abstract class ProgramCard implements Comparable<ProgramCard>{
 
     // store the type of card, priority, and the name of the card
-    private CardType type;
-    private int priority;
+    private final CardType type;
+    protected int priority;
     protected String cardName;
 
     /**
      * The ProgramCard constructor
      * @param type the type of the initialised card
-     * @param priority the cards priority
      */
-    public ProgramCard(CardType type, int priority) {
+    public ProgramCard(CardType type) {
         this.type = type;
-        this.priority = priority;
     }
 
     /**
@@ -27,6 +25,11 @@ public abstract class ProgramCard implements Comparable<ProgramCard>{
     public CardType getType() {
         return type;
     }
+
+    /**
+     * Set priority according to CardType and distance/rotation values.
+     */
+    abstract void setPriority();
 
     /**
      * Get the priority of the card
@@ -44,13 +47,7 @@ public abstract class ProgramCard implements Comparable<ProgramCard>{
      */
     @Override
     public int compareTo(ProgramCard otherCard) {
-        if (this.priority > otherCard.getPriority()) {
-            return 1;
-        } else if (this.priority == otherCard.getPriority()) {
-            return 0;
-        } else {
-            return -1;
-        }
+        return Integer.compare(this.priority, otherCard.getPriority());
     }
 
     @Override

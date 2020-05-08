@@ -9,12 +9,12 @@ import java.util.ArrayList;
 
 public class Board {
 
-    private Game game;
+    private final Game game;
 
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
 
-    private ArrayList<Vector2> flagPositions = new ArrayList<>();
+    private final ArrayList<Vector2> flagPositions;
 
     public Board(Game game) {
         this.game = game;
@@ -23,7 +23,16 @@ public class Board {
         this.flagPositions = loadFlagPositions();
     }
 
-    // TODO: add rotations for corners
+    /**
+     * Private helper method that conveys a robot
+     * called by conveyExpress and conveyRegular
+     * @param robot the given robot to convey
+     * @param cell the given cell the robot is standing on
+     */
+    private void convey(Robot robot, TiledMapTileLayer.Cell cell) {
+        String tileDir = cell.getTile().getProperties().get("direction").toString();
+        robot.move(1, Direction.lookup(tileDir));
+    }
 
     /**
      * Handle mechanics for all express conveyors
@@ -33,29 +42,20 @@ public class Board {
             TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("conveyors");
             TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
 
-            if (cell != null && Boolean.parseBoolean(cell.getTile().getProperties().get("express").toString())) {
-                robot.getLayer().setCell((int) robot.getPositionX(), (int) robot.getPositionY(), null);
-                String tileDir = cell.getTile().getProperties().get("direction").toString();
-                robot.setDirection(Direction.valueOf(tileDir));
-                robot.move(1);
-            }
+            if (cell != null && Boolean.parseBoolean(cell.getTile().getProperties().get("express").toString()))
+                convey(robot, cell);
         }
     }
 
     /**
      * Handle mechanics for all conveyors
      */
-    public void convey() {
+    public void conveyRegular() {
         for (Robot robot : game.getRobots()) {
             TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("conveyors");
             TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
 
-            if (cell != null) {
-                robot.getLayer().setCell((int) robot.getPositionX(), (int) robot.getPositionY(), null);
-                String tileDir = cell.getTile().getProperties().get("direction").toString();
-                robot.setDirection(Direction.valueOf(tileDir));
-                robot.move(1);
-            }
+            if (cell != null) convey(robot,cell);
         }
     }
 
@@ -102,11 +102,9 @@ public class Board {
      * Perform hole mechanics
      */
     public void holes() {
-        TiledMapTileLayer layer = (TiledMapTileLayer) game.getMap().getLayers().get("holes");
+        TiledMapTileLayer holes = (TiledMapTileLayer) game.getMap().getLayers().get("holes");
 
-        for (Robot robot : game.getRobots()) {
-            if(layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) robot.die();
-        }
+        for (Robot robot : game.getRobots()) if(holes.getCell((int) robot.getPositionX(), (int) robot.getPositionY()) != null) robot.die();
     }
 
     /**
@@ -118,13 +116,107 @@ public class Board {
             TiledMapTileLayer.Cell cell = layer.getCell((int) robot.getPositionX(), (int) robot.getPositionY());
 
             if (cell != null) {
+                robot.setBackupMemory(robot.getPosition().cpy());
+
                 int flagNum = (int) cell.getTile().getProperties().get("num");
                 if (flagNum == robot.flagsCollected + 1) {
                     robot.setFlagsCollected(robot.getFlagsCollected() + 1);
+                    robot.repair();
                 }
             }
 
             if (robot.getFlagsCollected() >= 4) game.gameOver(robot);
+        }
+    }
+
+    /**
+     * Fires a laser at a given location on the board
+     * @param x the x position
+     * @param y the y position
+     * @param damage the damage to deal
+     * @return true if laser didn't hit anything (wall, robot)
+     */
+    private boolean fireLaser(int x, int y, int damage) {
+        TiledMapTileLayer walls = (TiledMapTileLayer) game.getMap().getLayers().get("walls");
+
+        if (walls.getCell(x, y) != null) {
+            if (Direction.lookup(walls.getCell(x, y).getTile().getProperties().get("direction", String.class)) == Direction.WEST) {
+                return false;
+            }
+
+            for (Robot robot : game.getRobots()) {
+                if (robot.getPositionX() == x && robot.getPositionY() == y) {
+                    robot.handleDamage(damage);
+                    return false;
+                }
+            }
+
+            return Direction.lookup(walls.getCell(x, y).getTile().getProperties().get("direction", String.class)) != Direction.EAST;
+        } else {
+            for (Robot robot : game.getRobots()) {
+                if (robot.getPositionX() == x && robot.getPositionY() == y) {
+                    robot.handleDamage(damage);
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Fire lasers on board
+     */
+    public void lasersFire() {
+        TiledMapTileLayer lasers = (TiledMapTileLayer) game.getMap().getLayers().get("lasers");
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (lasers.getCell(x, y) != null) {
+                    Direction dir = Direction.lookup(lasers.getCell(x, y).getTile().getProperties().get("direction", String.class));
+                    int damage = lasers.getCell(x, y).getTile().getProperties().get("damage", Integer.class);
+
+                    if (dir == Direction.NORTH) {
+                        for (int i = y; i < height; i++) {
+                            if (!fireLaser(x, i, damage)) break;
+                        }
+                    } else if (dir == Direction.EAST) {
+                        for (int i = x; i < width; i++) {
+                            if (!fireLaser(i, y, damage)) break;
+                        }
+                    } else if (dir == Direction.SOUTH) {
+                        for (int i = y; i >= 0; i--) {
+                            if (!fireLaser(x, i, damage)) break;
+                        }
+                    } else if (dir == Direction.WEST) {
+                        for (int i = x; i >= 0; i--) {
+                            if (!fireLaser(i, y, damage)) break;
+                        }
+                    } else {
+                        System.err.println("fatal error oh shit");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Kills a robot if it is outside of the map.
+     */
+    public void outOfMapTrigger() {
+        for (Robot r : game.getRobots()) {
+            if (r.getPositionX() < 0 || r.getPositionX() >= width || r.getPositionY() < 0 || r.getPositionY() >= height) {
+                r.die();
+            }
+        }
+    }
+
+    /**
+     * Fires the lasers of all the robots.
+     */
+    public void robotsFire(){
+        for (Robot robot : game.getRobots()) {
+            robot.fire();
         }
     }
 
@@ -177,5 +269,4 @@ public class Board {
     public ArrayList<Vector2> getFlagPositions() {
         return flagPositions;
     }
-
 }

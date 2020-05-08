@@ -1,10 +1,10 @@
 package inf112.gunit.player;
 
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
+import inf112.gunit.board.Direction;
 import inf112.gunit.main.GdxTestRunner;
-import inf112.gunit.main.Main;
 import inf112.gunit.screens.Game;
-import inf112.gunit.screens.Menu;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,14 +19,12 @@ import static org.junit.Assert.assertEquals;
 @RunWith(GdxTestRunner.class)
 public class MoveTests {
 
-    Game game;
-    Robot robot;
+    private Robot robot;
 
     @Before
     public void initialise() {
-        this.game = new Game(1);
+        Game game = new Game(1, new TmxMapLoader().load("assets/board_new.tmx"));
         this.robot = game.getRobots()[0];
-        robot.setPosition(new Vector2(0,0));
     }
 
     /**
@@ -34,6 +32,7 @@ public class MoveTests {
      */
     @Test
     public void moveDistOne() {
+        robot.setPosition(new Vector2(0,0));
         int y = (int) robot.getPositionY();
         robot.move(1);
         assertEquals(y+1, (int) robot.getPositionY());
@@ -44,20 +43,81 @@ public class MoveTests {
      */
     @Test
     public void moveDistTwo() {
+        robot.setPosition(new Vector2(0,3));
         int y = (int) robot.getPositionY();
         robot.move(2);
         assertEquals(y+2, (int) robot.getPositionY());
     }
-
-    /**
-     * Test that the robot cant move out of the map
-     */
+    
     @Test
-    public void moveIllegalY() {
+    public void moveDistThree() {
+        robot.setPosition(new Vector2(0, 3));
         int y = (int) robot.getPositionY();
-        robot.rotate(true, 2); //rotate robot 180 degrees, to face south (position is 0,0)
-        robot.move(1);
-        assertEquals(y, (int) robot.getPositionY()); //check that distance is the same as when started
+        robot.move(3);
+        assertEquals(y + 3, (int) robot.getPositionY());
     }
 
+    @Test
+    public void moveIllegalFarWallFromSouth() {
+        robot.setPosition(new Vector2(1, 0));
+        int y = (int) robot.getPositionY();
+        robot.move(1);
+        assertEquals(y, (int) robot.getPositionY());
+    }
+
+    @Test
+    public void moveIllegalFarWallFromNorth() {
+        robot.setPosition(new Vector2(1, 9));
+        robot.setDirection(Direction.SOUTH);
+        int y = (int) robot.getPositionY();
+        robot.move(1);
+        assertEquals(y, (int) robot.getPositionY());
+        
+        robot.setPosition(new Vector2(1, 9));
+        robot.setDirection(Direction.SOUTH);
+        y = (int) robot.getPositionY();
+        robot.move(2);
+        assertEquals(y, (int) robot.getPositionY());
+
+        robot.setPosition(new Vector2(1, 9));
+        robot.setDirection(Direction.SOUTH);
+        y = (int) robot.getPositionY();
+        robot.move(3);
+        assertEquals(y, (int) robot.getPositionY());
+    }
+
+    @Test
+    public void moveIllegalCloseWallFromSouth() {
+        robot.setPosition(new Vector2(1, 8));
+        int y = (int) robot.getPositionY();
+        robot.move(1);
+        assertEquals(y, (int) robot.getPositionY());
+    }
+
+    @Test
+    public void moveIllegalCloseWallFromWest() {
+        robot.setPosition(new Vector2(2, 4));
+        int x = (int) robot.getPositionX();
+        robot.rotate(true, 1);
+        robot.move(1);
+        assertEquals(x, (int) robot.getPositionX());
+    }
+
+    @Test
+    public void moveIllegalFarWallFromEast() {
+        robot.setPosition(new Vector2(3, 4));
+        int x = (int) robot.getPositionX();
+        robot.rotate(false, 1);
+        robot.move(1);
+        assertEquals(x, (int) robot.getPositionX());
+    }
+
+    @Test
+    public void moveLegalOrthogonalWallFromEast() {
+        robot.setPosition(new Vector2(0, 1));
+        int x = (int) robot.getPositionX();
+        robot.rotate(true, 1);
+        robot.move(1);
+        assertEquals(x + 1, (int) robot.getPositionX());
+    }
 }

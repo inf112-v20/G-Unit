@@ -19,7 +19,6 @@ package inf112.gunit.main;
 import java.util.HashMap;
 import java.util.Map;
 
-import inf112.gunit.screens.Game;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
@@ -35,7 +34,7 @@ import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 
 public class GdxTestRunner extends BlockJUnit4ClassRunner implements ApplicationListener {
 
-    private Map<FrameworkMethod, RunNotifier> invokeInRender = new HashMap<FrameworkMethod, RunNotifier>();
+    private final Map<FrameworkMethod, RunNotifier> invokeInRender = new HashMap<FrameworkMethod, RunNotifier>();
 
     public GdxTestRunner(Class<?> klass) throws InitializationError {
         super(klass);

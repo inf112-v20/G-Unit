@@ -40,7 +40,10 @@ If executed properly you are presented with the main screen of the game.
 
 ## Playing the game
 
--   The game is currently not playable. The robots will execute a selection of random program cards. You can see the game mechanics in action by watchin the robots move around.
+-   You are presented with the menu when you launch the game. Here you can select which difficulty you would like to play.
+    You can also select how many AI opponents you would like to play against.
+-   When the game starts, you select your program cards and press the submit button.
+-   If you win or lose, you are presented with a game over screen, and the ability to play again.
 
 ## Notes
 

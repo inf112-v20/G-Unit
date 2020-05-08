@@ -57,12 +57,10 @@ public class Hud implements Disposable {
 
     public Stage stage;
 
-    private final Viewport viewport;
-
     public Hud(SpriteBatch batch, final Game game) {
         this.game = game;
 
-        viewport = new FitViewport(Main.WIDTH, Main.HEIGHT, new OrthographicCamera());
+        Viewport viewport = new FitViewport(Main.WIDTH, Main.HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, batch);
 
         flagTable = new Table();
@@ -150,7 +148,7 @@ public class Hud implements Disposable {
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 super.enter(event, x, y, pointer, fromActor);
                 button.setChecked(true);
-                if(button == submitButton && submitButton.getStyle() == submitUnreadyStyle)
+                if(button.equals(submitButton) && submitButton.getStyle().equals(submitUnreadyStyle))
                     Gdx.graphics.setCursor(Main.arrow);
                 else
                     Gdx.graphics.setCursor(Main.pointer);

@@ -43,7 +43,6 @@ public class Robot extends Sprite {
     private Vector2 prevPos;
 
     private final Game game;
-    private MapProperties props;
 
     // the direction the robot is facing
     private Direction dir;
@@ -600,7 +599,7 @@ public class Robot extends Sprite {
                     return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
                 }
             } else if (deltaY < 0) {
-                if (curDir == Direction.NORTH) {
+                if (curDir.equals(Direction.NORTH)) {
                     int extraDist = 0;
                     TiledMapTileLayer.Cell convCellOne = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x, (int) from.y + 1);
                     TiledMapTileLayer.Cell convCellTwo = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x, (int) from.y + 2);
@@ -610,23 +609,23 @@ public class Robot extends Sprite {
 
                     if (convCellOne != null) {
                         Direction cellDir = Direction.lookup(convCellOne.getTile().getProperties().get("direction").toString());
-                        if (Direction.flip(cellDir) == curDir)
+                        if (Direction.flip(cellDir).equals(curDir))
                             extraDist++;
                     } else if (convCellTwo != null) {
                         Direction cellDir = Direction.lookup(convCellTwo.getTile().getProperties().get("direction").toString());
-                        if (Direction.flip(cellDir) == curDir)
+                        if (Direction.flip(cellDir).equals(curDir))
                             extraDist++;
                     }
 
                     if (wallCellOne != null) {
                         Direction cellDir = Direction.lookup(wallCellOne.getTile().getProperties().get("direction").toString());
-                        if (cellDir == curDir || Direction.flip(cellDir) == curDir) {
+                        if (cellDir.equals(curDir) || Direction.flip(cellDir).equals(curDir)) {
                             currentPath.add(new RotationCard(1, true));
                             return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
                         }
                     } else if (wallCellTwo != null) {
                         Direction cellDir = Direction.lookup(wallCellTwo.getTile().getProperties().get("direction").toString());
-                        if (cellDir == curDir || Direction.flip(cellDir) == curDir) {
+                        if (cellDir.equals(curDir) || Direction.flip(cellDir).equals(curDir)) {
                             currentPath.add(new RotationCard(1, true));
                             return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
                         }
@@ -642,13 +641,13 @@ public class Robot extends Sprite {
                         currentPath.add(new MovementCard(1 + extraDist));
                         return pathTo(currentPath, flagPosList, new Vector2(from.x, from.y + 1 + extraDist), to, curDir);
                     }
-                } else if (curDir == Direction.EAST) {
+                } else if (curDir.equals(Direction.EAST)) {
                     currentPath.add(new RotationCard(1, false));
                     return pathTo(currentPath, flagPosList, from, to, Direction.getAntiClockwiseDirection(curDir));
-                } else if (curDir == Direction.SOUTH) {
+                } else if (curDir.equals(Direction.SOUTH)) {
                     currentPath.add(new RotationCard(2, true));
                     return pathTo(currentPath, flagPosList, from, to, Direction.flip(curDir));
-                } else if (curDir == Direction.WEST) {
+                } else if (curDir.equals(Direction.WEST)) {
                     currentPath.add(new RotationCard(1, true));
                     return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
                 }
@@ -656,7 +655,7 @@ public class Robot extends Sprite {
         }
 
         // If a flag has been collected in the middle of the path, find the next flag
-        if (flagPosList.get(flagsCollected) != to) {
+        if (!flagPosList.get(flagsCollected).equals(to)) {
             return pathTo(currentPath, flagPosList, from, flagPosList.get(flagsCollected), dir);
         }
         

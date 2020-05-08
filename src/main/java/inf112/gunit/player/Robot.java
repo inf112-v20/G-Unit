@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.audio.Sound;
@@ -357,6 +356,8 @@ public class Robot extends Sprite {
                     break;
                 case ROTATION:
                     this.rotate(((RotationCard) programCard).isClockwise(), ((RotationCard) programCard).getRotations());
+                    break;
+                default:
                     break;
             }
         }

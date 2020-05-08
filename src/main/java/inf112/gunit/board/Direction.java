@@ -53,9 +53,10 @@ public enum Direction {
      */
     public static int calcDegDiff(Direction from, Direction to) {
         int degrees = 0;
+        Direction newDir = from;
 
-        while (!from.equals(to)) {
-            from = getClockwiseDirection(from);
+        while (!newDir.equals(to)) {
+            newDir = getClockwiseDirection(newDir);
             degrees += 90;
         }
 

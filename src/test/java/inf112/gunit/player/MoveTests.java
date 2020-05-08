@@ -1,13 +1,10 @@
 package inf112.gunit.player;
 
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.board.Direction;
 import inf112.gunit.main.GdxTestRunner;
-import inf112.gunit.main.Main;
 import inf112.gunit.screens.Game;
-import inf112.gunit.screens.Menu;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

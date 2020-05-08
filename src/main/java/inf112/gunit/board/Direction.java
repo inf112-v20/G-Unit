@@ -25,6 +25,11 @@ public enum Direction {
         }
     }
 
+    /**
+     * Calculate degrees corresponding to a given Direction
+     * @param dir the Direction to calcualte
+     * @return amount in degrees
+     */
     public static int toDegrees(Direction dir) {
         if (dir == Direction.NORTH) {
             return 0;

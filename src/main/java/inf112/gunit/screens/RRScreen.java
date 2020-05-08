@@ -11,7 +11,6 @@ public abstract class RRScreen implements Screen {
     protected TextureAtlas atlas = new TextureAtlas("assets/clean-crispy/skin/clean-crispy-ui.atlas");
     protected Skin  skin = new Skin(Gdx.files.internal("assets/clean-crispy/skin/clean-crispy-ui.json"), atlas);
 
-
     protected int width = 1000;
     protected int height = 1000;
 }

@@ -48,9 +48,4 @@ public class MovementCard extends ProgramCard {
                 break;
         }
     }
-
-    @Override
-    public String toString() {
-        return distance + " cells";
-    }
 }

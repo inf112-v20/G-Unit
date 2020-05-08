@@ -1,6 +1,5 @@
 package inf112.gunit.board;
 
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.player.Robot;
@@ -10,12 +9,12 @@ import java.util.ArrayList;
 
 public class Board {
 
-    private Game game;
+    private final Game game;
 
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
 
-    private ArrayList<Vector2> flagPositions = new ArrayList<>();
+    private final ArrayList<Vector2> flagPositions;
 
     public Board(Game game) {
         this.game = game;
@@ -123,7 +122,6 @@ public class Board {
                 if (flagNum == robot.flagsCollected + 1) {
                     robot.setFlagsCollected(robot.getFlagsCollected() + 1);
                     robot.repair();
-                    System.out.println(robot + " picked up flag number " + flagNum);
                 }
             }
 

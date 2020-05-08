@@ -57,19 +57,4 @@ public class RotationCard extends ProgramCard {
             this.priority = (r.nextInt(34) + 7) * 10;
         }
     }
-
-    @Override
-    public String toString() {
-        if (rotations > 1) {
-            return "180 turn";
-        }
-        
-        String dir = "";
-        if (isClockwise())
-            dir = "right";
-        else
-            dir = "left";
-        
-        return "90 turn to the " + dir;
-    }
 }

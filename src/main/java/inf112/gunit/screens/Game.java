@@ -181,7 +181,6 @@ public class Game extends InputAdapter implements Screen {
      * based on the GameState
      */
     private void logic() {
-
         switch (this.state) {
             case SETUP:
                 for (Robot r : robots) {
@@ -531,21 +530,21 @@ public class Game extends InputAdapter implements Screen {
 
     @Override
     public void pause() {
-
+        // not in use
     }
 
     @Override
     public void resume() {
-
+        // not in use
     }
 
     @Override
     public void hide() {
-
+        // not in use
     }
 
     @Override
     public void dispose() {
-
+        // not in use
     }
 }

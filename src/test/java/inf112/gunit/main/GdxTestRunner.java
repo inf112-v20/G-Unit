@@ -46,10 +46,12 @@ public class GdxTestRunner extends BlockJUnit4ClassRunner implements Application
 
     @Override
     public void create() {
+        // not in use
     }
 
     @Override
     public void resume() {
+        // not in use
     }
 
     @Override
@@ -64,14 +66,17 @@ public class GdxTestRunner extends BlockJUnit4ClassRunner implements Application
 
     @Override
     public void resize(int width, int height) {
+        // not in use
     }
 
     @Override
     public void pause() {
+        // not in use
     }
 
     @Override
     public void dispose() {
+        // not in use
     }
 
     @Override
@@ -100,5 +105,4 @@ public class GdxTestRunner extends BlockJUnit4ClassRunner implements Application
             e.printStackTrace();
         }
     }
-
 }

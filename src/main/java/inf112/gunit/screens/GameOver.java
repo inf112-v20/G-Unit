@@ -126,17 +126,17 @@ public class GameOver extends RRScreen {
 
     @Override
     public void pause() {
-
+        // not in use
     }
 
     @Override
     public void resume() {
-
+        // not in use
     }
 
     @Override
     public void hide() {
-
+        // not in use
     }
 
     @Override

@@ -23,54 +23,52 @@ public class RobotShootLaserTest {
     private Robot robotFarAway;
 
     // EW East West Positions and Directions
-    private Vector2 shooterPosEW = new Vector2(0,0);
-    private Vector2 beingShotPosEW = new Vector2(1,0);
-    private Vector2 hidingBehindPosEW = new Vector2(2,0);
-    private Vector2 farAwayOutOfTheWay = new Vector2(5,5);
+    private final Vector2 shooterPosEW = new Vector2(0,0);
+    private final Vector2 beingShotPosEW = new Vector2(1,0);
+    private final Vector2 hidingBehindPosEW = new Vector2(2,0);
+    private final Vector2 farAwayOutOfTheWay = new Vector2(5,5);
 
-    private Direction shooterDirEW = Direction.EAST;
-    private Direction beingShotDirEW = Direction.NORTH;
-    private Direction hidingBehindDirEW = Direction.WEST;
+    private final Direction shooterDirEW = Direction.EAST;
+    private final Direction beingShotDirEW = Direction.NORTH;
+    private final Direction hidingBehindDirEW = Direction.WEST;
 
     // NS North South Positions and Directions
-    private Vector2 shooterPosNS = new Vector2(0,0);
-    private Vector2 beingShotPosNS = new Vector2(0,1);
-    private Vector2 hidingBehindPosNS = new Vector2(0,2);
+    private final Vector2 shooterPosNS = new Vector2(0,0);
+    private final Vector2 beingShotPosNS = new Vector2(0,1);
+    private final Vector2 hidingBehindPosNS = new Vector2(0,2);
 
-    private Direction shooterDirNS = Direction.NORTH;
-    private Direction beingShotDirNS = Direction.EAST;
-    private Direction hidingBehindDirNS = Direction.SOUTH;
+    private final Direction shooterDirNS = Direction.NORTH;
+    private final Direction beingShotDirNS = Direction.EAST;
+    private final Direction hidingBehindDirNS = Direction.SOUTH;
 
     // Far away test case positions and directions
     // East
-    private Vector2 shooterPosFarAwayEast = new Vector2(0,0);
-    private Vector2 farAwayPosEast = new Vector2(9, 0);
+    private final Vector2 shooterPosFarAwayEast = new Vector2(0,0);
+    private final Vector2 farAwayPosEast = new Vector2(9, 0);
 
-    private Direction shooterDirFarAwayEast = Direction.EAST;
-    private Direction farAwayDirEast = Direction.SOUTH;
+    private final Direction shooterDirFarAwayEast = Direction.EAST;
+    private final Direction farAwayDirEast = Direction.SOUTH;
 
     // West
-    private Vector2 shooterPosFarAwayWest = new Vector2(9,0);
-    private Vector2 farAwayPosWest = new Vector2(0, 0);
+    private final Vector2 shooterPosFarAwayWest = new Vector2(9,0);
+    private final Vector2 farAwayPosWest = new Vector2(0, 0);
 
-    private Direction shooterDirFarAwayWest = Direction.WEST;
-    private Direction farAwayDirWest = Direction.SOUTH;
+    private final Direction shooterDirFarAwayWest = Direction.WEST;
+    private final Direction farAwayDirWest = Direction.SOUTH;
 
     // North
-    private Vector2 shooterPosFarAwayNorth = new Vector2(5,0);
-    private Vector2 farAwayPosNorth = new Vector2(5, 9);
+    private final Vector2 shooterPosFarAwayNorth = new Vector2(5,0);
+    private final Vector2 farAwayPosNorth = new Vector2(5, 9);
 
-    private Direction shooterDirFarAwayNorth = Direction.NORTH;
-    private Direction farAwayDirNorth = Direction.NORTH;
+    private final Direction shooterDirFarAwayNorth = Direction.NORTH;
+    private final Direction farAwayDirNorth = Direction.NORTH;
 
     // South
-    private Vector2 shooterPosFarAwaySouth = new Vector2(5,9);
-    private Vector2 farAwayPosSouth = new Vector2(5, 0);
+    private final Vector2 shooterPosFarAwaySouth = new Vector2(5,9);
+    private final Vector2 farAwayPosSouth = new Vector2(5, 0);
 
-    private Direction shooterDirFarAwaySouth = Direction.SOUTH;
-    private Direction farAwayDirSouth = Direction.SOUTH;
-
-
+    private final Direction shooterDirFarAwaySouth = Direction.SOUTH;
+    private final Direction farAwayDirSouth = Direction.SOUTH;
 
     @Before
     public void initialise(){

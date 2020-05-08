@@ -47,13 +47,7 @@ public abstract class ProgramCard implements Comparable<ProgramCard>{
      */
     @Override
     public int compareTo(ProgramCard otherCard) {
-        if (this.priority > otherCard.getPriority()) {
-            return 1;
-        } else if (this.priority == otherCard.getPriority()) {
-            return 0;
-        } else {
-            return -1;
-        }
+        return Integer.compare(this.priority, otherCard.getPriority());
     }
 
     @Override

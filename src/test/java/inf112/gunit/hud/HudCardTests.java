@@ -23,13 +23,11 @@ public class HudCardTests {
     private final Random r = new Random();
 
     private Robot robot;
-    private Board board;
 
     @Before
     public void initialise() {
         Game game = new Game(1, new TmxMapLoader().load("assets/board_new.tmx"));
         this.robot = game.getPlayerRobot();
-        this.board = new Board(game);
         robot.setPosition(new Vector2(0,0));
         robot.setDirection(Direction.NORTH);
     }

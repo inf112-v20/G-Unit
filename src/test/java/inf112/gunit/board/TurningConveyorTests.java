@@ -21,10 +21,10 @@ public class TurningConveyorTests {
     private Robot robot;
     private Board board;
 
-    private Vector2 expressNorthEastPos = new Vector2(6, 6);
-    private Vector2 expressSouthWestPos = new Vector2(9, 8);
-    private Vector2 regularWestNorthPos = new Vector2(2, 0);
-    private Vector2 regularEastSouthPos = new Vector2(6, 3);
+    private final Vector2 expressNorthEastPos = new Vector2(6, 6);
+    private final Vector2 expressSouthWestPos = new Vector2(9, 8);
+    private final Vector2 regularWestNorthPos = new Vector2(2, 0);
+    private final Vector2 regularEastSouthPos = new Vector2(6, 3);
 
     @Before
     public void initialise() {

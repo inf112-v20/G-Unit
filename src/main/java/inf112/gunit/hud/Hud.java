@@ -30,16 +30,11 @@ public class Hud implements Disposable {
     private final Texture DAMAGE_TOKEN = new Texture("assets/hud/damage_token_grey.png");
     private final Texture LIFE_TOKEN_FILLED = new Texture("assets/hud/life_token.png");
     private final Texture LIFE_TOKEN = new Texture("assets/hud/life_token_grey.png");
-    private final Texture POWER_DOWN = new Texture("assets/hud/power_down.png");
-    private final Texture POWER_DOWN_GREY = new Texture("assets/hud/power_down_grey.png");
-    private final Texture SUBMIT_GREEN = new Texture("assets/hud/submit_green.png");
-    private final Texture SUBMIT_GREY = new Texture("assets/hud/submit_grey.png");
 
     private final TextureRegion[][] CARD_TEXTURES = TextureRegion.split(new Texture("assets/hud/card_sprites.png"), 75, 100);
     private final TextureRegion[][] FLAG_TEXTURES = TextureRegion.split(new Texture("assets/hud/flag_sprites.png"), 300, 300);
 
     private final int TEXTURE_PADDING = 30;
-    private final float FLAG_SCALE = 0.3f;
 
     private final Table damageTokenTable;
     private final Table lifeTokenTable;
@@ -57,12 +52,10 @@ public class Hud implements Disposable {
 
     public Stage stage;
 
-    private final Viewport viewport;
-
     public Hud(SpriteBatch batch, final Game game) {
         this.game = game;
 
-        viewport = new FitViewport(Main.WIDTH, Main.HEIGHT, new OrthographicCamera());
+        Viewport viewport = new FitViewport(Main.WIDTH, Main.HEIGHT, new OrthographicCamera());
         stage = new Stage(viewport, batch);
 
         flagTable = new Table();
@@ -86,7 +79,9 @@ public class Hud implements Disposable {
         cardTable.setPosition(500, 0);
 
         powerDownUncheckedStyle = new ImageButton.ImageButtonStyle();
+        Texture POWER_DOWN_GREY = new Texture("assets/hud/power_down_grey.png");
         powerDownUncheckedStyle.imageUp = new TextureRegionDrawable(new TextureRegion(POWER_DOWN_GREY));
+        Texture POWER_DOWN = new Texture("assets/hud/power_down.png");
         powerDownUncheckedStyle.imageDown = new TextureRegionDrawable(new TextureRegion(POWER_DOWN));
 
         powerDownCheckedStyle = new ImageButton.ImageButtonStyle();
@@ -94,9 +89,11 @@ public class Hud implements Disposable {
         powerDownCheckedStyle.imageDown = new TextureRegionDrawable(new TextureRegion(POWER_DOWN_GREY));
 
         submitUnreadyStyle = new ImageButton.ImageButtonStyle();
+        Texture SUBMIT_GREY = new Texture("assets/hud/submit_grey.png");
         submitUnreadyStyle.imageUp = new TextureRegionDrawable(new TextureRegion(SUBMIT_GREY));
 
         submitReadyStyle = new ImageButton.ImageButtonStyle();
+        Texture SUBMIT_GREEN = new Texture("assets/hud/submit_green.png");
         submitReadyStyle.imageUp = new TextureRegionDrawable(new TextureRegion(SUBMIT_GREEN));
 
         powerDownButton = new ImageButton(powerDownUncheckedStyle);
@@ -173,6 +170,7 @@ public class Hud implements Disposable {
 
         for (int i = 0; i < game.getPlayerRobot().getFlagsCollected(); i++) {
             Drawable d = new TextureRegionDrawable(FLAG_TEXTURES[0][i]);
+            float FLAG_SCALE = 0.3f;
             d.setMinWidth(d.getMinWidth() * FLAG_SCALE);
             d.setMinHeight(d.getMinHeight() * FLAG_SCALE);
             flagTable.add(new Image(d));

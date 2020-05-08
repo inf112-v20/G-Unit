@@ -22,7 +22,6 @@ import inf112.gunit.main.Main;
 
 public class Menu extends RRScreen {
 
-    private final SpriteBatch batch;
     protected Stage stage;
     private final Viewport viewport;
     private final OrthographicCamera camera;
@@ -40,7 +39,7 @@ public class Menu extends RRScreen {
     public Menu(final Main main) {
         this.main = main;
 
-        batch = new SpriteBatch();
+        SpriteBatch batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new FitViewport(width, height, camera);
         viewport.apply();

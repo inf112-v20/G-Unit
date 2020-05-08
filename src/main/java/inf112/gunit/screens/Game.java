@@ -59,8 +59,6 @@ public class Game extends InputAdapter implements Screen {
     private int cardIdx;
     private ArrayList<ProgramCard> roundCards = new ArrayList<>();
 
-    private int numOfPlayers;
-    
     private boolean easyMode;
 
     /**
@@ -68,17 +66,16 @@ public class Game extends InputAdapter implements Screen {
      * @param main takes a main
      * @param numOfPlayers number of players
      */
-    public Game(Main main, boolean easeyMode, int numOfPlayers) {
-        this.numOfPlayers = numOfPlayers;
+    public Game(Main main, boolean easyMode, int numOfPlayers) {
         this.easyMode = easyMode;
         if (numOfPlayers > 4) {
             System.err.println("Number of players cant be greater than 4!!");
             this.dispose();
-            System.exit(1);
+            Gdx.app.exit();
         } else if (numOfPlayers <= 0) {
             System.err.println("Number of players cant be less than 1!!");
             this.dispose();
-            System.exit(1);
+            Gdx.app.exit();
         }
 
         this.main = main;
@@ -134,11 +131,11 @@ public class Game extends InputAdapter implements Screen {
         if (numOfPlayers > 4) {
             System.err.println("Number of players cant be greater than 4!!");
             this.dispose();
-            System.exit(1);
+            Gdx.app.exit();
         } else if (numOfPlayers <= 0) {
             System.err.println("Number of players cant be less than 1!!");
             this.dispose();
-            System.exit(1);
+            Gdx.app.exit();
         }
 
         this.map = map;
@@ -177,7 +174,6 @@ public class Game extends InputAdapter implements Screen {
         if (background_music != null) background_music.stop();
         this.dispose();
         if (main != null) main.setScreen(new GameOver(main, robot));
-        //System.exit(0);
     }
 
     /**
@@ -190,13 +186,11 @@ public class Game extends InputAdapter implements Screen {
             case SETUP:
                 for (Robot r : robots) {
                     r.dealCards();
-                    if (r != playerRobot) {
+                    if (!r.equals(playerRobot)) {
                         ProgramCard[] p = new ProgramCard[5];
                         ArrayList<ProgramCard> p_list;
-                        if (easyMode)
-                            p_list = r.hardAI(board.getFlagPositions());
-                        else
-                            p_list = r.hardAI(board.getFlagPositions());
+                        if (easyMode) p_list = r.easyAI(board.getFlagPositions());
+                        else p_list = r.hardAI(board.getFlagPositions());
 
                         for (int i = 0; i < p_list.size(); i++) {
                             p[i] = p_list.get(i);
@@ -267,7 +261,7 @@ public class Game extends InputAdapter implements Screen {
                 System.err.println("ROBORALLY BRUH MOMENT");
                 this.dispose();
                 Gdx.app.exit();
-                System.exit(69);
+                break;
         }
 
     }
@@ -400,19 +394,19 @@ public class Game extends InputAdapter implements Screen {
 
         // Gets the cell you are currently on (before moving) by flipping the direction you are
         // trying to move to, and getting the cell at those coordinates
-        if (Direction.flip(dir) == Direction.NORTH) {
+        if (Direction.flip(dir).equals(Direction.NORTH)) {
             prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y + 1);
             prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x, y + 1);
         }
-        else if (Direction.flip(dir) == Direction.EAST) {
+        else if (Direction.flip(dir).equals(Direction.EAST)) {
             prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x + 1, y);
             prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x + 1, y);
         }
-        else if (Direction.flip(dir) == Direction.SOUTH) {
+        else if (Direction.flip(dir).equals(Direction.SOUTH)) {
             prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x, y - 1);
             prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x, y - 1);
         }
-        else if (Direction.flip(dir) == Direction.WEST) {
+        else if (Direction.flip(dir).equals(Direction.WEST)) {
             prevCell = ((TiledMapTileLayer) map.getLayers().get("walls")).getCell(x - 1, y);
             prevLaserCell = ((TiledMapTileLayer) map.getLayers().get("lasers")).getCell(x - 1, y);
         }
@@ -421,7 +415,7 @@ public class Game extends InputAdapter implements Screen {
            Direction wallDir = Direction.lookup(wallCell.getTile().getProperties().get("direction").toString());
            // If the wall on the cell you are trying to move to is not facing you,
             // return true. Else return false.
-           return dir != Direction.flip(wallDir);
+           return !dir.equals(Direction.flip(wallDir));
         }
 
         if (laserCell != null) {
@@ -429,7 +423,7 @@ public class Game extends InputAdapter implements Screen {
             // of the direction property of the laser
             Direction laserDir = Direction.lookup(laserCell.getTile().getProperties().get("direction").toString());
 
-            return dir != laserDir;
+            return !dir.equals(laserDir);
         }
 
         // Gets the direction the wall is facing, if the cell you are currently on has a wall
@@ -437,13 +431,13 @@ public class Game extends InputAdapter implements Screen {
             Direction prevDir = Direction.lookup(prevCell.getTile().getProperties().get("direction").toString());
             // If the wall on the cell you are currently on is not facing you,
             // return true. Else return false.
-            return dir != prevDir;
+            return !dir.equals(prevDir);
         }
 
         if (prevLaserCell != null) {
             Direction prevLaserDir = Direction.lookup(prevLaserCell.getTile().getProperties().get("direction").toString());
 
-            return dir != Direction.flip(prevLaserDir);
+            return !dir.equals(Direction.flip(prevLaserDir));
         }
 
         // Return true if nothing is in the way

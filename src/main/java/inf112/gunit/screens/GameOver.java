@@ -26,8 +26,6 @@ public class GameOver extends RRScreen {
     private final GlyphLayout layoutWinner;
     private final GlyphLayout layoutLoser;
     private final Robot robot;
-    private final String winnerString;
-    private final String loserString;
     private final Main main;
 
     /**
@@ -37,8 +35,8 @@ public class GameOver extends RRScreen {
     public GameOver(final Main main, Robot robot) {
         this.main = main;
         this.robot = robot;
-        winnerString = "Game Over! The " + robot.toString() + " robot won!";
-        loserString = "Game Over! You Lost!";
+        String winnerString = "Game Over! The " + robot.toString() + " robot won!";
+        String loserString = "Game Over! You Lost!";
 
         batch = new SpriteBatch();
         camera = new OrthographicCamera();

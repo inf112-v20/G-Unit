@@ -2,7 +2,6 @@ package inf112.gunit.hud;
 
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
-import inf112.gunit.board.Board;
 import inf112.gunit.board.Direction;
 import inf112.gunit.main.GdxTestRunner;
 import inf112.gunit.player.Robot;

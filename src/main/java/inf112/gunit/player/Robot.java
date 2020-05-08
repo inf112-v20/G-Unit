@@ -39,7 +39,6 @@ public class Robot extends Sprite {
     private ArrayList<ProgramCard> programBuffer = new ArrayList<>();
     public boolean isDonePicking = false;
   
-    private Vector2 prevPrevPos;
     private Vector2 prevPos;
 
     private final Game game;
@@ -54,7 +53,6 @@ public class Robot extends Sprite {
 
     private boolean isMoving = false;
     private boolean isRotating = false;
-    private final int ANIMATION_DELTA = 15;
     private int animationTick = 0;
     private int animationTileNum;
     private Direction animationDir;
@@ -75,9 +73,6 @@ public class Robot extends Sprite {
 
     // Each robot can search only once each "round"/phase.
     private boolean hasSearched = false;
-
-    // The amount of damage a robots weapon takes.
-    private final int power = 1;
 
     private boolean wantsToPowerDown = false;
     private boolean poweredDown = false;
@@ -172,6 +167,7 @@ public class Robot extends Sprite {
      * Animate one tick
      */
     private void animate() {
+        int ANIMATION_DELTA = 15;
         if (animationTick == ANIMATION_DELTA) {
             isMoving = false;
             isRotating = false;
@@ -341,6 +337,10 @@ public class Robot extends Sprite {
                     dir = (clockwise) ? Direction.NORTH : Direction.SOUTH;
                     isRotating = true;
                     break;
+                default:
+                    isRotating = false;
+                    dir = Direction.NORTH;
+                    break;
             }
         }
     }
@@ -489,18 +489,25 @@ public class Robot extends Sprite {
         if (xAxisFirst) {
             if (deltaX > 0) {
                 if (curDir == Direction.WEST) {
-                    int extraDist = 0;
                     TiledMapTileLayer.Cell convCellOne = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x - 1, (int) from.y);
                     TiledMapTileLayer.Cell convCellTwo = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x - 2, (int) from.y);
+                    int extraDist = getExtraDist(curDir, convCellOne, convCellTwo);
 
-                    if (convCellOne != null) {
-                        Direction cellOneDir = Direction.lookup(convCellOne.getTile().getProperties().get("direction").toString());
-                        if (Direction.flip(cellOneDir) == curDir)
-                            extraDist++;
-                    } else if (convCellTwo != null) {
-                        Direction cellTwoDir = Direction.lookup(convCellTwo.getTile().getProperties().get("direction").toString());
-                        if (Direction.flip(cellTwoDir) == curDir)
-                            extraDist++;
+                    TiledMapTileLayer.Cell wallCellOne = ((TiledMapTileLayer) game.getMap().getLayers().get("walls")).getCell((int) from.x, (int) from.y + 1);
+                    TiledMapTileLayer.Cell wallCellTwo = ((TiledMapTileLayer) game.getMap().getLayers().get("walls")).getCell((int) from.x, (int) from.y + 2);
+
+                    if (wallCellOne != null) {
+                        Direction cellDir = Direction.lookup(wallCellOne.getTile().getProperties().get("direction").toString());
+                        if (cellDir == curDir || Direction.flip(cellDir) == curDir) {
+                            currentPath.add(new RotationCard(1, true));
+                            return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
+                        }
+                    } else if (wallCellTwo != null) {
+                        Direction cellDir = Direction.lookup(wallCellTwo.getTile().getProperties().get("direction").toString());
+                        if (cellDir == curDir || Direction.flip(cellDir) == curDir) {
+                            currentPath.add(new RotationCard(1, true));
+                            return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
+                        }
                     }
 
                     if (deltaX >= 3) {
@@ -525,18 +532,25 @@ public class Robot extends Sprite {
                 }
             } else if (deltaX < 0) {
                 if (curDir == Direction.EAST) {
-                    int extraDist = 0;
                     TiledMapTileLayer.Cell convCellOne = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x + 1, (int) from.y);
                     TiledMapTileLayer.Cell convCellTwo = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x + 2, (int) from.y);
+                    int extraDist = getExtraDist(curDir, convCellOne, convCellTwo);
 
-                    if (convCellOne != null) {
-                        Direction cellOneDir = Direction.lookup(convCellOne.getTile().getProperties().get("direction").toString());
-                        if (Direction.flip(cellOneDir) == curDir)
-                            extraDist++;
-                    } else if (convCellTwo != null) {
-                        Direction cellTwoDir = Direction.lookup(convCellTwo.getTile().getProperties().get("direction").toString());
-                        if (Direction.flip(cellTwoDir) == curDir)
-                            extraDist++;
+                    TiledMapTileLayer.Cell wallCellOne = ((TiledMapTileLayer) game.getMap().getLayers().get("walls")).getCell((int) from.x, (int) from.y + 1);
+                    TiledMapTileLayer.Cell wallCellTwo = ((TiledMapTileLayer) game.getMap().getLayers().get("walls")).getCell((int) from.x, (int) from.y + 2);
+
+                    if (wallCellOne != null) {
+                        Direction cellDir = Direction.lookup(wallCellOne.getTile().getProperties().get("direction").toString());
+                        if (cellDir == curDir || Direction.flip(cellDir) == curDir) {
+                            currentPath.add(new RotationCard(1, true));
+                            return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
+                        }
+                    } else if (wallCellTwo != null) {
+                        Direction cellDir = Direction.lookup(wallCellTwo.getTile().getProperties().get("direction").toString());
+                        if (cellDir == curDir || Direction.flip(cellDir) == curDir) {
+                            currentPath.add(new RotationCard(1, true));
+                            return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
+                        }
                     }
 
                     if (deltaX <= -3) {
@@ -564,18 +578,25 @@ public class Robot extends Sprite {
         else {
             if (deltaY > 0) {
                 if (curDir == Direction.SOUTH) {
-                    int extraDist = 0;
                     TiledMapTileLayer.Cell convCellOne = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x, (int) from.y - 1);
                     TiledMapTileLayer.Cell convCellTwo = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x, (int) from.y - 2);
+                    int extraDist = getExtraDist(curDir, convCellOne, convCellTwo);
 
-                    if (convCellOne != null) {
-                        Direction cellOneDir = Direction.lookup(convCellOne.getTile().getProperties().get("direction").toString());
-                        if (Direction.flip(cellOneDir) == curDir)
-                            extraDist++;
-                    } else if (convCellTwo != null) {
-                        Direction cellTwoDir = Direction.lookup(convCellTwo.getTile().getProperties().get("direction").toString());
-                        if (Direction.flip(cellTwoDir) == curDir)
-                            extraDist++;
+                    TiledMapTileLayer.Cell wallCellOne = ((TiledMapTileLayer) game.getMap().getLayers().get("walls")).getCell((int) from.x, (int) from.y + 1);
+                    TiledMapTileLayer.Cell wallCellTwo = ((TiledMapTileLayer) game.getMap().getLayers().get("walls")).getCell((int) from.x, (int) from.y + 2);
+
+                    if (wallCellOne != null) {
+                        Direction cellDir = Direction.lookup(wallCellOne.getTile().getProperties().get("direction").toString());
+                        if (cellDir == curDir || Direction.flip(cellDir) == curDir) {
+                            currentPath.add(new RotationCard(1, true));
+                            return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
+                        }
+                    } else if (wallCellTwo != null) {
+                        Direction cellDir = Direction.lookup(wallCellTwo.getTile().getProperties().get("direction").toString());
+                        if (cellDir == curDir || Direction.flip(cellDir) == curDir) {
+                            currentPath.add(new RotationCard(1, true));
+                            return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
+                        }
                     }
 
                     if (deltaY >= 3) {
@@ -599,23 +620,13 @@ public class Robot extends Sprite {
                     return pathTo(currentPath, flagPosList, from, to, Direction.getClockwiseDirection(curDir));
                 }
             } else if (deltaY < 0) {
-                if (curDir.equals(Direction.NORTH)) {
-                    int extraDist = 0;
+                if (curDir == Direction.NORTH) {
                     TiledMapTileLayer.Cell convCellOne = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x, (int) from.y + 1);
                     TiledMapTileLayer.Cell convCellTwo = ((TiledMapTileLayer) game.getMap().getLayers().get("conveyors")).getCell((int) from.x, (int) from.y + 2);
+                    int extraDist = getExtraDist(curDir, convCellOne, convCellTwo);
 
                     TiledMapTileLayer.Cell wallCellOne = ((TiledMapTileLayer) game.getMap().getLayers().get("walls")).getCell((int) from.x, (int) from.y + 1);
                     TiledMapTileLayer.Cell wallCellTwo = ((TiledMapTileLayer) game.getMap().getLayers().get("walls")).getCell((int) from.x, (int) from.y + 2);
-
-                    if (convCellOne != null) {
-                        Direction cellDir = Direction.lookup(convCellOne.getTile().getProperties().get("direction").toString());
-                        if (Direction.flip(cellDir).equals(curDir))
-                            extraDist++;
-                    } else if (convCellTwo != null) {
-                        Direction cellDir = Direction.lookup(convCellTwo.getTile().getProperties().get("direction").toString());
-                        if (Direction.flip(cellDir).equals(curDir))
-                            extraDist++;
-                    }
 
                     if (wallCellOne != null) {
                         Direction cellDir = Direction.lookup(wallCellOne.getTile().getProperties().get("direction").toString());
@@ -665,6 +676,30 @@ public class Robot extends Sprite {
         }
         
         return currentPath;
+    }
+
+    /**
+     * Determines if a conveyor belt is facing the robot.
+     * If so, return the extra distance the robot should
+     * go to not get pushed by the conveyor belt.
+     *
+     * @param curDir the current direction of the robot
+     * @param convCellOne the conveyor cell one cell ahead of the robot
+     * @param convCellTwo the conveyor cell two cells ahead
+     * @return 1 if a conveyor is facing the robot, 0 otherwise
+     */
+    private int getExtraDist(Direction curDir, TiledMapTileLayer.Cell convCellOne, TiledMapTileLayer.Cell convCellTwo) {
+        if (convCellOne != null) {
+            Direction cellOneDir = Direction.lookup(convCellOne.getTile().getProperties().get("direction").toString());
+            if (Direction.flip(cellOneDir) == curDir)
+                return 1;
+        } else if (convCellTwo != null) {
+            Direction cellTwoDir = Direction.lookup(convCellTwo.getTile().getProperties().get("direction").toString());
+            if (Direction.flip(cellTwoDir) == curDir)
+                return 1;
+        }
+        
+        return 0;
     }
 
     /**
@@ -885,7 +920,8 @@ public class Robot extends Sprite {
      * @return power
      */
     public int getPower() {
-        return power;
+        // The amount of damage a robots weapon takes.
+        return 1;
     }
 
     public void setBackupMemory(Vector2 backupMemory) {

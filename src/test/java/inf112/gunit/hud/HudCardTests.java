@@ -2,7 +2,6 @@ package inf112.gunit.hud;
 
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
-import inf112.gunit.board.Board;
 import inf112.gunit.board.Direction;
 import inf112.gunit.main.GdxTestRunner;
 import inf112.gunit.player.Robot;
@@ -23,13 +22,11 @@ public class HudCardTests {
     private final Random r = new Random();
 
     private Robot robot;
-    private Board board;
 
     @Before
     public void initialise() {
         Game game = new Game(1, new TmxMapLoader().load("assets/board_new.tmx"));
         this.robot = game.getPlayerRobot();
-        this.board = new Board(game);
         robot.setPosition(new Vector2(0,0));
         robot.setDirection(Direction.NORTH);
     }

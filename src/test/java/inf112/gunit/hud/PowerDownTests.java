@@ -21,13 +21,12 @@ public class PowerDownTests {
 
     private final Random r = new Random();
 
-    private Game game;
     private Robot robot;
     private Board board;
 
     @Before
     public void initialise() {
-        game = new Game(1, new TmxMapLoader().load("assets/conveyor_testboard.tmx"));
+        Game game = new Game(1, new TmxMapLoader().load("assets/conveyor_testboard.tmx"));
         this.robot = game.getPlayerRobot();
         this.board = new Board(game);
         robot.setPosition(new Vector2(0,0));

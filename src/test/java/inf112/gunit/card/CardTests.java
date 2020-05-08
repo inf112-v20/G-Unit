@@ -3,7 +3,7 @@ package inf112.gunit.card;
 import inf112.gunit.player.card.MovementCard;
 import inf112.gunit.player.card.RotationCard;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Random;
 

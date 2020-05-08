@@ -19,7 +19,6 @@ package inf112.gunit.main;
 import java.util.HashMap;
 import java.util.Map;
 
-import inf112.gunit.screens.Game;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;

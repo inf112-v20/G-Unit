@@ -19,7 +19,6 @@ import inf112.gunit.main.Main;
 import inf112.gunit.player.Robot;
 import inf112.gunit.player.card.ProgramCard;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -29,7 +28,7 @@ import java.util.Collections;
  */
 public class Game extends InputAdapter implements Screen {
 
-    public float tileScale;
+    public final float tileScale;
 
     public SpriteBatch batch;
 
@@ -43,13 +42,13 @@ public class Game extends InputAdapter implements Screen {
     private int tick;
 
     private Main main;
-    private TiledMap map;
-    private MapProperties props;
+    private final TiledMap map;
+    private final MapProperties props;
 
-    private Board board;
+    private final Board board;
 
-    private Robot[] robots;
-    private Robot playerRobot;
+    private final Robot[] robots;
+    private final Robot playerRobot;
 
     private OrthographicCamera camera;
     private OrthogonalTiledMapRenderer tileRenderer;
@@ -107,7 +106,7 @@ public class Game extends InputAdapter implements Screen {
         int tileWidth = props.get("tilewidth", Integer.class);
         int tileHeight = props.get("tileheight", Integer.class);
 
-        tileScale = Main.HEIGHT / mapHeight;
+        tileScale = Main.HEIGHT / (float) mapHeight;
 
         //set the camera accordingly
         camera = new OrthographicCamera();
@@ -155,7 +154,7 @@ public class Game extends InputAdapter implements Screen {
             robots[i] = p;
         }
 
-        tileScale = Main.HEIGHT / map.getProperties().get("height", Integer.class);
+        tileScale = Main.HEIGHT / (float) map.getProperties().get("height", Integer.class);
 
         playerRobot = robots[0];
 
@@ -177,7 +176,7 @@ public class Game extends InputAdapter implements Screen {
         state = GameState.SETUP;
         if (background_music != null) background_music.stop();
         this.dispose();
-        if (main != null) main.setScreen(new GameOver(main, robot, numOfPlayers));
+        if (main != null) main.setScreen(new GameOver(main, robot));
         //System.exit(0);
     }
 
@@ -201,15 +200,13 @@ public class Game extends InputAdapter implements Screen {
 
                         for (int i = 0; i < p_list.size(); i++) {
                             p[i] = p_list.get(i);
-                            System.out.println(p[i].toString());
                         }
                         
                         r.setProgram(p);
                     }
                 }
-                if (!playerRobot.isPoweredDown()) {
+                if (!playerRobot.isPoweredDown())
                     hud.updateCards();
-                } else System.out.println("not updating cards");
                 state = GameState.ROBOT_PROGRAMMING;
                 break;
             case ROBOT_PROGRAMMING:
@@ -326,8 +323,6 @@ public class Game extends InputAdapter implements Screen {
      * Initialise a new round
      */
     private void newRound() {
-        System.out.println("New round!");
-
         for (Robot robot : robots) {
             if (robot.isPoweredDown()) {
                 robot.setPoweredDown(false);
@@ -372,7 +367,6 @@ public class Game extends InputAdapter implements Screen {
 
         for (Robot robot : robots) {
             if (card.equals(robot.getProgram()[phase])) {
-                System.out.println("Attempting to perform '" + card + "' on : '" + robot + "'");
                 if (!robot.isPoweredDown()) robot.doTurn(card);
                 cardIdx++;
                 break;
@@ -473,7 +467,6 @@ public class Game extends InputAdapter implements Screen {
             return true;
         }   
         // Bumps into wall, receives one damage token
-        System.out.println("move is not valid, dmg one lol 100");
         robot.handleDamage(1);
 
         return false;
@@ -493,11 +486,6 @@ public class Game extends InputAdapter implements Screen {
                 target.handleDamage(shooter.getPower());
                 shooter.setHasFired(true);
                 shooter.setHasSearched(true);
-
-                System.out.println("The " + shooter.toString() + " robot" +
-                        shooter.getPosition() + " shot the " +
-                        target.toString() + " robot" + target.getPosition()
-                        + " from " + shooter.getDirection() + ".");
             }
         }
     }

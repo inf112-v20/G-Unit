@@ -1,21 +1,18 @@
 package inf112.gunit.player.card;
 
-import java.util.Random;
-
 /**
  * ProgramCard is an abstract superclass for the different types of ProgramCards
  */
 public abstract class ProgramCard implements Comparable<ProgramCard>{
 
     // store the type of card, priority, and the name of the card
-    private CardType type;
+    private final CardType type;
     protected int priority;
     protected String cardName;
 
     /**
      * The ProgramCard constructor
      * @param type the type of the initialised card
-     * @param priority the cards priority
      */
     public ProgramCard(CardType type) {
         this.type = type;

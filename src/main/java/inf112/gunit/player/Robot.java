@@ -3,13 +3,10 @@ package inf112.gunit.player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import inf112.gunit.board.Direction;
@@ -19,8 +16,6 @@ import inf112.gunit.player.card.ProgramCard;
 import inf112.gunit.player.card.RotationCard;
 import inf112.gunit.screens.Game;
 
-import java.lang.reflect.Array;
-import java.net.PortUnreachableException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -47,7 +42,7 @@ public class Robot extends Sprite {
     private Vector2 prevPrevPos;
     private Vector2 prevPos;
 
-    private Game game;
+    private final Game game;
     private MapProperties props;
 
     // the direction the robot is facing
@@ -83,13 +78,13 @@ public class Robot extends Sprite {
     private boolean hasSearched = false;
 
     // The amount of damage a robots weapon takes.
-    private int power = 1;
+    private final int power = 1;
 
     private boolean wantsToPowerDown = false;
     private boolean poweredDown = false;
     
-    private Sound slideSound;
-    private Sound damageSound;
+    private final Sound slideSound;
+    private final Sound damageSound;
 
     // Boolean for if the robot is dead.
     private boolean dead = false;
@@ -143,13 +138,13 @@ public class Robot extends Sprite {
      */
     private void moveAnimation(int numTiles, Direction moveDir) {
         if (moveDir == Direction.NORTH) {
-            setY(getY() + animationTick * game.tileScale / (100 / numTiles));
+            setY(getY() + animationTick * game.tileScale / (100 / (float) numTiles));
         } else if (moveDir == Direction.EAST) {
-            setX(getX() + animationTick * game.tileScale / (100 / numTiles));
+            setX(getX() + animationTick * game.tileScale / (100 / (float) numTiles));
         } else if (moveDir == Direction.SOUTH) {
-            setY(getY() - animationTick * game.tileScale / (100 / numTiles));
+            setY(getY() - animationTick * game.tileScale / (100 / (float) numTiles));
         } else if (moveDir == Direction.WEST) {
-            setX(getX() - animationTick * game.tileScale / (100 / numTiles));
+            setX(getX() - animationTick * game.tileScale / (100 / (float) numTiles));
         } else {
             System.err.println("UNKNOWN DIRECTION: " + dir);
         }
@@ -162,13 +157,13 @@ public class Robot extends Sprite {
     private void rotationAnimation(Direction animationDir) {
 
         if (animationDir == Direction.NORTH) {
-            setRotation(getRotation() - (Direction.calcDegDiff(Direction.NORTH, dir) / 15));
+            setRotation(getRotation() - (Direction.calcDegDiff(Direction.NORTH, dir) / (float) 15));
         } else if (animationDir == Direction.EAST) {
-            setRotation(getRotation() - (Direction.calcDegDiff(Direction.EAST, dir) / 15));
+            setRotation(getRotation() - (Direction.calcDegDiff(Direction.EAST, dir) / (float) 15));
         } else if (animationDir == Direction.SOUTH) {
-            setRotation(getRotation() - (Direction.calcDegDiff(Direction.SOUTH, dir) / 15));
+            setRotation(getRotation() - (Direction.calcDegDiff(Direction.SOUTH, dir) / (float) 15));
         } else if (animationDir == Direction.WEST) {
-            setRotation(getRotation() - (Direction.calcDegDiff(Direction.WEST, dir) / 15));
+            setRotation(getRotation() - (Direction.calcDegDiff(Direction.WEST, dir) / (float) 15));
         } else {
             System.err.println("UNKNOWN DIRECTION: " + animationDir);
         }
@@ -314,8 +309,7 @@ public class Robot extends Sprite {
         if (Boolean.parseBoolean(tile.getProperties().get("rotation").toString())) {
             animationDir = dir;
 
-            Direction d = Direction.lookup(tile.getProperties().get("direction").toString());
-            dir = d;
+            dir = Direction.lookup(tile.getProperties().get("direction").toString());
             isRotating = true;
         }
     }
@@ -448,8 +442,6 @@ public class Robot extends Sprite {
         
         ArrayList<ProgramCard> newCards = pathTo(new ArrayList<ProgramCard>(), flagPosList, position, flagPosList.get(flagsCollected), dir);
         if (position.equals(prevPos)) {
-            System.out.println("adding spice");
-
             prevPos = position.cpy();
 
             return addSomeSpice(newCards);
@@ -486,7 +478,6 @@ public class Robot extends Sprite {
      */
     public ArrayList<ProgramCard> pathTo(ArrayList<ProgramCard> currentPath, ArrayList<Vector2> flagPosList, Vector2 from, Vector2 to, Direction curDir) {
         if (currentPath.size() == 5) {
-            System.out.println("Got path with five cards!");
             return currentPath;
         }
         
@@ -745,8 +736,6 @@ public class Robot extends Sprite {
      */
     public void updatePowerDownDesire() {
         wantsToPowerDown = !wantsToPowerDown;
-        if (wantsToPowerDown) System.out.println(this + " wants to powerdown");
-        else System.out.println(this + " doesn't want to powerdown anymore");
     }
 
     /**
@@ -960,7 +949,6 @@ public class Robot extends Sprite {
                     this.setHasSearched(true);
                     break;
                 default:
-                    System.err.println(this + " is facing an invalid direction. Can't fire!");
                     break;
             }
         }

@@ -5,7 +5,7 @@ import inf112.gunit.player.card.ProgramCard;
 
 public class ProgramCardButton extends ImageTextButton {
 
-    private ProgramCard card;
+    private final ProgramCard card;
 
     public ProgramCardButton(ProgramCard card, String text, ImageTextButtonStyle style) {
         super(text, style);

@@ -41,23 +41,23 @@ public class Hud implements Disposable {
     private final int TEXTURE_PADDING = 30;
     private final float FLAG_SCALE = 0.3f;
 
-    private Table damageTokenTable;
-    private Table lifeTokenTable;
-    private Table cardTable;
-    private Table flagTable;
+    private final Table damageTokenTable;
+    private final Table lifeTokenTable;
+    private final Table cardTable;
+    private final Table flagTable;
 
-    private ImageButton powerDownButton;
-    private ImageButton submitButton;
+    private final ImageButton powerDownButton;
+    private final ImageButton submitButton;
     
-    private ImageButton.ImageButtonStyle powerDownUncheckedStyle;
-    private ImageButton.ImageButtonStyle powerDownCheckedStyle;
+    private final ImageButton.ImageButtonStyle powerDownUncheckedStyle;
+    private final ImageButton.ImageButtonStyle powerDownCheckedStyle;
     
-    private ImageButton.ImageButtonStyle submitReadyStyle;
-    private ImageButton.ImageButtonStyle submitUnreadyStyle;
+    private final ImageButton.ImageButtonStyle submitReadyStyle;
+    private final ImageButton.ImageButtonStyle submitUnreadyStyle;
 
     public Stage stage;
 
-    private Viewport viewport;
+    private final Viewport viewport;
 
     public Hud(SpriteBatch batch, final Game game) {
         this.game = game;
@@ -140,7 +140,7 @@ public class Hud implements Disposable {
     }
 
     /**
-     * Common ethod for adding mouse listeners for the buttons
+     * Common method for adding mouse listeners for the buttons
      * @param button the button to add the listener to
      * @return a new ClickListener
      */

@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -19,27 +18,25 @@ import inf112.gunit.player.Robot;
 
 public class GameOver extends RRScreen {
 
-    private SpriteBatch batch;
+    private final SpriteBatch batch;
     protected Stage stage;
-    private Viewport viewport;
-    private OrthographicCamera camera;
-    private BitmapFont font;
-    private GlyphLayout layoutWinner;
-    private GlyphLayout layoutLoser;
-    private Robot robot;
-    private int numOfPlayers;
-    private String winnerString;
-    private String loserString;
-    private Main main;
+    private final Viewport viewport;
+    private final OrthographicCamera camera;
+    private final BitmapFont font;
+    private final GlyphLayout layoutWinner;
+    private final GlyphLayout layoutLoser;
+    private final Robot robot;
+    private final String winnerString;
+    private final String loserString;
+    private final Main main;
 
     /**
      * The Menu construcor
      * @param main takes a main (which is a game)
      */
-    public GameOver(final Main main, Robot robot, int numOfPlayers) {
+    public GameOver(final Main main, Robot robot) {
         this.main = main;
         this.robot = robot;
-        this.numOfPlayers = numOfPlayers;
         winnerString = "Game Over! The " + robot.toString() + " robot won!";
         loserString = "Game Over! You Lost!";
 

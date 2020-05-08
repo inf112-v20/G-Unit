@@ -22,16 +22,16 @@ import inf112.gunit.main.Main;
 
 public class Menu extends RRScreen {
 
-    private SpriteBatch batch;
+    private final SpriteBatch batch;
     protected Stage stage;
-    private Viewport viewport;
-    private OrthographicCamera camera;
+    private final Viewport viewport;
+    private final OrthographicCamera camera;
 
     private TextField numplayerstext;
     private Slider numplayers;
 
 
-    private Main main;
+    private final Main main;
 
     /**
      * The Menu construcor
@@ -73,9 +73,6 @@ public class Menu extends RRScreen {
 
 
         // Listeners
-        // TODO The skin is supposed to change when hovering not clicking
-
-
         hardplayButton.addListener(new ClickListener(){
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {

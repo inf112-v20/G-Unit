@@ -160,7 +160,7 @@ public class Game extends InputAdapter implements Screen {
 
     @Override
     public void show() {
-
+        // not in use
     }
 
     /**
@@ -525,7 +525,7 @@ public class Game extends InputAdapter implements Screen {
 
     @Override
     public void resize(int i, int i1) {
-
+        // not in use
     }
 
     @Override

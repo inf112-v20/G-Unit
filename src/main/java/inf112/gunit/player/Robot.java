@@ -125,12 +125,22 @@ public class Robot extends Sprite {
         damageSound = Gdx.audio.newSound(Gdx.files.internal("assets/sounds/ouf.wav"));
     }
 
+    /**
+     * Set the sprites position according to x and y position
+     * @param x the x position
+     * @param y the y position
+     */
     private void setGridPos(float x, float y) {
         this.setPosition(x, y);
         this.setX(this.getPositionX() * game.tileScale - 109);
         this.setY(this.getPositionY() * game.tileScale - 109);
     }
 
+    /**
+     * Animate one tick if robot is moving
+     * @param numTiles number of tiles to animate
+     * @param moveDir direction which robot is moving
+     */
     private void moveAnimation(int numTiles, Direction moveDir) {
         if (moveDir == Direction.NORTH) {
             setY(getY() + animationTick * game.tileScale / (100 / numTiles));
@@ -145,6 +155,10 @@ public class Robot extends Sprite {
         }
     }
 
+    /**
+     * Animate on tick if robot is rotating
+     * @param animationDir direction from
+     */
     private void rotationAnimation(Direction animationDir) {
 
         if (animationDir == Direction.NORTH) {
@@ -160,6 +174,9 @@ public class Robot extends Sprite {
         }
     }
 
+    /**
+     * Animate one tick
+     */
     private void animate() {
         if (animationTick == ANIMATION_DELTA) {
             isMoving = false;
@@ -176,6 +193,7 @@ public class Robot extends Sprite {
 
     /**
      * Update the robots texture, rotation and position
+     * Also animate the robot
      */
     public void update() {
         if (isRotating) this.animate();

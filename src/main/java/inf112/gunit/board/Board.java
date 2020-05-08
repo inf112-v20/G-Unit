@@ -131,6 +131,13 @@ public class Board {
         }
     }
 
+    /**
+     * Fires a laser at a given location on the board
+     * @param x the x position
+     * @param y the y position
+     * @param damage the damage to deal
+     * @return true if laser didn't hit anything (wall, robot)
+     */
     private boolean fireLaser(int x, int y, int damage) {
         TiledMapTileLayer walls = (TiledMapTileLayer) game.getMap().getLayers().get("walls");
 

@@ -749,7 +749,7 @@ public class Robot extends Sprite {
      * If the player/robot has no lifeTokens left, he/she is removed from the board entirely.
      */
     public void die(){
-        damageSound.play(1.0f);
+        if (!isDead()) damageSound.play(1.0f);
 
         this.lifeTokens--;
         this.position = backupMemory.cpy();

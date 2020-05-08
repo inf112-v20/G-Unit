@@ -26,7 +26,6 @@ public class GameOver extends RRScreen {
     private final GlyphLayout layoutWinner;
     private final GlyphLayout layoutLoser;
     private final Robot robot;
-    private final int numOfPlayers;
     private final String winnerString;
     private final String loserString;
     private final Main main;
@@ -35,10 +34,9 @@ public class GameOver extends RRScreen {
      * The Menu construcor
      * @param main takes a main (which is a game)
      */
-    public GameOver(final Main main, Robot robot, int numOfPlayers) {
+    public GameOver(final Main main, Robot robot) {
         this.main = main;
         this.robot = robot;
-        this.numOfPlayers = numOfPlayers;
         winnerString = "Game Over! The " + robot.toString() + " robot won!";
         loserString = "Game Over! You Lost!";
 

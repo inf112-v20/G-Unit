@@ -154,7 +154,7 @@ public class Game extends InputAdapter implements Screen {
             robots[i] = p;
         }
 
-        tileScale = Main.HEIGHT / map.getProperties().get("height", Integer.class);
+        tileScale = Main.HEIGHT / (float) map.getProperties().get("height", Integer.class);
 
         playerRobot = robots[0];
 
@@ -176,7 +176,7 @@ public class Game extends InputAdapter implements Screen {
         state = GameState.SETUP;
         if (background_music != null) background_music.stop();
         this.dispose();
-        if (main != null) main.setScreen(new GameOver(main, robot, numOfPlayers));
+        if (main != null) main.setScreen(new GameOver(main, robot));
         //System.exit(0);
     }
 
